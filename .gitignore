@@ -21,7 +21,7 @@ workspace.ipynb
 brexport.html
 *.ckpt
 *.vscode
-*.json
+#*.json
 *.xml
 *.idea
 *.pyc
