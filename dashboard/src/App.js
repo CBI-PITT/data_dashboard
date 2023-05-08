@@ -105,17 +105,7 @@ function getConti(key, value) {
 //         )
 //     }
 // }
-function test(){
-    return(<Box width={300}>
-        <Slider
-          size="small"
-          defaultValue={70}
-          aria-label="Small"
-          valueLabelDisplay="auto"
-        />
-        <Slider defaultValue={50} aria-label="Default" valueLabelDisplay="auto" />
-      </Box>)
-}
+
 
 function App() {
     const url = ""
@@ -142,8 +132,8 @@ function App() {
           })
         } */
         const mockData = {
-            "categorical": { "Treatment": ["eeev", "veev","weev"], "Time_point": [24, 48, 72, 96],"Route": ['subcutaneous'] },
-            "continuous": { "Age": { "min": 0.5, "max": 5 },"Metadata":{"min":1,"max":29} }
+            "categorical": { "Treatment": ["eeev", "veev", "weev"], "Time_point": [24, 48, 72, 96], "Route": ['subcutaneous'] },
+            "continuous": { "Age": { "min": 0.5, "max": 5 }, "Metadata": { "min": 1, "max": 29 } }
         }
         var agent_cate_key = []
         var agent_cate_value = []
@@ -167,8 +157,7 @@ function App() {
     }, [])
 
 
-    /* setContinuous(mockData.continuous)
-    setCategorical(mockData.categorical) */
+    
 
 
     return (
@@ -180,11 +169,9 @@ function App() {
             <div className='mainSec'>
                 <div className='filter'>
                     <div className='continuous'>
-                        {/* {getConti(continuous)} */}
                         {getConti(key_Continuous, value_Continuous)}
                     </div>
                     <div className='categorical'>
-                        {/* {getCate(categorical)} */}
                         {getCate(key_Category, value_Category)}
                     </div>
                     <br></br>
@@ -193,13 +180,13 @@ function App() {
                     </div>
                 </div>
                 <div className='dispaly'>
-                    {/* {getCate(key_Category,value_Category)} */}
+
                 </div>
             </div>
-            
+
             <div>
             </div>
-            
+
         </div>
     );
 }
