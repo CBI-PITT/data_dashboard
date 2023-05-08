@@ -105,17 +105,7 @@ function getConti(key, value) {
 //         )
 //     }
 // }
-function test() {
-    return (<Box width={300}>
-        <Slider
-            size="small"
-            defaultValue={70}
-            aria-label="Small"
-            valueLabelDisplay="auto"
-        />
-        <Slider defaultValue={50} aria-label="Default" valueLabelDisplay="auto" />
-    </Box>)
-}
+
 
 function App() {
     const url = ""
@@ -167,8 +157,7 @@ function App() {
     }, [])
 
 
-    /* setContinuous(mockData.continuous)
-    setCategorical(mockData.categorical) */
+    
 
 
     return (
