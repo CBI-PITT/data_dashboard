@@ -2,10 +2,7 @@
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
+
 
 
 
@@ -18,14 +15,28 @@
   font-size: calc(10px + 2vmin);
   color: white;
 }
-.mainSec{
+.outer_container{
+  width: 30%;
+
+}
+
+.container{
   background-color: rgb(124, 219, 219);
   margin: 2%;
   height: 80%;
   border: #282c34;
   border-radius: 10px;
   border-style:  inset;
+  
+}
+.columns{
   display: flex;
+  flex-direction: column;
+  border: 3px;
+  border-style:  inset;
+  
+  border-radius: 10px;
+  margin: 1%;
 }
 .filter{
   display: flex;
@@ -36,6 +47,7 @@
   border-radius: 10px;
   margin: 1%;
 }
+
 .continuous{
   display: flex;
   flex-direction: column;
@@ -45,6 +57,23 @@
   flex-direction: column;
 }
 
-
-
+.groupBy{
+  display: flex;
+  flex-direction: column;
+  border: 3px;
+  border-style:  inset;
+  /* border-color: green; */
+  border-radius: 10px;
+  margin: 1%;
+}
+.aggregation
+{
+  display: flex;
+  flex-direction: column;
+  border: 3px;
+  border-style:  inset;
+  /* border-color: green; */
+  border-radius: 10px;
+  margin: 1%;
+}
 
