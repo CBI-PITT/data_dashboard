@@ -30,6 +30,7 @@ def get_filters():
         "categorical": { "Treatment": ["eeev", "veev","weev"], "Time_point": [24, 48, 72, 96],"Route": ['subcutaneous'] },
         "continuous": { "Age": { "min": 0.5, "max": 5 },"Metadata":{"min":1,"max":29} }
     }
+    # TODO: join with cels table
     """
     data = {}
     categorical = {}
@@ -46,8 +47,6 @@ def get_filters():
         continuous_columns.remove('id')
     for column in continuous_columns:
         column_data = pd.to_numeric(metadata_df[column])
-        print('-----------column-------', column)
-        print('----------- len(column_data.unique())-------',  len(column_data.unique()))
         if len(column_data.unique()) > 1:
             continuous[column] = {"min": column_data.min(), "max": column_data.max()}
     categorical_columns = categorical_dtypes.columns.to_list()
@@ -61,13 +60,54 @@ def get_filters():
             categorical[column] = unique_values
     data['categorical'] = categorical
     data['continuous'] = continuous
-    data_str = json.dumps(data, indent=4, sort_keys=True,
-              separators=(', ', ': '), ensure_ascii=False,
-              cls=NumpyEncoder)
-
-    from pprint import pprint;pprint(data)
+    data_str = json.dumps(
+        data, indent=4, sort_keys=True,
+        separators=(', ', ': '), ensure_ascii=False,
+        cls=NumpyEncoder
+    )
     return data_str
-    # return jsonify(data)
+
+
+@app.route('/api/get-xy')
+def get_axis_options():
+    """
+    response format:
+    {"data": ["id", "time_point", "structure_id"]}
+    :return: list of column names from the metadata table
+    # TODO: join with cels table
+    """
+    data = {}
+    metadata_csv = 'metadata.csv'
+    metadata_df = pd.read_csv(metadata_csv)
+    metadata_df = metadata_df.dropna(axis=1, how='all')
+    data['data'] = metadata_df.columns.to_list()
+    return jsonify(data)
+
+
+@app.route('/api/get-group-by')
+def get_group_by_options():
+    """
+    response format:
+    {"data": ["id", "time_point", "structure_id"]}
+    :return: list of column names from the metadata table
+    # TODO: join with cels table
+    """
+    data = {}
+    metadata_csv = 'metadata.csv'
+    metadata_df = pd.read_csv(metadata_csv)
+    metadata_df = metadata_df.dropna(axis=1, how='all')
+    data['data'] = metadata_df.columns.to_list()
+    return jsonify(data)
+
+
+@app.route('/api/get-aggregate')
+def get_aggregate_options():
+    """
+    response format:
+    {"data": ["count of distinct", "count of all", "total sum", "average", "min", "max"]}
+    """
+    data = {"data": ["count of distinct", "count of all", "total sum", "average", "min", "max"]}
+    return jsonify(data)
 
 
 if __name__ == "__main__":
