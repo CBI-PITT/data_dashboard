@@ -6,7 +6,8 @@ import React, { useEffect, useState } from 'react';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-
+import Box from '@mui/material/Box';
+import Slider from '@mui/material/Slider';
 
 function getCate(key, value) {
     // const key = ["Treatment", "Time_Point"]
@@ -104,7 +105,17 @@ function getConti(key, value) {
 //         )
 //     }
 // }
-
+function test(){
+    return(<Box width={300}>
+        <Slider
+          size="small"
+          defaultValue={70}
+          aria-label="Small"
+          valueLabelDisplay="auto"
+        />
+        <Slider defaultValue={50} aria-label="Default" valueLabelDisplay="auto" />
+      </Box>)
+}
 
 function App() {
     const url = ""
@@ -131,8 +142,8 @@ function App() {
           })
         } */
         const mockData = {
-            "categorical": { "Treatment": ["eeev", "veev"], "Time_point": [24, 48, 72, 96],"route": ['subcutaneous'] },
-            "continuous": { "Age": { "min": 0.5, "max": 5 },"metadata":{"min":1,"max":29} }
+            "categorical": { "Treatment": ["eeev", "veev","weev"], "Time_point": [24, 48, 72, 96],"Route": ['subcutaneous'] },
+            "continuous": { "Age": { "min": 0.5, "max": 5 },"Metadata":{"min":1,"max":29} }
         }
         var agent_cate_key = []
         var agent_cate_value = []
@@ -176,7 +187,7 @@ function App() {
                         {/* {getCate(categorical)} */}
                         {getCate(key_Category, value_Category)}
                     </div>
-
+                    <br></br>
                     <div>
                         <button>submit</button>
                     </div>
@@ -185,10 +196,10 @@ function App() {
                     {/* {getCate(key_Category,value_Category)} */}
                 </div>
             </div>
+            
             <div>
-
             </div>
-
+            
         </div>
     );
 }
