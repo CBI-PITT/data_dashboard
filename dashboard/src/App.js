@@ -180,11 +180,9 @@ function App() {
             <div className='mainSec'>
                 <div className='filter'>
                     <div className='continuous'>
-
                         {getConti(key_Continuous, value_Continuous)}
                     </div>
                     <div className='categorical'>
-
                         {getCate(key_Category, value_Category)}
                     </div>
                     <br></br>
