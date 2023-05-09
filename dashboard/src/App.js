@@ -161,6 +161,7 @@ function App() {
     const [value_Category, setvalue_Category] = useState()
     const [key_Continuous, setkey_Continuous] = useState()
     const [value_Continuous, setvalue_Continuous] = useState()
+    const [tableData, setTableData] = useState([])
 
     //Initialize GroupBy section
     const [GroupBy_list, setGroupBY_List] = useState()
@@ -169,6 +170,14 @@ function App() {
     const [Agrregation_list, setAgrregation_list] = useState()
 
     useEffect(() => {
+        fetch("/api/query").then(
+            res => res.json()
+        ).then(
+            data => {
+                setTableData(data)
+                console.log(data)
+            }
+        )
         axios.get(urlPrefix + url_filter).then((response) => {
             console.log(response.data)
             var agent_cate_key = []
@@ -184,7 +193,7 @@ function App() {
                 agent_conti_key.push(key)
                 agent_conti_value.push(response.data.continuous[key])
             }
-            
+
             // Filter setting
             setkey_Category(agent_cate_key)
             setvalue_Category(agent_cate_value)
@@ -229,6 +238,13 @@ function App() {
 
         // //Aggregation list setting
         // setAgrregation_list(mockData.Aggregation_list)
+        const fetchTableData = async () => {
+            const response = await fetch('/api/query');
+            const data = await response.json();
+            setTableData(data);
+        };
+
+        fetchTableData();
     }, [])
 
 
@@ -266,7 +282,13 @@ function App() {
                     </div>
                 </div>
                 <div className='display_container'>
-
+                    <div>
+                        {(typeof tableData === "undefined") ? (
+                            <p>Loading...</p>
+                        ) : (
+                            <p>{tableData}</p>
+                        )}
+                    </div>
                 </div>
             </div>
 

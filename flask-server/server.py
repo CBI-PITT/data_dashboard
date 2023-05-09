@@ -56,15 +56,20 @@ def get_filters():
         categorical_columns.remove('file_path')
     for column in categorical_columns:
         unique_values = list(metadata_df[column].unique())
+        print("column", column)
+        for v in unique_values:
+            print(v, type(v))
         if len(unique_values) > 1:
             categorical[column] = unique_values
     data['categorical'] = categorical
     data['continuous'] = continuous
+    print("Data", data)
     data_str = json.dumps(
         data, indent=4, sort_keys=True,
         separators=(', ', ': '), ensure_ascii=False,
         cls=NumpyEncoder
     )
+    print("Data str", data_str)
     response = jsonify(data_str)
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
@@ -118,7 +123,8 @@ def get_aggregate_options():
     return response
 
 
-@app.route('/api/query', methods=['POST'])
+# @app.route('/api/query', methods=['POST'])
+@app.route('/api/query')
 def query_data_source():
     """
     request JSON format:
@@ -135,20 +141,20 @@ def query_data_source():
 
     :return: json with filtered/grouped/aggregated data
     """
-    json_data = request.json
+    # json_data = request.json
 
-    # # Test data
-    # json_data = {
-    #     "y": "metadata",
-    #     # "y": "uuid",
-    #     "x": "time_point",
-    #     "filter": {
-    #         "categorical": {},
-    #         "continuous": {}
-    #     },
-    #     "group_by": ["time_point"],
-    #     "aggregate": "count of distinct"
-    # }
+    # Test data
+    json_data = {
+        # "y": "metadata",
+        "y": "uuid",
+        "x": "time_point",
+        "filter": {
+            "categorical": {},
+            "continuous": {}
+        },
+        "group_by": ["time_point"],
+        "aggregate": "count of distinct"
+    }
 
     # Read the data into a Pandas DataFrame
     metadata_df = pd.read_csv('metadata.csv')
