@@ -65,7 +65,9 @@ def get_filters():
         separators=(', ', ': '), ensure_ascii=False,
         cls=NumpyEncoder
     )
-    return data_str
+    response = jsonify(data_str)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 @app.route('/api/get-xy')
@@ -81,7 +83,9 @@ def get_axis_options():
     metadata_df = pd.read_csv(metadata_csv)
     metadata_df = metadata_df.dropna(axis=1, how='all')
     data['data'] = metadata_df.columns.to_list()
-    return jsonify(data)
+    response = jsonify(data)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 @app.route('/api/get-group-by')
@@ -97,7 +101,9 @@ def get_group_by_options():
     metadata_df = pd.read_csv(metadata_csv)
     metadata_df = metadata_df.dropna(axis=1, how='all')
     data['data'] = metadata_df.columns.to_list()
-    return jsonify(data)
+    response = jsonify(data)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 @app.route('/api/get-aggregate')
@@ -107,7 +113,9 @@ def get_aggregate_options():
     {"data": ["count of distinct", "count of all", "total sum", "average", "min", "max"]}
     """
     data = {"data": ["count of distinct", "count of all", "total sum", "average", "min", "max"]}
-    return jsonify(data)
+    response = jsonify(data)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 @app.route('/api/query', methods=['POST'])
@@ -190,7 +198,10 @@ def query_data_source():
     print("==================Result================", result)
 
     # Convert the DataFrame to JSON and return it
-    return result.to_json(orient='records')
+    data = result.to_json(orient='records')
+    response = jsonify(data)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 if __name__ == "__main__":
