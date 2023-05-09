@@ -151,6 +151,9 @@ function App() {
     const urlPrefix = "http://127.0.0.1:5000"
     const url_xyAxis = "/api/get-xy"
     const url_filter = "/api/filters"
+    const url_groupBy = "/api/get-group-by"
+    const url_aggregation = "/api/get-aggregate"
+    const url_query = "/api/query"
     
     //Initialize columns section
     const [X_axis_list, setX_axis_list] = useState()
@@ -255,10 +258,10 @@ function App() {
                         </div>
                     </div>
                     <div className='groupBy'>
-                        {get_GroupBy(get_GroupBy)}
+                        {get_GroupBy(GroupBy_list)}
                     </div>
                     <div className='aggregation'>
-                        {get_Agrregation(get_Agrregation)}
+                        {get_Agrregation(Agrregation_list)}
                     </div>
                     <br></br>
                     <div>
