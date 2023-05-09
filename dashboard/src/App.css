@@ -15,19 +15,32 @@
   font-size: calc(10px + 2vmin);
   color: white;
 }
-.outer_container{
-  width: 30%;
-
+.main_sec{
+  width: 100%;
+  background-color: antiquewhite;
+  display: flex;
+  flex-direction: row;
 }
 
-.container{
-  background-color: rgb(124, 219, 219);
+.selection_container{
+  background-color: rgb(156, 169, 121);
   margin: 2%;
-  height: 80%;
+  /* height: 80%; */
   border: #282c34;
   border-radius: 10px;
   border-style:  inset;
-  
+  width: 30%;
+}
+
+.display_container{
+  background-color: rgb(124, 219, 219);
+  margin: 2%;
+  /* height: 80%; */
+  border: #282c34;
+  border-radius: 10px;
+  border-style:inset;
+  /* border: 3px; */
+  width: 60%;
 }
 .columns{
   display: flex;

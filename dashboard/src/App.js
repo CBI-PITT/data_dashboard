@@ -1,5 +1,6 @@
 import './App.css';
 import React, { useEffect, useState } from 'react';
+import axios from "axios";
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
@@ -147,8 +148,10 @@ function get_Agrregation(list) {
 
 
 function App() {
-    const url = ""
-
+    const urlPrefix = "http://127.0.0.1:5000"
+    const url_xyAxis = "/api/get-xy"
+    const url_filter = "/api/filters"
+    
     //Initialize columns section
     const [X_axis_list, setX_axis_list] = useState()
     const [Y_axis_list, setY_axis_list] = useState()
@@ -166,56 +169,66 @@ function App() {
     const [Agrregation_list, setAgrregation_list] = useState()
 
     useEffect(() => {
-        /* async () => {
-          fetch(url).then(Response => {
-            if (Response.ok) {
-              return Response.json
+        axios.get(urlPrefix + url_filter).then((response) => {
+            console.log(response.data)
+            var agent_cate_key = []
+            var agent_cate_value = []
+            var agent_conti_key = []
+            var agent_conti_value = []
+            for (var key in response.data.categorical) {
+                agent_cate_key.push(key)
+                agent_cate_value.push(response.data.categorical[key])
             }
-          }).then(Data => {
-            setSample(Data)
-          }
-          ).catch(Error=>{
-            throw(Error)
-          })
-        } */
-        const mockData = {
-            "X_axis_list": ["cellId"],
-            "Y_axis_list": ["Time_Point"],
-            "categorical": { "Treatment": ["eeev", "veev", "weev"], "Time_point": [24, 48, 72, 96], "Route": ['subcutaneous'] },
-            "continuous": { "Age": { "min": 0.5, "max": 5 }, "Metadata": { "min": 1, "max": 29 } },
-            "GroupBy_list": ["Treatment"],
-            "Aggregation_list": ["value"]
-        }
-        var agent_cate_key = []
-        var agent_cate_value = []
-        var agent_conti_key = []
-        var agent_conti_value = []
-        for (var key in mockData.categorical) {
-            agent_cate_key.push(key)
-            agent_cate_value.push(mockData.categorical[key])
-        }
 
-        for (var key in mockData.continuous) {
-            agent_conti_key.push(key)
-            agent_conti_value.push(mockData.continuous[key])
-        }
+            for (var key in response.data.continuous) {
+                agent_conti_key.push(key)
+                agent_conti_value.push(response.data.continuous[key])
+            }
+            
+            // Filter setting
+            setkey_Category(agent_cate_key)
+            setvalue_Category(agent_cate_value)
+            setkey_Continuous(agent_conti_key)
+            setvalue_Continuous(agent_conti_value)
+        });
+        // const mockData = {
+        //     "X_axis_list": ["cellId"],
+        //     "Y_axis_list": ["Time_Point"],
+        //     "categorical": { "Treatment": ["eeev", "veev", "weev"], "Time_point": [24, 48, 72, 96], "Route": ['subcutaneous'] },
+        //     "continuous": { "Age": { "min": 0.5, "max": 5 }, "Metadata": { "min": 1, "max": 29 } },
+        //     "GroupBy_list": ["Treatment"],
+        //     "Aggregation_list": ["value"]
+        // }
+        // var agent_cate_key = []
+        // var agent_cate_value = []
+        // var agent_conti_key = []
+        // var agent_conti_value = []
+        // for (var key in mockData.categorical) {
+        //     agent_cate_key.push(key)
+        //     agent_cate_value.push(mockData.categorical[key])
+        // }
+
+        // for (var key in mockData.continuous) {
+        //     agent_conti_key.push(key)
+        //     agent_conti_value.push(mockData.continuous[key])
+        // }
         // Columns (X_axis_list, Y_axis_list) setting
-        setX_axis_list(mockData.X_axis_list)
-        setY_axis_list(mockData.Y_axis_list)
-        console.log("X_axis_list is :" + X_axis_list)
+        // setX_axis_list(mockData.X_axis_list)
+        // setY_axis_list(mockData.Y_axis_list)
+        // console.log("X_axis_list is :" + X_axis_list)
 
         // Filter setting
-        setkey_Category(agent_cate_key)
-        setvalue_Category(agent_cate_value)
-        setkey_Continuous(agent_conti_key)
-        setvalue_Continuous(agent_conti_value)
-        console.log(agent_cate_key)
+        // setkey_Category(agent_cate_key)
+        // setvalue_Category(agent_cate_value)
+        // setkey_Continuous(agent_conti_key)
+        // setvalue_Continuous(agent_conti_value)
+        // console.log(agent_cate_key)
 
         //GroupBy list setting
-        setGroupBY_List(mockData.GroupBy_list)
+        // setGroupBY_List(mockData.GroupBy_list)
 
-        //Aggregation list setting
-        setAgrregation_list(mockData.Aggregation_list)
+        // //Aggregation list setting
+        // setAgrregation_list(mockData.Aggregation_list)
     }, [])
 
 
@@ -227,8 +240,8 @@ function App() {
             <header className="App-header">
                 <h1>Klimstra</h1>
             </header>
-            <div className='outer_container'>
-                <div className='container'>
+            <div className='main_sec'>
+                <div className='selection_container'>
                     <div className='columns'>
                         {get_X_axis(X_axis_list)}
                         {get_Y_axis(Y_axis_list)}
@@ -251,6 +264,9 @@ function App() {
                     <div>
                         <button>submit</button>
                     </div>
+                </div>
+                <div className='display_container'>
+
                 </div>
             </div>
 
