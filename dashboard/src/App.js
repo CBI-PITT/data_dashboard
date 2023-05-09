@@ -12,7 +12,13 @@ function get_X_axis(list) {
     if (list !== undefined) {
         return (
             <div>
-                Reserve for X_axis
+                {
+                    list.map((item) => (
+                        <span>
+                            {item} / 
+                        </span>
+                    ))
+                }
             </div>
         )
     }
@@ -23,7 +29,13 @@ function get_Y_axis(list) {
     if (list !== undefined) {
         return (
             <div>
-                Reserve for Y_axis
+                {
+                    list.map((item) => (
+                        <span>
+                            {item} / 
+                        </span>
+                    ))
+                }
             </div>
         )
     }
@@ -80,20 +92,34 @@ function getConti(key, value) {
 }
 
 function get_GroupBy(list) {
+    console.log(list)
     if (list !== undefined) {
         return (
             <div>
-                Reserve for groupBy list
+                {
+                    list.map((item) => (
+                        <span>
+                            {item} / 
+                        </span>
+                    ))
+                }
             </div>
         )
     }
 }
 
 function get_Agrregation(list) {
+    console.log(list)
     if (list !== undefined) {
         return (
             <div>
-                Reserve for Agrregation list
+                {
+                    list.map((item) => (
+                        <span>
+                            {item} / 
+                        </span>
+                    ))
+                }
             </div>
         )
     }
@@ -151,7 +177,10 @@ function App() {
     const urlPrefix = "http://127.0.0.1:5000"
     const url_xyAxis = "/api/get-xy"
     const url_filter = "/api/filters"
-    
+    const url_groupBy = "/api/get-group-by"
+    const url_aggregation = "/api/get-aggregate"
+    const url_query = "/api/query"
+
     //Initialize columns section
     const [X_axis_list, setX_axis_list] = useState()
     const [Y_axis_list, setY_axis_list] = useState()
@@ -164,7 +193,7 @@ function App() {
     const [tableData, setTableData] = useState([])
 
     //Initialize GroupBy section
-    const [GroupBy_list, setGroupBY_List] = useState()
+    const [GroupBy_list, setGroupBy_List] = useState()
 
     //Initialize Agrregation section
     const [Agrregation_list, setAgrregation_list] = useState()
@@ -178,20 +207,37 @@ function App() {
                 console.log(data)
             }
         )
+
+        // Request for xy axis list
+        axios.get(urlPrefix + url_xyAxis).then((response) => {
+            let xyAxis_list_return = response.data.data
+            // console.log(xyAxis_list_return)
+            setX_axis_list(xyAxis_list_return)
+            setY_axis_list(xyAxis_list_return)
+            // console.log(X_axis_list)
+        })
+
+        // Request for filter(key,value)
         axios.get(urlPrefix + url_filter).then((response) => {
-            console.log(response.data)
-            var agent_cate_key = []
-            var agent_cate_value = []
-            var agent_conti_key = []
-            var agent_conti_value = []
-            for (var key in response.data.categorical) {
+
+             console.log("filter return", typeof(response.data))
+
+            let filter_return = JSON.parse(response.data.replace(/\bNaN\b/g, "null"));
+            // console.log(filter_return)
+            let agent_cate_key = []
+            let agent_cate_value = []
+            let agent_conti_key = []
+            let agent_conti_value = []
+
+            for (let key in filter_return.categorical) {
+
                 agent_cate_key.push(key)
-                agent_cate_value.push(response.data.categorical[key])
+                agent_cate_value.push(filter_return.categorical[key])
             }
 
-            for (var key in response.data.continuous) {
+            for (let key in filter_return.continuous) {
                 agent_conti_key.push(key)
-                agent_conti_value.push(response.data.continuous[key])
+                agent_conti_value.push(filter_return.continuous[key])
             }
 
             // Filter setting
@@ -200,6 +246,32 @@ function App() {
             setkey_Continuous(agent_conti_key)
             setvalue_Continuous(agent_conti_value)
         });
+
+        // Request for groupBy list
+        axios.get(urlPrefix + url_groupBy).then((response) => {
+             console.log("groupBy return", typeof(response.data.data))
+            let groupBy_list_return = response.data.data
+            setGroupBy_List(groupBy_list_return)
+            //  console.log(GroupBy_list)
+        })
+
+        // Request for aggregation list
+        axios.get(urlPrefix + url_aggregation).then((response) => {
+            // console.log(response.data.data)
+            let aggregation_list_return = response.data.data
+            setAgrregation_list(aggregation_list_return)
+            //  console.log(Agrregation_list)
+        })
+
+
+        // console.log("X_axis_list" + X_axis_list)
+        // console.log("Y_axis_list" + Y_axis_list)
+        // console.log("key_Category" + key_Category)
+        // console.log("key_Continuous" + key_Continuous)
+        // console.log("GroupBy_list: " + GroupBy_list)
+        // console.log("Agrregation_list" + Agrregation_list)
+
+
         // const mockData = {
         //     "X_axis_list": ["cellId"],
         //     "Y_axis_list": ["Time_Point"],
@@ -271,10 +343,10 @@ function App() {
                         </div>
                     </div>
                     <div className='groupBy'>
-                        {get_GroupBy(get_GroupBy)}
+                        {get_GroupBy(GroupBy_list)}
                     </div>
                     <div className='aggregation'>
-                        {get_Agrregation(get_Agrregation)}
+                        {get_Agrregation(Agrregation_list)}
                     </div>
                     <br></br>
                     <div>
