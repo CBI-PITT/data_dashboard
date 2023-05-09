@@ -110,5 +110,88 @@ def get_aggregate_options():
     return jsonify(data)
 
 
+@app.route('/api/query', methods=['POST'])
+def query_data_source():
+    """
+    request JSON format:
+    {
+        "x": "<column_name>",
+        "y": "<column_name>",
+        "filter": {
+            "categorical": {"<column_name>": [<value1>, <value2>], "<column_name>": [<value1>, <value2>]},
+            "continuous": {"<column_name>": [<min>, <max>], "<column_name>": [<min>, <max>]}
+        },
+        "group_by": ["<column_name1>", "<column_name2>"],
+        "aggregate": <value>
+    }
+
+    :return: json with filtered/grouped/aggregated data
+    """
+    json_data = request.json
+
+    # # Test data
+    # json_data = {
+    #     "y": "metadata",
+    #     # "y": "uuid",
+    #     "x": "time_point",
+    #     "filter": {
+    #         "categorical": {},
+    #         "continuous": {}
+    #     },
+    #     "group_by": ["time_point"],
+    #     "aggregate": "count of distinct"
+    # }
+
+    # Read the data into a Pandas DataFrame
+    metadata_df = pd.read_csv('metadata.csv')
+    metadata_df.drop("uuid", axis=1, inplace=True)
+    cells_df = pd.read_csv('Integrated.csv')
+    cells_df.drop("time_point", axis=1, inplace=True)
+    data = cells_df.merge(metadata_df, left_on='metadata', right_on='id')
+    data = data.dropna(axis=1, how='all')
+    print("DATA:", data.columns)
+
+    # Get the values from the JSON
+    x = json_data['x']
+    y = json_data['y']
+    filter_cat = json_data['filter']['categorical']
+    filter_cont = json_data['filter']['continuous']
+    group_by = json_data['group_by']
+    aggregate = json_data['aggregate']
+
+    # Apply filters to the data
+    for column, values in filter_cat.items():
+        data = data[data[column].isin(values)]
+
+    for column, (min_val, max_val) in filter_cont.items():
+        data = data[(data[column] >= min_val) & (data[column] <= max_val)]
+
+    # Group the data
+    data_grouped = data.groupby(group_by)
+
+    # Aggregate the data
+    if aggregate == 'count of distinct':
+        agg_data = data_grouped[y].nunique()
+    elif aggregate == 'count of all':
+        agg_data = data_grouped[y].count()
+    elif aggregate == 'total sum':
+        agg_data = data_grouped[y].sum()
+    elif aggregate == 'average':
+        agg_data = data_grouped[y].mean()
+    elif aggregate == 'min':
+        agg_data = data_grouped[y].min()
+    elif aggregate == 'max':
+        agg_data = data_grouped[y].max()
+
+    # Create a new DataFrame with x, y, and aggregated data
+    result = pd.DataFrame({x: agg_data.index})
+    result[y] = agg_data.values
+
+    print("==================Result================", result)
+
+    # Convert the DataFrame to JSON and return it
+    return result.to_json(orient='records')
+
+
 if __name__ == "__main__":
     app.run(debug=True)
