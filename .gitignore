@@ -176,4 +176,4 @@ venv.bak/
 
 *.~lock.*
 
-
+node_modules/
