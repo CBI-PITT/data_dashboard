@@ -89,4 +89,15 @@
   border-radius: 10px;
   margin: 1%;
 }
+.slider{
+  width: 30%;
+  
+}
+
+#min{
+  display: inline-block;
+}
+#max{
+  display: inline-block;
+}
 

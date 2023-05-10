@@ -11,15 +11,24 @@ function get_X_axis(list) {
     console.log(list)
     if (list !== undefined) {
         return (
-            <div>
-                {
-                    list.map((item) => (
-                        <span>
-                            {item} / 
-                        </span>
-                    ))
-                }
-            </div>
+            // <div>
+            //     {
+            //         list.map((item) => (
+            //             <span>
+            //                 {item} /
+            //             </span>
+            //         ))
+            //     }
+            // </div>
+            <label for="x_axis"> X axis:
+                <select id='x_axis' name="x">
+                    {
+                        list.map((item) => (
+                            <option value={item}>{item}</option>
+                        ))
+                    }
+                </select>
+            </label>
         )
     }
 }
@@ -28,15 +37,24 @@ function get_Y_axis(list) {
     console.log(list)
     if (list !== undefined) {
         return (
-            <div>
-                {
-                    list.map((item) => (
-                        <span>
-                            {item} / 
-                        </span>
-                    ))
-                }
-            </div>
+            // <div>
+            //     {
+            //         list.map((item) => (
+            //             <span>
+            //                 {item} /
+            //             </span>
+            //         ))
+            //     }
+            // </div>
+            <label for="y_axis"> Y axis:
+                <select id='y_axis' name="y">
+                    {
+                        list.map((item) => (
+                            <option value={item}>{item}</option>
+                        ))
+                    }
+                </select>
+            </label>
         )
     }
 }
@@ -45,18 +63,44 @@ function getCate(key, value) {
     // const key = ["Treatment", "Time_Point"]
     // const value = [["eeve", "weev", "vvev"], [24, 48, 72, 96]]
     if (key !== undefined && value !== undefined) {
+
         return (
+            // <div>
+            //     {
+            //         key.map((k, ind) => (
+            //             <div>
+            //                 <h2>{k}</h2>
+            //                 {value[ind].map((v) => (
+            //                     <label>
+            //                         <input type="checkbox" />
+            //                         {v}
+            //                     </label>
+            //                 ))}
+            //             </div>
+            //         ))
+            //     }
+            // </div>
+
+
+            // current like{"treatment" : ["weev","veev"]}
+            // should be packed to "filter": {
+            //     "categorical": {"<column_name>": [<value1>, <value2>], "<column_name>": [<value1>, <value2>]},
+            //     "continuous": {"<column_name>": [<min>, <max>], "<column_name>": [<min>, <max>]}
+            // }
             <div>
                 {
                     key.map((k, ind) => (
                         <div>
                             <h2>{k}</h2>
-                            {value[ind].map((v) => (
-                                <label>
-                                    <input type="checkbox" />
-                                    {v}
-                                </label>
-                            ))}
+                            <label for={k}>
+                                <select id={k} name={k} size={3} multiple>
+                                    {value[ind].map((v) => (
+                                        <option value={v}>
+                                            {v}
+                                        </option>
+                                    ))}
+                                </select>
+                            </label>
                         </div>
                     ))
                 }
@@ -70,9 +114,27 @@ function getConti(key, value) {
     // const value = [["eeve", "weev", "vvev"], [24, 48, 72, 96]]
     if (key !== undefined && value !== undefined) {
         return (
+            // <div>
+            //     {
+            //         key.map((k, ind) => (
+            //             <div>
+            //                 <h2>{k}</h2>
+            //                 {/* {value[ind].map((v) => (
+            //                     <label>
+            //                         <input type="checkbox" />
+            //                         {v}
+            //                     </label>
+            //                 ))} */}
+            //                 <span>Min: {value[ind].min}</span>
+            //                 <span>Max: {value[ind].max}</span>
+            //             </div>
+            //         ))
+            //     }
+            // </div>
             <div>
-                {
-                    key.map((k, ind) => (
+                <center>
+
+                    {key.map((k, ind) => (
                         <div>
                             <h2>{k}</h2>
                             {/* {value[ind].map((v) => (
@@ -81,11 +143,17 @@ function getConti(key, value) {
                                     {v}
                                 </label>
                             ))} */}
-                            <span>Min: {value[ind].min}</span>
-                            <span>Max: {value[ind].max}</span>
+                            <div>
+                            {value[ind].min}
+                                <input className='slider' type="range" min={value[ind].min} max={value[ind].max}   name={k}/>{value[ind].max}
+                                
+                            </div>
+                            
                         </div>
-                    ))
-                }
+                    ))}
+
+
+                </center>
             </div>
         )
     }
@@ -95,14 +163,27 @@ function get_GroupBy(list) {
     console.log(list)
     if (list !== undefined) {
         return (
+            // <div>
+            //     {
+            //         list.map((item) => (
+            //             <span>
+            //                 {item} /
+            //             </span>
+            //         ))
+            //     }
+            // </div>
             <div>
-                {
-                    list.map((item) => (
-                        <span>
-                            {item} / 
-                        </span>
-                    ))
-                }
+                <h2>Group By</h2>
+                <label for="groupBy">
+                    <select id='groupBy' name="group_by" multiple size={3}>
+                        {
+                            list.map((item) => (
+                                <option value={item}>{item}</option>
+                            ))
+                        }
+                    </select>
+                </label>
+
             </div>
         )
     }
@@ -112,65 +193,33 @@ function get_Agrregation(list) {
     console.log(list)
     if (list !== undefined) {
         return (
-            <div>
-                {
-                    list.map((item) => (
-                        <span>
-                            {item} / 
-                        </span>
-                    ))
-                }
-            </div>
+            // <div>
+            //     {
+            //         list.map((item) => (
+            //             <span>
+            //                 {item} /
+            //             </span>
+            //         ))
+            //     }
+            // </div>
+            <label for="aggregation">Aggregation:
+                <select id='aggregation' name="aggregate" >
+                    {
+                        list.map((item) => (
+                            <option value={item}>{item}</option>
+                        ))
+                    }
+                </select>
+            </label>
         )
     }
 }
 
-// function getCate(props) {
-//     if (props !== undefined) {
-//         return (
-//             <div>
-//                 <h3>Treatment</h3>
-//                 <div>
-//                     {props.treatment.map((prop) => (
-//                         <label>
-//                             <input type="checkbox" />
-//                             {prop}
-//                         </label>
-//                     ))}
-//                 </div>
-//                 <h3>Time_point</h3>
-//                 <div>
-//                     {props.time_point.map((prop) => (
+const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log(event.target.time_point.value);
+  };
 
-//                         <label>
-//                             <input type="checkbox" />
-
-//                             {prop}
-
-//                         </label>
-//                     ))}
-//                 </div>
-//             </div>
-//         )
-//     }
-// }
-// function getConti(props) {
-//     if (props !== undefined) {
-//         return (
-//             <div>
-//                 <h3>Age</h3>
-//                 <div>
-//                     Min:
-
-//                     {props.age.min}
-//                     Max:
-
-//                     {props.age.max}
-//                 </div>
-//             </div>
-//         )
-//     }
-// }
 
 
 function App() {
@@ -198,6 +247,15 @@ function App() {
     //Initialize Agrregation section
     const [Agrregation_list, setAgrregation_list] = useState()
 
+    //initialize Form Data
+    const [formData, setFormData] = useState({
+        x: '',
+        y: '',
+        filter: {},
+        group_by:[],
+        aggregate:''
+      });
+
     useEffect(() => {
         fetch("/api/query").then(
             res => res.json()
@@ -220,7 +278,7 @@ function App() {
         // Request for filter(key,value)
         axios.get(urlPrefix + url_filter).then((response) => {
 
-             console.log("filter return", typeof(response.data))
+            console.log("filter return", typeof (response.data))
 
             let filter_return = JSON.parse(response.data.replace(/\bNaN\b/g, "null"));
             // console.log(filter_return)
@@ -249,7 +307,7 @@ function App() {
 
         // Request for groupBy list
         axios.get(urlPrefix + url_groupBy).then((response) => {
-             console.log("groupBy return", typeof(response.data.data))
+            console.log("groupBy return", typeof (response.data.data))
             let groupBy_list_return = response.data.data
             setGroupBy_List(groupBy_list_return)
             //  console.log(GroupBy_list)
@@ -310,13 +368,13 @@ function App() {
 
         // //Aggregation list setting
         // setAgrregation_list(mockData.Aggregation_list)
-        const fetchTableData = async () => {
-            const response = await fetch('/api/query');
-            const data = await response.json();
-            setTableData(data);
-        };
+        // const fetchTableData = async () => {
+        //     const response = await fetch('/api/query');
+        //     const data = await response.json();
+        //     setTableData(data);
+        // };
 
-        fetchTableData();
+        // fetchTableData();
     }, [])
 
 
@@ -330,28 +388,40 @@ function App() {
             </header>
             <div className='main_sec'>
                 <div className='selection_container'>
-                    <div className='columns'>
-                        {get_X_axis(X_axis_list)}
-                        {get_Y_axis(Y_axis_list)}
-                    </div>
-                    <div className='filter'>
-                        <div className='continuous'>
-                            {getConti(key_Continuous, value_Continuous)}
+                    <form className='form_data' onSubmit={handleSubmit}>
+                        <div className='columns'>
+                            <br></br>
+                            {get_X_axis(X_axis_list)}
+                            <br></br>
+                            {get_Y_axis(Y_axis_list)}
+                            <br></br>
                         </div>
-                        <div className='categorical'>
-                            {getCate(key_Category, value_Category)}
+                        <div className='filter'>
+                            <div className='continuous'>
+                                {getConti(key_Continuous, value_Continuous)}
+                            </div>
+                            <div className='categorical'>
+                                {getCate(key_Category, value_Category)}
+                            </div>
+                            <br></br>
                         </div>
-                    </div>
-                    <div className='groupBy'>
-                        {get_GroupBy(GroupBy_list)}
-                    </div>
-                    <div className='aggregation'>
-                        {get_Agrregation(Agrregation_list)}
-                    </div>
-                    <br></br>
-                    <div>
-                        <button>submit</button>
-                    </div>
+                        <div className='groupBy'>
+                            {get_GroupBy(GroupBy_list)}
+                            <br></br>
+                        </div>
+                        <div className='aggregation'>
+                            <br></br>
+                            {get_Agrregation(Agrregation_list)}
+                            <br></br>
+                        </div>
+                        <br></br>
+                        <div>
+                            {/* <button>submit</button> */}
+                            <input type="submit" value="Submit" />
+                            <input type="reset" value="Reset" />
+                        </div>
+                        <br></br>
+                    </form>
                 </div>
                 <div className='display_container'>
                     <div>
@@ -359,6 +429,7 @@ function App() {
                             <p>Loading...</p>
                         ) : (
                             <p>{tableData}</p>
+                            // console.log(tableData)
                         )}
                     </div>
                 </div>
