@@ -123,8 +123,8 @@ def get_aggregate_options():
     return response
 
 
-# @app.route('/api/query', methods=['POST'])
-@app.route('/api/query')
+@app.route('/api/query', methods=['POST'])
+# @app.route('/api/query')
 def query_data_source():
     """
     request JSON format:
