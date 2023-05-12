@@ -1,224 +1,227 @@
 import './App.css';
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Box from '@mui/material/Box';
-import Slider from '@mui/material/Slider';
 
-function get_X_axis(list) {
-    console.log(list)
-    if (list !== undefined) {
-        return (
-            // <div>
-            //     {
-            //         list.map((item) => (
-            //             <span>
-            //                 {item} /
-            //             </span>
-            //         ))
-            //     }
-            // </div>
-            <label for="x_axis"> X axis:
-                <select id='x_axis' name="x">
-                    {
-                        list.map((item) => (
-                            <option value={item}>{item}</option>
-                        ))
-                    }
-                </select>
-            </label>
-        )
-    }
-}
-
-function get_Y_axis(list) {
-    console.log(list)
-    if (list !== undefined) {
-        return (
-            // <div>
-            //     {
-            //         list.map((item) => (
-            //             <span>
-            //                 {item} /
-            //             </span>
-            //         ))
-            //     }
-            // </div>
-            <label for="y_axis"> Y axis:
-                <select id='y_axis' name="y">
-                    {
-                        list.map((item) => (
-                            <option value={item}>{item}</option>
-                        ))
-                    }
-                </select>
-            </label>
-        )
-    }
-}
-
-function getCate(key, value) {
-    // const key = ["Treatment", "Time_Point"]
-    // const value = [["eeve", "weev", "vvev"], [24, 48, 72, 96]]
-    if (key !== undefined && value !== undefined) {
-
-        return (
-            // <div>
-            //     {
-            //         key.map((k, ind) => (
-            //             <div>
-            //                 <h2>{k}</h2>
-            //                 {value[ind].map((v) => (
-            //                     <label>
-            //                         <input type="checkbox" />
-            //                         {v}
-            //                     </label>
-            //                 ))}
-            //             </div>
-            //         ))
-            //     }
-            // </div>
+import get_X_axis from './dataRetreive/get_X_axis';
+import get_Y_axis from './dataRetreive/get_Y_axis';
+import getCate from './dataRetreive/get_categorical';
+import getConti from './dataRetreive/get_continuous';
+import get_GroupBy from './dataRetreive/get_groupBy';
+import get_Aggregation from './dataRetreive/get_aggregation';
+import bar from './asset/bar.png'
 
 
-            // current like{"treatment" : ["weev","veev"]}
-            // should be packed to "filter": {
-            //     "categorical": {"<column_name>": [<value1>, <value2>], "<column_name>": [<value1>, <value2>]},
-            //     "continuous": {"<column_name>": [<min>, <max>], "<column_name>": [<min>, <max>]}
-            // }
-            <div>
-                {
-                    key.map((k, ind) => (
-                        <div>
-                            <h2>{k}</h2>
-                            <label for={k}>
-                                <select id={k} name={k} size={3} multiple>
-                                    {value[ind].map((v) => (
-                                        <option value={v}>
-                                            {v}
-                                        </option>
-                                    ))}
-                                </select>
-                            </label>
-                        </div>
-                    ))
-                }
-            </div>
-        )
-    }
-}
+// function get_X_axis(list) {
+//     console.log(list)
+//     if (list !== undefined) {
+//         return (
+//             // <div>
+//             //     {
+//             //         list.map((item) => (
+//             //             <span>
+//             //                 {item} /
+//             //             </span>
+//             //         ))
+//             //     }
+//             // </div>
+//             <label for="x_axis"> X axis:
+//                 <select id='x_axis' name="x">
+//                     {
+//                         list.map((item) => (
+//                             <option value={item}>{item}</option>
+//                         ))
+//                     }
+//                 </select>
+//             </label>
+//         )
+//     }
+// }
 
-function getConti(key, value) {
-    // const key = ["Treatment", "Time_Point"]
-    // const value = [["eeve", "weev", "vvev"], [24, 48, 72, 96]]
-    if (key !== undefined && value !== undefined) {
-        return (
-            // <div>
-            //     {
-            //         key.map((k, ind) => (
-            //             <div>
-            //                 <h2>{k}</h2>
-            //                 {/* {value[ind].map((v) => (
-            //                     <label>
-            //                         <input type="checkbox" />
-            //                         {v}
-            //                     </label>
-            //                 ))} */}
-            //                 <span>Min: {value[ind].min}</span>
-            //                 <span>Max: {value[ind].max}</span>
-            //             </div>
-            //         ))
-            //     }
-            // </div>
-            <div>
-                <center>
+// function get_Y_axis(list) {
+//     console.log(list)
+//     if (list !== undefined) {
+//         return (
+//             // <div>
+//             //     {
+//             //         list.map((item) => (
+//             //             <span>
+//             //                 {item} /
+//             //             </span>
+//             //         ))
+//             //     }
+//             // </div>
+//             <label for="y_axis"> Y axis:
+//                 <select id='y_axis' name="y">
+//                     {
+//                         list.map((item) => (
+//                             <option value={item}>{item}</option>
+//                         ))
+//                     }
+//                 </select>
+//             </label>
+//         )
+//     }
+// }
 
-                    {key.map((k, ind) => (
-                        <div>
-                            <h2>{k}</h2>
-                            {/* {value[ind].map((v) => (
-                                <label>
-                                    <input type="checkbox" />
-                                    {v}
-                                </label>
-                            ))} */}
-                            <div>
-                            {value[ind].min}
-                                <input className='slider' type="range" min={value[ind].min} max={value[ind].max}   name={k}/>{value[ind].max}
-                                
-                            </div>
-                            
-                        </div>
-                    ))}
+// function getCate(key, value) {
+//     // const key = ["Treatment", "Time_Point"]
+//     // const value = [["eeve", "weev", "vvev"], [24, 48, 72, 96]]
+//     if (key !== undefined && value !== undefined) {
+
+//         return (
+//             // <div>
+//             //     {
+//             //         key.map((k, ind) => (
+//             //             <div>
+//             //                 <h2>{k}</h2>
+//             //                 {value[ind].map((v) => (
+//             //                     <label>
+//             //                         <input type="checkbox" />
+//             //                         {v}
+//             //                     </label>
+//             //                 ))}
+//             //             </div>
+//             //         ))
+//             //     }
+//             // </div>
 
 
-                </center>
-            </div>
-        )
-    }
-}
+//             // current like{"treatment" : ["weev","veev"]}
+//             // should be packed to "filter": {
+//             //     "categorical": {"<column_name>": [<value1>, <value2>], "<column_name>": [<value1>, <value2>]},
+//             //     "continuous": {"<column_name>": [<min>, <max>], "<column_name>": [<min>, <max>]}
+//             // }
+//             <div>
+//                 {
+//                     key.map((k, ind) => (
+//                         <div>
+//                             <h2>{k}</h2>
+//                             <label for={k}>
+//                                 {console.log(k)}
+//                                 <select id={k} name={k} size={3} multiple>
+//                                     {value[ind].map((v) => (
+//                                         <option value={v}>
+//                                             {v}
+//                                         </option>
+//                                     ))}
+//                                 </select>
+//                             </label>
+//                         </div>
+//                     ))
+//                 }
+//             </div>
+//         )
+//     }
+// }
 
-function get_GroupBy(list) {
-    console.log(list)
-    if (list !== undefined) {
-        return (
-            // <div>
-            //     {
-            //         list.map((item) => (
-            //             <span>
-            //                 {item} /
-            //             </span>
-            //         ))
-            //     }
-            // </div>
-            <div>
-                <h2>Group By</h2>
-                <label for="groupBy">
-                    <select id='groupBy' name="group_by" multiple size={3}>
-                        {
-                            list.map((item) => (
-                                <option value={item}>{item}</option>
-                            ))
-                        }
-                    </select>
-                </label>
+// function getConti(key, value) {
+//     // const key = ["Treatment", "Time_Point"]
+//     // const value = [["eeve", "weev", "vvev"], [24, 48, 72, 96]]
+//     if (key !== undefined && value !== undefined) {
+//         return (
+//             // <div>
+//             //     {
+//             //         key.map((k, ind) => (
+//             //             <div>
+//             //                 <h2>{k}</h2>
+//             //                 {/* {value[ind].map((v) => (
+//             //                     <label>
+//             //                         <input type="checkbox" />
+//             //                         {v}
+//             //                     </label>
+//             //                 ))} */}
+//             //                 <span>Min: {value[ind].min}</span>
+//             //                 <span>Max: {value[ind].max}</span>
+//             //             </div>
+//             //         ))
+//             //     }
+//             // </div>
+//             <div>
+//                 <center>
 
-            </div>
-        )
-    }
-}
+//                     {key.map((k, ind) => (
+//                         <div>
+//                             <h2>{k}</h2>
+//                             {/* {value[ind].map((v) => (
+//                                 <label>
+//                                     <input type="checkbox" />
+//                                     {v}
+//                                 </label>
+//                             ))} */}
+//                             <div>
+//                                 {value[ind].min}
+//                                 <input className='slider' type="range" id={k} min={value[ind].min} max={value[ind].max} name={k} />
+//                                 {value[ind].max}
 
-function get_Agrregation(list) {
-    console.log(list)
-    if (list !== undefined) {
-        return (
-            // <div>
-            //     {
-            //         list.map((item) => (
-            //             <span>
-            //                 {item} /
-            //             </span>
-            //         ))
-            //     }
-            // </div>
-            <label for="aggregation">Aggregation:
-                <select id='aggregation' name="aggregate" >
-                    {
-                        list.map((item) => (
-                            <option value={item}>{item}</option>
-                        ))
-                    }
-                </select>
-            </label>
-        )
-    }
-}
+//                             </div>
 
-const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log(event.target.time_point.value);
-  };
+//                         </div>
+//                     ))}
+
+
+//                 </center>
+//             </div>
+//         )
+//     }
+// }
+
+// function get_GroupBy(list) {
+//     console.log(list)
+//     if (list !== undefined) {
+//         return (
+//             // <div>
+//             //     {
+//             //         list.map((item) => (
+//             //             <span>
+//             //                 {item} /
+//             //             </span>
+//             //         ))
+//             //     }
+//             // </div>
+//             <div>
+//                 <h2>Group By</h2>
+//                 <label for="groupBy">
+//                     <select id='groupBy' name="group_by" multiple size={3}>
+//                         {
+//                             list.map((item) => (
+//                                 <option value={item}>{item}</option>
+//                             ))
+//                         }
+//                     </select>
+//                 </label>
+
+//             </div>
+//         )
+//     }
+// }
+
+// function get_Aggregation(list) {
+//     console.log(list)
+//     if (list !== undefined) {
+//         return (
+//             // <div>
+//             //     {
+//             //         list.map((item) => (
+//             //             <span>
+//             //                 {item} /
+//             //             </span>
+//             //         ))
+//             //     }
+//             // </div>
+//             <label for="aggregation">Aggregation:
+//                 <select id='aggregation' name="aggregate" >
+//                     {
+//                         list.map((item) => (
+//                             <option value={item}>{item}</option>
+//                         ))
+//                     }
+//                 </select>
+//             </label>
+//         )
+//     }
+// }
+
+
 
 
 
@@ -245,19 +248,116 @@ function App() {
     const [GroupBy_list, setGroupBy_List] = useState()
 
     //Initialize Agrregation section
-    const [Agrregation_list, setAgrregation_list] = useState()
+    const [Aggregation_list, setAggregation_list] = useState()
 
     //initialize Form Data
-    const [formData, setFormData] = useState({
+    // const [formData, setFormData] = useState({
+    //     x: '',
+    //     y: '',
+    //     filter: { "categorical": {}, "continuous": {} },
+    //     group_by: [],
+    //     aggregate: ''
+    // });
+    const formData = {
         x: '',
         y: '',
-        filter: {},
-        group_by:[],
-        aggregate:''
-      });
+        filter: { "categorical": {}, "continuous": {} },
+        group_by: [],
+        aggregate: ''
+    }
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        let breakFlag = false;
+        formData.x = event.target.x.value;
+        formData.y = event.target.y.value;
+        if(formData.x === formData.y)
+        {
+            alert("X axis shoud not be same as y axis")
+            return
+        }
+        console.log(formData)
+        // Categorical form data setting
+        const map_categorical = new Map()
+        key_Category.forEach(element => {
+            if(breakFlag)
+            {
+                return 
+            }
+            console.log("event.target.element", document.getElementById(element))
+            let all_choice_keyInCategorical = document.getElementById(element)
+            let select_keyInCategorical = [];
+            for (let i = 0; i < all_choice_keyInCategorical.length; i++) {
+                // console.log(all_choice_keyInCategorical.options[1])
+                if (all_choice_keyInCategorical.options[i].selected) {
+                    select_keyInCategorical.push(all_choice_keyInCategorical[i].value)
+                }
+                map_categorical.set(element, select_keyInCategorical)
+            }
+            if(select_keyInCategorical.length === 0)
+            {
+                alert("Please fill the required section!")
+                breakFlag = true;
+                return
+            }
+            
+            formData.filter.categorical = map_categorical
 
-    useEffect(() => {
-        fetch("/api/query").then(
+        }
+        
+        );
+
+        if(breakFlag)
+        {
+            return
+        }
+        
+
+        // Continuous form data setting
+        const map_continuous = new Map()
+        key_Continuous.forEach(element => {
+
+            console.log("event.target.element", document.getElementById(element))
+            let selectValue_keyInContinuous = document.getElementById(element)
+            map_continuous.set(element, selectValue_keyInContinuous.value)
+            
+
+        });
+        formData.filter.continuous = map_continuous
+        
+        // var select = document.getElementById("groupBy");
+        let all_choice_groupBy = document.getElementById("groupBy")
+        let select_groupBy = [];
+        for (let i = 0; i < all_choice_groupBy.length; i++) {
+            if (all_choice_groupBy.options[i].selected) {
+                select_groupBy.push(all_choice_groupBy[i].value);
+            }
+        }
+        if (select_groupBy.length === 0)
+        {
+            alert("Please fill the required section!")
+            return 
+        }
+        // console.log("groupBy:",select_groupBy)
+
+        formData.group_by = select_groupBy;
+        formData.aggregate = event.target.aggregate.value
+        
+        
+        // console.log("formData type", typeof (formData));
+        // // console.log(formData.x);
+        // // console.log(formData.y);
+        // // console.log(formData.filter)
+        // // console.log(formData.group_by);
+        // // console.log(formData.aggregate);
+    
+
+        console.log(formData)
+        console.log("formdata",typeof(formData))
+        fetch("/api/query",{
+            method:'POST',
+            body:formData
+            
+        }).then(
             res => res.json()
         ).then(
             data => {
@@ -265,6 +365,17 @@ function App() {
                 console.log(data)
             }
         )
+    };
+
+    useEffect(() => {
+        // fetch("/api/query").then(
+        //     res => res.json()
+        // ).then(
+        //     data => {
+        //         setTableData(data)
+        //         console.log(data)
+        //     }
+        // )
 
         // Request for xy axis list
         axios.get(urlPrefix + url_xyAxis).then((response) => {
@@ -274,6 +385,7 @@ function App() {
             setY_axis_list(xyAxis_list_return)
             // console.log(X_axis_list)
         })
+        
 
         // Request for filter(key,value)
         axios.get(urlPrefix + url_filter).then((response) => {
@@ -317,7 +429,7 @@ function App() {
         axios.get(urlPrefix + url_aggregation).then((response) => {
             // console.log(response.data.data)
             let aggregation_list_return = response.data.data
-            setAgrregation_list(aggregation_list_return)
+            setAggregation_list(aggregation_list_return)
             //  console.log(Agrregation_list)
         })
 
@@ -387,7 +499,7 @@ function App() {
                 <h1>Klimstra</h1>
             </header>
             <div className='main_sec'>
-                <div className='selection_container'>
+                <div className='user_selection_container'>
                     <form className='form_data' onSubmit={handleSubmit}>
                         <div className='columns'>
                             <br></br>
@@ -411,7 +523,7 @@ function App() {
                         </div>
                         <div className='aggregation'>
                             <br></br>
-                            {get_Agrregation(Agrregation_list)}
+                            {get_Aggregation(Aggregation_list)}
                             <br></br>
                         </div>
                         <br></br>
@@ -432,6 +544,11 @@ function App() {
                             // console.log(tableData)
                         )}
                     </div>
+                    
+                </div>
+                <div className='drawing_selection_container'>
+                    
+                       
                 </div>
             </div>
 
