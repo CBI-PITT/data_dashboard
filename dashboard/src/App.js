@@ -258,7 +258,7 @@ function App() {
     //     group_by: [],
     //     aggregate: ''
     // });
-    const formData = {
+    var formData = {
         x: '',
         y: '',
         filter: { "categorical": {}, "continuous": {} },
@@ -352,8 +352,11 @@ function App() {
     
 
         console.log(formData)
+        formData = JSON.stringify(formData)
         console.log("formdata",typeof(formData))
+        
         fetch("/api/query",{
+            headers:{'Content-Type': 'application/json'},
             method:'POST',
             body:formData
             
