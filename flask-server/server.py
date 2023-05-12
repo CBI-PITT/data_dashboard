@@ -1,7 +1,7 @@
 import json
 
 import pandas as pd
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
 from utils import NumpyEncoder
 
@@ -124,7 +124,6 @@ def get_aggregate_options():
 
 
 @app.route('/api/query', methods=['POST'])
-# @app.route('/api/query')
 def query_data_source():
     """
     request JSON format:
@@ -141,20 +140,20 @@ def query_data_source():
 
     :return: json with filtered/grouped/aggregated data
     """
-    # json_data = request.json
+    json_data = request.json
 
-    # Test data
-    json_data = {
-        # "y": "metadata",
-        "y": "uuid",
-        "x": "time_point",
-        "filter": {
-            "categorical": {},
-            "continuous": {}
-        },
-        "group_by": ["time_point"],
-        "aggregate": "count of distinct"
-    }
+    # # Test data
+    # json_data = {
+    #     # "y": "metadata",
+    #     "y": "uuid",
+    #     "x": "time_point",
+    #     "filter": {
+    #         "categorical": {},
+    #         "continuous": {}
+    #     },
+    #     "group_by": ["time_point"],
+    #     "aggregate": "count of distinct"
+    # }
 
     # Read the data into a Pandas DataFrame
     metadata_df = pd.read_csv('metadata.csv')
