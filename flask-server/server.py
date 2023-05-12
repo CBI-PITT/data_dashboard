@@ -1,7 +1,7 @@
 import json
 
 import pandas as pd
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
 from utils import NumpyEncoder
 
@@ -124,7 +124,6 @@ def get_aggregate_options():
 
 
 @app.route('/api/query', methods=['POST'])
-# @app.route('/api/query')
 def query_data_source():
     """
     request JSON format:
@@ -143,7 +142,11 @@ def query_data_source():
     """
     json_data = request.json
 
+<<<<<<< HEAD
     # Test data
+=======
+    # # Test data
+>>>>>>> 96b2e2617e33e682b68e142890a42f4eee7adb0e
     # json_data = {
     #     # "y": "metadata",
     #     "y": "uuid",
