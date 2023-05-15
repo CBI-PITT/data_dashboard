@@ -8,8 +8,7 @@ import getCate from './dataRetreive/get_categorical';
 import getConti from './dataRetreive/get_continuous';
 import get_GroupBy from './dataRetreive/get_groupBy';
 import get_Aggregation from './dataRetreive/get_aggregation';
-import bar from './asset/bar.png'
-
+import bar from './drawing/bar';
 
 // function get_X_axis(list) {
 //     console.log(list)
@@ -225,6 +224,8 @@ import bar from './asset/bar.png'
 
 
 
+
+
 function App() {
     const urlPrefix = "http://127.0.0.1:5000"
     const url_xyAxis = "/api/get-xy"
@@ -242,13 +243,16 @@ function App() {
     const [value_Category, setvalue_Category] = useState()
     const [key_Continuous, setkey_Continuous] = useState()
     const [value_Continuous, setvalue_Continuous] = useState()
-    const [tableData, setTableData] = useState([])
+    const [tableData, setTableData] = useState()
+    const [displayData, setDisplayData] = useState()
 
     //Initialize GroupBy section
     const [GroupBy_list, setGroupBy_List] = useState()
 
     //Initialize Agrregation section
     const [Aggregation_list, setAggregation_list] = useState()
+
+    const [data_json, setData_json] = useState()
 
     //initialize Form Data
     // const [formData, setFormData] = useState({
@@ -258,20 +262,19 @@ function App() {
     //     group_by: [],
     //     aggregate: ''
     // });
-    var formData = {
+    var [formData, setFormData] = useState({
         x: '',
         y: '',
         filter: { "categorical": {}, "continuous": {} },
         group_by: [],
         aggregate: ''
-    }
+    })
     const handleSubmit = (event) => {
         event.preventDefault();
         let breakFlag = false;
         formData.x = event.target.x.value;
         formData.y = event.target.y.value;
-        if(formData.x === formData.y)
-        {
+        if (formData.x === formData.y) {
             alert("X axis shoud not be same as y axis")
             return
         }
@@ -279,9 +282,8 @@ function App() {
         // Categorical form data setting
         const map_categorical = new Map()
         key_Category.forEach(element => {
-            if(breakFlag)
-            {
-                return 
+            if (breakFlag) {
+                return
             }
             console.log("event.target.element", document.getElementById(element))
             let all_choice_keyInCategorical = document.getElementById(element)
@@ -293,38 +295,38 @@ function App() {
                 }
                 map_categorical.set(element, select_keyInCategorical)
             }
-            if(select_keyInCategorical.length === 0)
-            {
+            if (select_keyInCategorical.length === 0) {
                 alert("Please fill the required section!")
                 breakFlag = true;
                 return
             }
-            
-            formData.filter.categorical = map_categorical
 
+            formData.filter.categorical = Object.fromEntries(map_categorical)
+            // formData.filter.categorical = map_categorical
         }
-        
+
         );
 
-        if(breakFlag)
-        {
+        if (breakFlag) {
             return
         }
-        
+
 
         // Continuous form data setting
-        const map_continuous = new Map()
-        key_Continuous.forEach(element => {
+        // const map_continuous = new Map()
+        // key_Continuous.forEach(element => {
 
-            console.log("event.target.element", document.getElementById(element))
-            let selectValue_keyInContinuous = document.getElementById(element)
-            map_continuous.set(element, selectValue_keyInContinuous.value)
-            
+        //     console.log("event.target.element", document.getElementById(element))
+        //     let selectValue_keyInContinuous = document.getElementById(element)
+        //     map_continuous.set(element, selectValue_keyInContinuous.value)
 
-        });
-        formData.filter.continuous = map_continuous
-        
-        // var select = document.getElementById("groupBy");
+
+        // });
+        // formData.filter.continuous = Object.fromEntries(map_continuous)
+        formData.filter.continuous = { "time_point": [24, 96] }
+
+
+
         let all_choice_groupBy = document.getElementById("groupBy")
         let select_groupBy = [];
         for (let i = 0; i < all_choice_groupBy.length; i++) {
@@ -332,40 +334,50 @@ function App() {
                 select_groupBy.push(all_choice_groupBy[i].value);
             }
         }
-        if (select_groupBy.length === 0)
-        {
+        if (select_groupBy.length === 0) {
             alert("Please fill the required section!")
-            return 
+            return
         }
         // console.log("groupBy:",select_groupBy)
 
+        // group_by setting
         formData.group_by = select_groupBy;
+
+
         formData.aggregate = event.target.aggregate.value
-        
-        
+
+
         // console.log("formData type", typeof (formData));
         // // console.log(formData.x);
         // // console.log(formData.y);
         // // console.log(formData.filter)
         // // console.log(formData.group_by);
         // // console.log(formData.aggregate);
-    
 
+
+
+        var formData_send = JSON.stringify(formData)
         console.log(formData)
-        formData = JSON.stringify(formData)
-        console.log("formdata",typeof(formData))
-        
-        fetch("/api/query",{
-            headers:{'Content-Type': 'application/json'},
-            method:'POST',
-            body:formData
-            
+        console.log(formData_send)
+        console.log("formdata_send", typeof (formData_send))
+
+        fetch("/api/query", {
+            headers: { 'Content-Type': 'application/json' },
+            method: 'POST',
+            body: formData_send
+
         }).then(
             res => res.json()
         ).then(
             data => {
+
+
+
                 setTableData(data)
-                console.log(data)
+                console.log("setTableData", tableData)
+                setDisplayData(JSON.parse(data))
+                console.log("setDisplayData", displayData)
+
             }
         )
     };
@@ -388,7 +400,7 @@ function App() {
             setY_axis_list(xyAxis_list_return)
             // console.log(X_axis_list)
         })
-        
+
 
         // Request for filter(key,value)
         axios.get(urlPrefix + url_filter).then((response) => {
@@ -532,8 +544,8 @@ function App() {
                         <br></br>
                         <div>
                             {/* <button>submit</button> */}
-                            <input type="submit" value="Submit" />
                             <input type="reset" value="Reset" />
+                            <input type="submit" value="Submit" />
                         </div>
                         <br></br>
                     </form>
@@ -547,16 +559,26 @@ function App() {
                             // console.log(tableData)
                         )}
                     </div>
-                    
+                    <br></br>
+                    <div className='chart'>
+                        {
+                            (typeof displayData === "undefined") ? (
+                                <div>Loading...</div>
+                            ) : (
+                                <div>{
+                                    bar(displayData, formData.x, formData.y)
+                                    // bar()
+                                }</div>
+                                // console.log(tableData)
+                            )}
+                    </div>
                 </div>
                 <div className='drawing_selection_container'>
-                    
-                       
+
+
                 </div>
             </div>
 
-            <div>
-            </div>
 
         </div>
     );

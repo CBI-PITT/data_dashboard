@@ -43,6 +43,7 @@
   border-style:inset;
   /* border: 3px; */
   width: 60%;
+  
 }
 
 .drawing_selection_container{
@@ -119,3 +120,9 @@
   display: inline-block;
 }
 
+.chart{
+  background-color:azure;
+  margin: 2%;
+  border-style:groove;
+  border-radius: 10px;
+}
