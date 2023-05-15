@@ -3,7 +3,7 @@ import json
 import pandas as pd
 from flask import Flask, jsonify, request
 
-from utils import NumpyEncoder
+from utils import NumpyEncoder, merge_cells_and_metadata
 
 
 app = Flask(__name__)
@@ -84,10 +84,8 @@ def get_axis_options():
     # TODO: join with cels table
     """
     data = {}
-    metadata_csv = 'metadata.csv'
-    metadata_df = pd.read_csv(metadata_csv)
-    metadata_df = metadata_df.dropna(axis=1, how='all')
-    data['data'] = metadata_df.columns.to_list()
+    df = merge_cells_and_metadata()
+    data['data'] = df.columns.to_list()
     response = jsonify(data)
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
@@ -102,10 +100,8 @@ def get_group_by_options():
     # TODO: join with cels table
     """
     data = {}
-    metadata_csv = 'metadata.csv'
-    metadata_df = pd.read_csv(metadata_csv)
-    metadata_df = metadata_df.dropna(axis=1, how='all')
-    data['data'] = metadata_df.columns.to_list()
+    df = merge_cells_and_metadata()
+    data['data'] = df.columns.to_list()
     response = jsonify(data)
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
@@ -142,11 +138,7 @@ def query_data_source():
     """
     json_data = request.json
 
-<<<<<<< HEAD
-    # Test data
-=======
     # # Test data
->>>>>>> 96b2e2617e33e682b68e142890a42f4eee7adb0e
     # json_data = {
     #     # "y": "metadata",
     #     "y": "uuid",
@@ -160,13 +152,7 @@ def query_data_source():
     # }
 
     # Read the data into a Pandas DataFrame
-    metadata_df = pd.read_csv('metadata.csv')
-    metadata_df.drop("uuid", axis=1, inplace=True)
-    cells_df = pd.read_csv('Integrated.csv')
-    cells_df.drop("time_point", axis=1, inplace=True)
-    data = cells_df.merge(metadata_df, left_on='metadata', right_on='id')
-    data = data.dropna(axis=1, how='all')
-    print("DATA:", data.columns)
+    data = merge_cells_and_metadata()
 
     # Get the values from the JSON
     x = json_data['x']

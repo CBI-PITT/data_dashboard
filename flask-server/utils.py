@@ -1,6 +1,7 @@
 import json
 
 import numpy as np
+import pandas as pd
 
 
 class NumpyEncoder(json.JSONEncoder):
@@ -29,3 +30,14 @@ class NumpyEncoder(json.JSONEncoder):
             return None
 
         return json.JSONEncoder.default(self, obj)
+
+
+def merge_cells_and_metadata():
+    metadata_df = pd.read_csv('metadata.csv')
+    metadata_df.drop("uuid", axis=1, inplace=True)
+    cells_df = pd.read_csv('Integrated.csv')
+    cells_df.drop("time_point", axis=1, inplace=True)
+    df = cells_df.merge(metadata_df, left_on='metadata', right_on='id')
+    df = df.dropna(axis=1, how='all')
+    print("DATA:", df.columns)
+    return df
