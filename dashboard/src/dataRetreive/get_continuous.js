@@ -1,6 +1,15 @@
+import Box from '@mui/material/Box';
+import Slider from '@mui/material/Slider';
+import { useState } from 'react';
+import * as React from 'react';
 function getConti(key, value) {
     // const key = ["Treatment", "Time_Point"]
     // const value = [["eeve", "weev", "vvev"], [24, 48, 72, 96]]
+    // const [valueSlider,setValueSlider] = useState([])
+
+    // const onChangeValue = (event,newValue) =>{
+    //     setValueSlider(newValue)
+    // }
     if (key !== undefined && value !== undefined) {
         return (
             // <div>
@@ -26,17 +35,16 @@ function getConti(key, value) {
                     {key.map((k, ind) => (
                         <div>
                             <h2>{k}</h2>
-                            {/* {value[ind].map((v) => (
-                                <label>
-                                    <input type="checkbox" />
-                                    {v}
-                                </label>
-                            ))} */}
                             <div>
                                 {value[ind].min}
-                                <input className='slider' type="range" id={k} min={value[ind].min} max={value[ind].max} name={k} />
-                                {value[ind].max}
+                                <Box className='slider'>
 
+                                    {/* <input className='slider' type="range" id={k} min={value[ind].min} max={value[ind].max} name={k} /> */}
+                                    <Slider id={k} min={value[ind].min} max={value[ind].max} name={k} defaultValue={[value[ind].min, value[ind].max]} 
+                                        valueLabelDisplay="auto"></Slider>
+
+                                </Box>
+                                {value[ind].max}
                             </div>
 
                         </div>

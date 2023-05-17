@@ -9,6 +9,8 @@ import getConti from './dataRetreive/get_continuous';
 import get_GroupBy from './dataRetreive/get_groupBy';
 import get_Aggregation from './dataRetreive/get_aggregation';
 import bar from './drawing/bar';
+import Box from '@mui/material/Box';
+import Slider from '@mui/material/Slider';
 
 // function get_X_axis(list) {
 //     console.log(list)
@@ -313,18 +315,24 @@ function App() {
 
 
         // Continuous form data setting
-        // const map_continuous = new Map()
-        // key_Continuous.forEach(element => {
+        const map_continuous = new Map()
+        key_Continuous.forEach(element => {
 
-        //     console.log("event.target.element", document.getElementById(element))
-        //     let selectValue_keyInContinuous = document.getElementById(element)
-        //     map_continuous.set(element, selectValue_keyInContinuous.value)
+            console.log("event.target.element", document.getElementById(element))
+            let selectValue_keyInContinuous = []
+            // selectValue_keyInContinuous[0] = document.getElementById(element).children[2].children[0].value
+            // selectValue_keyInContinuous[1] = document.getElementById(element).children[3].children[0].value
+            selectValue_keyInContinuous.push(parseInt(document.getElementById(element).children[2].children[0].value))
+            selectValue_keyInContinuous.push(parseInt(document.getElementById(element).children[3].children[0].value))
+            map_continuous.set(element, selectValue_keyInContinuous)
+            // console.log(selectValue_keyInContinuous[0])
 
+        });
+        formData.filter.continuous = Object.fromEntries(map_continuous)
 
-        // });
-        // formData.filter.continuous = Object.fromEntries(map_continuous)
-        formData.filter.continuous = { "time_point": [24, 96] }
-
+        
+        // formData.filter.continuous = { "time_point": [24, 96] }
+        console.log(map_continuous)
 
 
         let all_choice_groupBy = document.getElementById("groupBy")
@@ -578,7 +586,7 @@ function App() {
 
                 </div>
             </div>
-
+            
 
         </div>
     );
