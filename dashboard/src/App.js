@@ -2,15 +2,23 @@ import './App.css';
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
 
-import get_X_axis from './dataRetreive/get_X_axis';
-import get_Y_axis from './dataRetreive/get_Y_axis';
-import getCate from './dataRetreive/get_categorical';
-import getConti from './dataRetreive/get_continuous';
-import get_GroupBy from './dataRetreive/get_groupBy';
-import get_Aggregation from './dataRetreive/get_aggregation';
-import bar from './drawing/bar';
+import get_X_axis from './filters/get_X_axis';
+import get_Y_axis from './filters/get_Y_axis';
+import getCate from './filters/get_categorical';
+import getConti from './filters/get_continuous';
+import get_GroupBy from './filters/get_groupBy';
+import get_Aggregation from './filters/get_aggregation';
+import plot from './plot/plot';
+import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
 import Box from '@mui/material/Box';
-import Slider from '@mui/material/Slider';
+import barImg from './asset/bar.png'
+import boxImg from './asset/box.png'
+import dotImg from './asset/dot.png'
+import pieImg from './asset/pie.png'
+import lineImg from './asset/line.png'
+import areaImg from './asset/area.png'
+
 
 // function get_X_axis(list) {
 //     console.log(list)
@@ -222,7 +230,7 @@ import Slider from '@mui/material/Slider';
 //     }
 // }
 
-
+    
 
 
 
@@ -254,16 +262,11 @@ function App() {
     //Initialize Agrregation section
     const [Aggregation_list, setAggregation_list] = useState()
 
-    const [data_json, setData_json] = useState()
+    //Initialize plot button
+    const [plotChoice,setPlotChoice] = useState("bar")
 
     //initialize Form Data
-    // const [formData, setFormData] = useState({
-    //     x: '',
-    //     y: '',
-    //     filter: { "categorical": {}, "continuous": {} },
-    //     group_by: [],
-    //     aggregate: ''
-    // });
+
     var [formData, setFormData] = useState({
         x: '',
         y: '',
@@ -271,6 +274,48 @@ function App() {
         group_by: [],
         aggregate: ''
     })
+    const plotButton = () => {
+        const buttons = [
+        
+            <Button key="bar" onClick={() => {setPlotChoice("bar")}}><img src={barImg} className="plotButton"></img></Button>,
+            <Button key="box" onClick={() => {setPlotChoice("box")}}><img src={boxImg} className="plotButton"></img></Button>,
+            <Button key="dot" onClick={() => {setPlotChoice("dot")}}><img src={dotImg} className="plotButton"></img></Button>,
+            <Button key="pie" onClick={() => {setPlotChoice("pie")}}><img src={pieImg} className="plotButton"></img></Button>,
+            <Button key="line" onClick={() => {setPlotChoice("line")}}><img src={lineImg} className="plotButton"></img></Button>,
+            <Button key="area" onClick={() => {setPlotChoice("area")}}><img src={areaImg} className="plotButton"></img></Button>
+        ];
+        return (
+    
+            <Box 
+                sx={{
+                    display: 'flex',
+                    '& > *': {
+                        m: 1,
+                    },
+                }}
+            >
+    
+                <ButtonGroup
+                    orientation="vertical"
+                    aria-label="vertical contained button group"
+                    variant="outlined"
+                    color='inherit'
+                >
+                    {buttons}
+                </ButtonGroup>
+    
+            </Box>
+    
+        );
+    }
+
+    // var formData={
+    //         x: '',
+    //         y: '',
+    //         filter: { "categorical": {}, "continuous": {} },
+    //         group_by: [],
+    //         aggregate: ''
+    //     }
     const handleSubmit = (event) => {
         event.preventDefault();
         let breakFlag = false;
@@ -330,7 +375,7 @@ function App() {
         });
         formData.filter.continuous = Object.fromEntries(map_continuous)
 
-        
+
         // formData.filter.continuous = { "time_point": [24, 96] }
         console.log(map_continuous)
 
@@ -369,7 +414,7 @@ function App() {
         console.log(formData_send)
         console.log("formdata_send", typeof (formData_send))
 
-        fetch("/api/query", {
+        fetch(url_query, {
             headers: { 'Content-Type': 'application/json' },
             method: 'POST',
             body: formData_send
@@ -570,23 +615,15 @@ function App() {
                     <br></br>
                     <div className='chart'>
                         {
-                            (typeof displayData === "undefined") ? (
-                                <div>Loading...</div>
-                            ) : (
-                                <div>{
-                                    bar(displayData, formData.x, formData.y)
-                                    // bar()
-                                }</div>
-                                // console.log(tableData)
-                            )}
+                            plot(displayData, formData.x, formData.y,plotChoice)
+                        }
                     </div>
                 </div>
                 <div className='drawing_selection_container'>
-
-
+                    {plotButton()}
                 </div>
             </div>
-            
+
 
         </div>
     );
