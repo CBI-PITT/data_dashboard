@@ -277,10 +277,10 @@ function App() {
     const plotButton = () => {
         const buttons = [
         
-            <Button key="bar" onClick={() => {setPlotChoice("bar")}}><img src={barImg} className="plotButton"></img></Button>,
-            <Button key="box" onClick={() => {setPlotChoice("box")}}><img src={boxImg} className="plotButton"></img></Button>,
+            <Button key="bar" onClick={() => {setPlotChoice("bar")}} ><img src={barImg} className="plotButton"></img></Button>,
+            <Button key="box" onClick={() => {setPlotChoice("box")}} ><img src={boxImg} className="plotButton"></img></Button>,
             <Button key="dot" onClick={() => {setPlotChoice("dot")}}><img src={dotImg} className="plotButton"></img></Button>,
-            <Button key="pie" onClick={() => {setPlotChoice("pie")}}><img src={pieImg} className="plotButton"></img></Button>,
+            <Button key="pie" onClick={() => {setPlotChoice("pie")}} ><img src={pieImg} className="plotButton"></img></Button>,
             <Button key="line" onClick={() => {setPlotChoice("line")}}><img src={lineImg} className="plotButton"></img></Button>,
             <Button key="area" onClick={() => {setPlotChoice("area")}}><img src={areaImg} className="plotButton"></img></Button>
         ];
@@ -298,8 +298,8 @@ function App() {
                 <ButtonGroup
                     orientation="vertical"
                     aria-label="vertical contained button group"
-                    variant="outlined"
-                    color='inherit'
+                    variant= 'outlined'
+                    color='inherit'                   
                 >
                     {buttons}
                 </ButtonGroup>
@@ -367,8 +367,8 @@ function App() {
             let selectValue_keyInContinuous = []
             // selectValue_keyInContinuous[0] = document.getElementById(element).children[2].children[0].value
             // selectValue_keyInContinuous[1] = document.getElementById(element).children[3].children[0].value
-            selectValue_keyInContinuous.push(parseInt(document.getElementById(element).children[2].children[0].value))
-            selectValue_keyInContinuous.push(parseInt(document.getElementById(element).children[3].children[0].value))
+            selectValue_keyInContinuous.push(parseInt(document.getElementById(element).children[6].children[0].value))
+            selectValue_keyInContinuous.push(parseInt(document.getElementById(element).children[7].children[0].value))
             map_continuous.set(element, selectValue_keyInContinuous)
             // console.log(selectValue_keyInContinuous[0])
 
@@ -423,14 +423,10 @@ function App() {
             res => res.json()
         ).then(
             data => {
-
-
-
                 setTableData(data)
                 console.log("setTableData", tableData)
                 setDisplayData(JSON.parse(data))
                 console.log("setDisplayData", displayData)
-
             }
         )
     };
@@ -597,8 +593,12 @@ function App() {
                         <br></br>
                         <div>
                             {/* <button>submit</button> */}
-                            <input type="reset" value="Reset" />
-                            <input type="submit" value="Submit" />
+                            {/* <input type="reset" value="Reset" /> */}
+                            
+                            {/* <input type="submit" value="Submit" /> */}
+                            <Button type='reset' variant='contained' size='small' id = "reset">Reset</Button>
+                            
+                            <Button type='submit' variant='contained' size='small'id = "submit">Submit</Button>
                         </div>
                         <br></br>
                     </form>

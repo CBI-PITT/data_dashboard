@@ -9,9 +9,9 @@
 .App-header {
   background-color: #282c34;
   /*display: flex;*/
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  /* flex-direction: column;
+  align-items: center; */
+  /* justify-content: center; */
   font-size: calc(10px + 2vmin);
   color: white;
 }
@@ -24,7 +24,7 @@
 }
 
 .user_selection_container{
-  background-color: rgb(182, 189, 160);
+  background-color: rgb(199, 219, 199);
   margin-top: 2%;
   margin-left: 5%;
   margin-bottom: 2%;
@@ -51,12 +51,12 @@
 }
 
 .drawing_selection_container{
-  background-color: rgb(222, 236, 236);
+  background-color: rgb(230, 236, 230);
   margin-top: 2%;
   
   margin-bottom: 2%;
   /* height: 80%; */
-  border: #282c34;
+  border: #4b525f;
   border-radius: 10px;
   border-style:inset;
   /* border: 3px; */
@@ -113,18 +113,18 @@
 }
 .slider{
   width: 40%;
-  
-}
-
-#min{
   display: inline-block;
 }
-#max{
+
+.min{
+  display: inline-block;
+}
+.max{
   display: inline-block;
 }
 
 .chart{
-  background-color:azure;
+  background-color:rgb(246, 241, 228);
   margin: 2%;
   border-style:groove;
   border-radius: 10px;
@@ -132,4 +132,11 @@
 
 .plotButton{
   width: 100%;
+}
+
+#reset{
+  margin-right: 5%;
+}
+#submit{
+  margin-left: 5%;
 }

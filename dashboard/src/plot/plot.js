@@ -49,7 +49,7 @@ function plot(displayData, x_axis, y_axis, plotChoice) {
             cx="50%"
             cy="50%"
             outerRadius={250}
-            innerRadius={125}
+            innerRadius={150}
             paddingAngle={5}
             fill='#0088FE'
             label>
@@ -87,7 +87,7 @@ function plot(displayData, x_axis, y_axis, plotChoice) {
             <XAxis dataKey={x_axis} />
             <YAxis />
             <Tooltip />
-            <Line type="monotone" dataKey={y_axis} stroke="#82ca9d" fill="#82ca9d" />
+            <Line type='monotone' dataKey={y_axis} stroke="#82ca9d" fill="#82ca9d" />
             <Brush />
             <Legend/>
           </LineChart>
@@ -114,6 +114,8 @@ function plot(displayData, x_axis, y_axis, plotChoice) {
           <YAxis />
           <Tooltip />
           <Area type="monotone" dataKey={y_axis} stroke="#8884d8" fill="#8884d8" />
+          <Brush />
+          <Legend/>
         </AreaChart>
       </ResponsiveContainer>
     );

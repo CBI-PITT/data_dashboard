@@ -12,7 +12,7 @@ import areaImg from '../asset/area.png'
 export default function PlotButton() {
     const buttons = [
     
-        <Button key="bar"><img src={barImg} className="plotButton"></img></Button>,
+        <Button key="bar" onClick={(e) => {e.target.style.color="red"}}><img src={barImg} className="plotButton"></img></Button>,
         <Button key="box"><img src={boxImg} className="plotButton"></img></Button>,
         <Button key="dot"><img src={dotImg} className="plotButton"></img></Button>,
         <Button key="pie"><img src={pieImg} className="plotButton"></img></Button>,
@@ -35,6 +35,7 @@ export default function PlotButton() {
                 aria-label="vertical contained button group"
                 variant="outlined"
                 color='inherit'
+                border="100px"
             >
                 {buttons}
             </ButtonGroup>
