@@ -110,7 +110,7 @@ function plot(displayData, x_axis, y_axis, plotChoice) {
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey={XAxis} />
+          <XAxis dataKey={x_axis} />
           <YAxis />
           <Tooltip />
           <Area type="monotone" dataKey={y_axis} stroke="#8884d8" fill="#8884d8" />
