@@ -1,9 +1,57 @@
-function getCate(key, value) {
+import * as React from 'react';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import ListItemText from '@mui/material/ListItemText';
+import Select from '@mui/material/Select';
+import Checkbox from '@mui/material/Checkbox';
+import Typography from '@mui/material/Typography';
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            width: 250,
+        },
+    },
+};
+
+
+function GetCate({ key_category, value_category, formData }) {
     // const key = ["Treatment", "Time_Point"]
     // const value = [["eeve", "weev", "vvev"], [24, 48, 72, 96]]
-    if (key !== undefined && value !== undefined) {
-
+    
+    
+    // const [cateSelected, setCateSelected] = React.useState(
+    //    new Map()
+    // )
+    // console.log(cateSelected)
+    var cateSelected = new Map()
+    console.log(formData)
+    const handleChange = (event) => {
+        console.log(event.target.value)
+        console.log(event.target.name)
+        cateSelected.set(event.target.name,event.target.value)
+        // if(cateSelected.has(event.target.name))
+        // {
+        //     cateSelected.get(event.target.name).push(event.target.value)
+        // }
+        // else{
+        //     cateSelected.set(event.target.name, [])
+        //     cateSelected.get(event.target.name).push(event.target.value)
+        // }
+        formData.filter.categorical = Object.fromEntries(cateSelected)
+        // setContiSelected(event.target.value)
+        // formData.filter.categorical = event.target.value
+    };
+    
+    if (key_category !== undefined && value_category !== undefined) {
+        
         return (
+
             // current like{"treatment" : ["weev","veev"]}
             // should be packed to "filter": {
             //     "categorical": {"<column_name>": [<value1>, <value2>], "<column_name>": [<value1>, <value2>]},
@@ -11,25 +59,63 @@ function getCate(key, value) {
             // }
             <div>
                 {
-                    key.map((k, ind) => (
+                    key_category.map((k, ind) => (
                         <div>
-                            <h2>{k}</h2>
-                            <label for={k}>
-                                {/* {console.log(k)} */}
-                                <select id={k} name={k} size={3} multiple>
-                                    {value[ind].map((v) => (
-                                        <option value={v}>
-                                            {v}
-                                        </option>
+
+                            <Typography gutterBottom>
+                                {k}
+                            </Typography>
+                            
+                            <FormControl required sx={{ m: 1, width: '95%' }}>
+                                <InputLabel id="demo-multiple-checkbox-label">{k}</InputLabel>
+                                <Select
+                                    labelId="demo-multiple-checkbox-label"
+                                    id="demo-multiple-checkbox"
+                                    multiple
+                                    defaultValue={[]}
+                                    // value={cateSelected.get(k)===undefined?(
+                                    //     ()=>{
+                                    //         cateSelected.set(k,[])
+                                    //         return cateSelected.get(k)
+                                    //     }
+                                    // ):(cateSelected.get(k))}
+                                    onChange={handleChange}
+                                    input={<OutlinedInput label="Tag" />}
+                                    renderValue={(selected) => selected.join(', ')}
+                                    MenuProps={MenuProps}
+                                    name={k}
+                                >
+                                    {value_category[ind].map((name) => (
+                                        <MenuItem key={name} value={name} >
+                                            {/* <Checkbox checked={groupBySelected.indexOf(name) > -1} /> */}
+                                            <ListItemText primary={name} />
+                                        </MenuItem>
                                     ))}
-                                </select>
-                            </label>
+                                </Select>
+                            </FormControl>
+
+
                         </div>
                     ))
                 }
+
+
             </div>
         )
     }
 }
 
-export default getCate;
+
+// {/* <label for={k}>
+//                                 {/* {console.log(k)} */}
+//                                 <select id={k} name={k} size={3} multiple>
+//                                     {value_category[ind].map((v) => (
+//                                         <option value={v}>
+//                                             {v}
+//                                         </option>
+//                                     ))}
+//                                 </select>
+//                             </label> */}
+
+
+export default GetCate;

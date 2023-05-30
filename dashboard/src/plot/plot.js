@@ -6,9 +6,9 @@ import COLORS from './colors';
 
 
 function plot(displayData, x_axis, y_axis, plotChoice) {
-  console.log("displayData", displayData)
-  console.log("displayData", x_axis)
-  console.log("displayData", y_axis)
+  // console.log("displayData", displayData)
+  // console.log("displayData", x_axis)
+  // console.log("displayData", y_axis)
   
 
   if (displayData === undefined) {
@@ -16,7 +16,7 @@ function plot(displayData, x_axis, y_axis, plotChoice) {
   }
   if (plotChoice === "bar") {
     return (
-      <ResponsiveContainer width="100%" aspect={2}>
+      <ResponsiveContainer width="100%" aspect={1.5}>
         <BarChart
 
           data={displayData}
@@ -39,7 +39,7 @@ function plot(displayData, x_axis, y_axis, plotChoice) {
   }
   else if (plotChoice === "pie") {
     return (
-      <ResponsiveContainer width="100%" aspect={2}>
+      <ResponsiveContainer width="100%" aspect={1.5}>
         <PieChart width={400} height={400}>
           <Pie
             dataKey={y_axis}
@@ -48,9 +48,9 @@ function plot(displayData, x_axis, y_axis, plotChoice) {
             data={displayData}
             cx="50%"
             cy="50%"
-            outerRadius={250}
-            innerRadius={150}
-            paddingAngle={5}
+            outerRadius={200}
+            innerRadius={100}
+            paddingAngle={10}
             fill='#0088FE'
             label>
               {displayData.map((entry, index) => (
@@ -70,7 +70,7 @@ function plot(displayData, x_axis, y_axis, plotChoice) {
   else if (plotChoice === "line")
   {
     return(
-      <ResponsiveContainer width="100%" aspect={2}>
+      <ResponsiveContainer width="100%" aspect={1.5}>
           <LineChart
             width={500}
             height={200}
@@ -97,7 +97,7 @@ function plot(displayData, x_axis, y_axis, plotChoice) {
   else if(plotChoice === "area")
   {
     return (
-      <ResponsiveContainer width="100%" aspect={2}>
+      <ResponsiveContainer width="100%" aspect={1.5}>
         <AreaChart
           width={500}
           height={400}

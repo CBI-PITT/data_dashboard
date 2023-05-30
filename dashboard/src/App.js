@@ -2,12 +2,12 @@ import './App.css';
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
 
-import get_X_axis from './filters/get_X_axis';
-import get_Y_axis from './filters/get_Y_axis';
-import getCate from './filters/get_categorical';
-import getConti from './filters/get_continuous';
-import get_GroupBy from './filters/get_groupBy';
-import get_Aggregation from './filters/get_aggregation';
+import Get_X_axis from './filters/Get_X_axis';
+import Get_Y_axis from './filters/Get_Y_axis';
+import GetCate from './filters/Get_categorical';
+import GetConti from './filters/Get_continuous';
+import Get_GroupBy from './filters/Get_groupBy';
+import Get_Aggregation from './filters/Get_aggregation';
 import plot from './plot/plot';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
@@ -249,8 +249,8 @@ function App() {
     const [Y_axis_list, setY_axis_list] = useState()
 
     //Initialize filter section
-    const [key_Category, setkey_Category] = useState()
-    const [value_Category, setvalue_Category] = useState()
+    const [key_Category, setkey_Category] = useState([])
+    const [value_Category, setvalue_Category] = useState([])
     const [key_Continuous, setkey_Continuous] = useState()
     const [value_Continuous, setvalue_Continuous] = useState()
     const [tableData, setTableData] = useState()
@@ -267,7 +267,7 @@ function App() {
 
     //initialize Form Data
 
-    var [formData, setFormData] = useState({
+    const [formData, setFormData] = useState({
         x: '',
         y: '',
         filter: { "categorical": {}, "continuous": {} },
@@ -298,7 +298,7 @@ function App() {
                 <ButtonGroup
                     orientation="vertical"
                     aria-label="vertical contained button group"
-                    variant= 'outlined'
+                    variant= 'contained'
                     color='inherit'                   
                 >
                     {buttons}
@@ -319,40 +319,43 @@ function App() {
     const handleSubmit = (event) => {
         event.preventDefault();
         let breakFlag = false;
-        formData.x = event.target.x.value;
-        formData.y = event.target.y.value;
+        // formData.x = event.target.x.value;
+
+        // formData.x = event.target.x.value;
+        // console.log("now x:", event.target)
+        // formData.y = event.target.y.value;
         if (formData.x === formData.y) {
             alert("X axis shoud not be same as y axis")
             return
         }
         console.log(formData)
         // Categorical form data setting
-        const map_categorical = new Map()
-        key_Category.forEach(element => {
-            if (breakFlag) {
-                return
-            }
-            console.log("event.target.element", document.getElementById(element))
-            let all_choice_keyInCategorical = document.getElementById(element)
-            let select_keyInCategorical = [];
-            for (let i = 0; i < all_choice_keyInCategorical.length; i++) {
-                // console.log(all_choice_keyInCategorical.options[1])
-                if (all_choice_keyInCategorical.options[i].selected) {
-                    select_keyInCategorical.push(all_choice_keyInCategorical[i].value)
-                }
-                map_categorical.set(element, select_keyInCategorical)
-            }
-            if (select_keyInCategorical.length === 0) {
-                alert("Please fill the required section!")
-                breakFlag = true;
-                return
-            }
+        // const map_categorical = new Map()
+        // key_Category.forEach(element => {
+        //     if (breakFlag) {
+        //         return
+        //     }
+        //     // console.log("event.target.element", document.getElementById(element))
+        //     let all_choice_keyInCategorical = document.getElementById(element)
+        //     let select_keyInCategorical = [];
+        //     for (let i = 0; i < all_choice_keyInCategorical.length; i++) {
+        //         // console.log(all_choice_keyInCategorical.options[1])
+        //         if (all_choice_keyInCategorical.options[i].selected) {
+        //             select_keyInCategorical.push(all_choice_keyInCategorical[i].value)
+        //         }
+        //         map_categorical.set(element, select_keyInCategorical)
+        //     }
+        //     if (select_keyInCategorical.length === 0) {
+        //         alert("Please fill the required section!")
+        //         breakFlag = true;
+        //         return
+        //     }
 
-            formData.filter.categorical = Object.fromEntries(map_categorical)
-            // formData.filter.categorical = map_categorical
-        }
+        //     formData.filter.categorical = Object.fromEntries(map_categorical)
+        //     // formData.filter.categorical = map_categorical
+        // }
 
-        );
+        // );
 
         if (breakFlag) {
             return
@@ -363,7 +366,7 @@ function App() {
         const map_continuous = new Map()
         key_Continuous.forEach(element => {
 
-            console.log("event.target.element", document.getElementById(element))
+            // console.log("event.target.element", document.getElementById(element))
             let selectValue_keyInContinuous = []
             // selectValue_keyInContinuous[0] = document.getElementById(element).children[2].children[0].value
             // selectValue_keyInContinuous[1] = document.getElementById(element).children[3].children[0].value
@@ -380,24 +383,24 @@ function App() {
         console.log(map_continuous)
 
 
-        let all_choice_groupBy = document.getElementById("groupBy")
-        let select_groupBy = [];
-        for (let i = 0; i < all_choice_groupBy.length; i++) {
-            if (all_choice_groupBy.options[i].selected) {
-                select_groupBy.push(all_choice_groupBy[i].value);
-            }
-        }
-        if (select_groupBy.length === 0) {
-            alert("Please fill the required section!")
-            return
-        }
+        // let all_choice_groupBy = document.getElementById("groupBy")
+        // let select_groupBy = [];
+        // for (let i = 0; i < all_choice_groupBy.length; i++) {
+        //     if (all_choice_groupBy.options[i].selected) {
+        //         select_groupBy.push(all_choice_groupBy[i].value);
+        //     }
+        // }
+        // if (select_groupBy.length === 0) {
+        //     alert("Please fill the required section!")
+        //     return
+        // }
         // console.log("groupBy:",select_groupBy)
 
         // group_by setting
-        formData.group_by = select_groupBy;
+        // formData.group_by = select_groupBy;
 
 
-        formData.aggregate = event.target.aggregate.value
+        // formData.aggregate = event.target.aggregate.value
 
 
         // console.log("formData type", typeof (formData));
@@ -424,7 +427,7 @@ function App() {
         ).then(
             data => {
                 setTableData(data)
-                console.log("setTableData", tableData)
+                // console.log("setTableData", tableData)
                 setDisplayData(JSON.parse(data))
                 console.log("setDisplayData", displayData)
             }
@@ -567,27 +570,34 @@ function App() {
                     <form className='form_data' onSubmit={handleSubmit}>
                         <div className='columns'>
                             <br></br>
-                            {get_X_axis(X_axis_list)}
+                            {/* {Get_X_axis(X_axis_list,formData)} */}
+                            <Get_X_axis list = {X_axis_list} formData={formData}/>
                             <br></br>
-                            {get_Y_axis(Y_axis_list)}
+                            {/* {Get_Y_axis(Y_axis_list,formData)} */}
+                            <Get_Y_axis list = {Y_axis_list} formData={formData} />
                             <br></br>
                         </div>
                         <div className='filter'>
                             <div className='continuous'>
-                                {getConti(key_Continuous, value_Continuous)}
+                                {/* {getConti(key_Continuous, value_Continuous)} */}
+                                <GetConti key_Continuous = {key_Continuous} value_Continuous = {value_Continuous} />
                             </div>
                             <div className='categorical'>
-                                {getCate(key_Category, value_Category)}
+                                {/* {GetCate(key_Category, value_Category,formData)} */}
+                                <GetCate key_category={key_Category} value_category={value_Category} formData = {formData}/>
                             </div>
                             <br></br>
                         </div>
                         <div className='groupBy'>
-                            {get_GroupBy(GroupBy_list)}
+                            {/* {Get_GroupBy(GroupBy_list)} */}
+                            <br></br>
+                            <Get_GroupBy list = {GroupBy_list} formData={formData}/>
                             <br></br>
                         </div>
                         <div className='aggregation'>
                             <br></br>
-                            {get_Aggregation(Aggregation_list)}
+                            {/* {Get_Aggregation(Aggregation_list, formData)} */}
+                            <Get_Aggregation list = {Aggregation_list} formData={formData}/>
                             <br></br>
                         </div>
                         <br></br>
