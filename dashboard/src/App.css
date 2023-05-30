@@ -1,3 +1,5 @@
+
+
 .App {
   text-align: center;
 }
@@ -24,7 +26,7 @@
 }
 
 .user_selection_container{
-  background-color: rgb(150, 163, 145);
+  background-color: rgb(153, 166, 148);
   margin-top: 2%;
   margin-left: 5%;
   margin-bottom: 2%;
@@ -42,7 +44,7 @@
   margin-left: 2%;
   margin-bottom: 2%;
   /* height: 80%; */
-  border: #282c34;
+  border: #747983;
   border-radius: 10px;
   border-style:inset;
   /* border: 3px; */
@@ -72,7 +74,7 @@
   
   border-radius: 10px;
   margin: 1%;
-  background-color: #b1b1b1;
+  background-color: #e7d5d5;
 }
 .filter{
   display: flex;
@@ -82,7 +84,7 @@
   /* border-color: green; */
   border-radius: 10px;
   margin: 1%;
-  background-color: #b1b1b1;
+  background-color: #e7d5d5;
 }
 
 .continuous{
@@ -104,7 +106,7 @@
   /* border-color: green; */
   border-radius: 10px;
   margin: 1%;
-  background-color: #b1b1b1;
+  background-color: #e7d5d5;
 }
 .aggregation
 {
@@ -115,7 +117,7 @@
   /* border-color: green; */
   border-radius: 10px;
   margin: 1%;
-  background-color: #b1b1b1;
+  background-color: #e7d5d5;
 }
 .slider{
   width: 40%;
@@ -138,6 +140,9 @@
 
 .plotButton{
   width: 100%;
+}
+.coverImg{
+  width: 40%;
 }
 
 #reset{

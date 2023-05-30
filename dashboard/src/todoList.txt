@@ -1,0 +1,3 @@
+# reset button not work
+# continuous var - data retreive optimize
+# layout problem on different devices

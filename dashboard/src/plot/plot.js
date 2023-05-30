@@ -3,20 +3,24 @@ import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Resp
 import { PieChart, Pie } from 'recharts';
 import React, { PureComponent } from 'react';
 import COLORS from './colors';
+import CoverImg from '../asset/CoverImg.png'
 
-
-function plot(displayData, x_axis, y_axis, plotChoice) {
+function Plot({displayData, x_axis, y_axis, plotChoice}) {
   // console.log("displayData", displayData)
   // console.log("displayData", x_axis)
   // console.log("displayData", y_axis)
   
 
   if (displayData === undefined) {
-    return <p>Loading....</p>
+    // return <p>Loading....</p>
+    return (
+      <img src={CoverImg} className="coverImg"></img>
+    )
+    
   }
   if (plotChoice === "bar") {
     return (
-      <ResponsiveContainer width="100%" aspect={1.5}>
+      <ResponsiveContainer width="100%" aspect={2}>
         <BarChart
 
           data={displayData}
@@ -39,7 +43,7 @@ function plot(displayData, x_axis, y_axis, plotChoice) {
   }
   else if (plotChoice === "pie") {
     return (
-      <ResponsiveContainer width="100%" aspect={1.5}>
+      <ResponsiveContainer width="100%" aspect={2}>
         <PieChart width={400} height={400}>
           <Pie
             dataKey={y_axis}
@@ -70,7 +74,7 @@ function plot(displayData, x_axis, y_axis, plotChoice) {
   else if (plotChoice === "line")
   {
     return(
-      <ResponsiveContainer width="100%" aspect={1.5}>
+      <ResponsiveContainer width="100%" aspect={2}>
           <LineChart
             width={500}
             height={200}
@@ -97,7 +101,7 @@ function plot(displayData, x_axis, y_axis, plotChoice) {
   else if(plotChoice === "area")
   {
     return (
-      <ResponsiveContainer width="100%" aspect={1.5}>
+      <ResponsiveContainer width="100%" aspect={2}>
         <AreaChart
           width={500}
           height={400}
@@ -123,7 +127,7 @@ function plot(displayData, x_axis, y_axis, plotChoice) {
 
 }
 
-export default plot;
+export default Plot;
 
 
 

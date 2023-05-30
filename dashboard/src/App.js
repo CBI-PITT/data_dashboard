@@ -8,7 +8,7 @@ import GetCate from './filters/Get_categorical';
 import GetConti from './filters/Get_continuous';
 import Get_GroupBy from './filters/Get_groupBy';
 import Get_Aggregation from './filters/Get_aggregation';
-import plot from './plot/plot';
+import Plot from './plot/Plot';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import Box from '@mui/material/Box';
@@ -616,7 +616,7 @@ function App() {
                 <div className='display_container'>
                     <div>
                         {(typeof tableData === "undefined") ? (
-                            <p>Loading...</p>
+                            <p>Data retreiving and Loading...</p>
                         ) : (
                             <p>{tableData}</p>
                             // console.log(tableData)
@@ -624,9 +624,10 @@ function App() {
                     </div>
                     <br></br>
                     <div className='chart'>
-                        {
-                            plot(displayData, formData.x, formData.y,plotChoice)
-                        }
+                        {/* {
+                            Plot(displayData, formData.x, formData.y,plotChoice)
+                        } */}
+                        <Plot displayData={displayData} x_axis={formData.x} y_axis={formData.y} plotChoice ={plotChoice}/>
                     </div>
                 </div>
                 <div className='drawing_selection_container'>
