@@ -41,7 +41,7 @@ function Get_Y_axis({list, formData}) {
                 >
                     {
                         list.map((item) => (
-                            <MenuItem value={item}>{item}</MenuItem>
+                            <MenuItem value={item} key={item}>{item}</MenuItem>
                         ))
                     }
 

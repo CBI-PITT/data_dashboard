@@ -299,7 +299,7 @@ function App() {
                     orientation="vertical"
                     aria-label="vertical contained button group"
                     variant= 'contained'
-                    color='inherit'                   
+                    color="inherit"                   
                 >
                     {buttons}
                 </ButtonGroup>
@@ -363,24 +363,24 @@ function App() {
 
 
         // Continuous form data setting
-        const map_continuous = new Map()
-        key_Continuous.forEach(element => {
+        // const map_continuous = new Map()
+        // key_Continuous.forEach(element => {
 
-            // console.log("event.target.element", document.getElementById(element))
-            let selectValue_keyInContinuous = []
-            // selectValue_keyInContinuous[0] = document.getElementById(element).children[2].children[0].value
-            // selectValue_keyInContinuous[1] = document.getElementById(element).children[3].children[0].value
-            selectValue_keyInContinuous.push(parseInt(document.getElementById(element).children[6].children[0].value))
-            selectValue_keyInContinuous.push(parseInt(document.getElementById(element).children[7].children[0].value))
-            map_continuous.set(element, selectValue_keyInContinuous)
-            // console.log(selectValue_keyInContinuous[0])
+        //     // console.log("event.target.element", document.getElementById(element))
+        //     let selectValue_keyInContinuous = []
+        //     // selectValue_keyInContinuous[0] = document.getElementById(element).children[2].children[0].value
+        //     // selectValue_keyInContinuous[1] = document.getElementById(element).children[3].children[0].value
+        //     selectValue_keyInContinuous.push(parseInt(document.getElementById(element).children[6].children[0].value))
+        //     selectValue_keyInContinuous.push(parseInt(document.getElementById(element).children[7].children[0].value))
+        //     map_continuous.set(element, selectValue_keyInContinuous)
+        //     // console.log(selectValue_keyInContinuous[0])
 
-        });
-        formData.filter.continuous = Object.fromEntries(map_continuous)
+        // });
+        // formData.filter.continuous = Object.fromEntries(map_continuous)
 
 
         // formData.filter.continuous = { "time_point": [24, 96] }
-        console.log(map_continuous)
+        // console.log(map_continuous)
 
 
         // let all_choice_groupBy = document.getElementById("groupBy")
@@ -417,7 +417,7 @@ function App() {
         console.log(formData_send)
         console.log("formdata_send", typeof (formData_send))
 
-        fetch(url_query, {
+        fetch(urlPrefix+ url_query, {
             headers: { 'Content-Type': 'application/json' },
             method: 'POST',
             body: formData_send
@@ -432,6 +432,7 @@ function App() {
                 console.log("setDisplayData", displayData)
             }
         )
+        
     };
 
     useEffect(() => {
@@ -580,7 +581,7 @@ function App() {
                         <div className='filter'>
                             <div className='continuous'>
                                 {/* {getConti(key_Continuous, value_Continuous)} */}
-                                <GetConti key_Continuous = {key_Continuous} value_Continuous = {value_Continuous} />
+                                <GetConti key_Continuous = {key_Continuous} value_Continuous = {value_Continuous} formData={formData} />
                             </div>
                             <div className='categorical'>
                                 {/* {GetCate(key_Category, value_Category,formData)} */}
@@ -606,15 +607,15 @@ function App() {
                             {/* <input type="reset" value="Reset" /> */}
                             
                             {/* <input type="submit" value="Submit" /> */}
-                            <Button type='reset' variant='contained' size='small' id = "reset">Reset</Button>
+                            <Button type='reset' variant='outlined' size='small' id = "reset">Reset</Button>
                             
-                            <Button type='submit' variant='contained' size='small'id = "submit">Submit</Button>
+                            <Button type='submit' variant='outlined' size='small'id = "submit">Submit</Button>
                         </div>
                         <br></br>
                     </form>
                 </div>
                 <div className='display_container'>
-                    <div>
+                    {/* <div>
                         {(typeof tableData === "undefined") ? (
                             <p>Data retreiving and Loading...</p>
                         ) : (
@@ -622,7 +623,8 @@ function App() {
                             // console.log(tableData)
                         )}
                     </div>
-                    <br></br>
+                    <br></br> */}
+                    
                     <div className='chart'>
                         {/* {
                             Plot(displayData, formData.x, formData.y,plotChoice)

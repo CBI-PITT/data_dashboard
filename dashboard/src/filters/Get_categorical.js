@@ -30,19 +30,12 @@ function GetCate({ key_category, value_category, formData }) {
     // )
     // console.log(cateSelected)
     var cateSelected = new Map()
-    console.log(formData)
+    // console.log(formData)
     const handleChange = (event) => {
-        console.log(event.target.value)
-        console.log(event.target.name)
+        // console.log(event.target.value)
+        // console.log(event.target.name)
         cateSelected.set(event.target.name,event.target.value)
-        // if(cateSelected.has(event.target.name))
-        // {
-        //     cateSelected.get(event.target.name).push(event.target.value)
-        // }
-        // else{
-        //     cateSelected.set(event.target.name, [])
-        //     cateSelected.get(event.target.name).push(event.target.value)
-        // }
+        
         formData.filter.categorical = Object.fromEntries(cateSelected)
         // setContiSelected(event.target.value)
         // formData.filter.categorical = event.target.value
@@ -60,12 +53,12 @@ function GetCate({ key_category, value_category, formData }) {
             <div>
                 {
                     key_category.map((k, ind) => (
-                        <div>
+                        <div key={k}>
 
-                            <Typography gutterBottom>
+                            {/* <Typography gutterBottom>
                                 {k}
-                            </Typography>
-                            
+                            </Typography> */}
+                            <br></br>
                             <FormControl required sx={{ m: 1, width: '95%' }}>
                                 <InputLabel id="demo-multiple-checkbox-label">{k}</InputLabel>
                                 <Select
