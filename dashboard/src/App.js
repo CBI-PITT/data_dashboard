@@ -298,7 +298,7 @@ function App() {
                 <ButtonGroup
                     orientation="vertical"
                     aria-label="vertical contained button group"
-                    variant= 'contained'
+                    variant= 'text'
                     color="inherit"                   
                 >
                     {buttons}
@@ -328,7 +328,8 @@ function App() {
             alert("X axis shoud not be same as y axis")
             return
         }
-        console.log(formData)
+        // console.log(formData)
+
         // Categorical form data setting
         // const map_categorical = new Map()
         // key_Category.forEach(element => {
@@ -415,7 +416,7 @@ function App() {
         var formData_send = JSON.stringify(formData)
         console.log(formData)
         console.log(formData_send)
-        console.log("formdata_send", typeof (formData_send))
+        // console.log("formdata_send", typeof (formData_send))
 
         fetch(urlPrefix+ url_query, {
             headers: { 'Content-Type': 'application/json' },
@@ -429,7 +430,7 @@ function App() {
                 setTableData(data)
                 // console.log("setTableData", tableData)
                 setDisplayData(JSON.parse(data))
-                console.log("setDisplayData", displayData)
+                // console.log("setDisplayData", displayData)
             }
         )
         
@@ -629,7 +630,7 @@ function App() {
                         {/* {
                             Plot(displayData, formData.x, formData.y,plotChoice)
                         } */}
-                        <Plot displayData={displayData} x_axis={formData.x} y_axis={formData.y} plotChoice ={plotChoice}/>
+                        <Plot displayData={displayData} x_axis={formData.x} y_axis={formData.y} groupBy={formData.group_by} aggregation={formData.aggregate} plotChoice ={plotChoice}/>
                     </div>
                 </div>
                 <div className='drawing_selection_container'>

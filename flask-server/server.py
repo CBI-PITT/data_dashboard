@@ -2,12 +2,17 @@ import json
 
 import pandas as pd
 from flask import Flask, jsonify, request
-
+from flask_cors import CORS
 from utils import NumpyEncoder, merge_cells_and_metadata
 
 
 app = Flask(__name__)
-
+CORS(app)
+# cors = CORS(app, resource={
+#     r"/*":{
+#         "origins":"*"
+#     }
+# })
 
 @app.route('/')
 def index():
@@ -185,10 +190,17 @@ def query_data_source():
         agg_data = data_grouped[y].min()
     elif aggregate == 'max':
         agg_data = data_grouped[y].max()
+    group_by_str = ''    
+    for val in group_by:
+        group_by_str = val + '_'
+    
 
+    print(group_by_str)
+    print(aggregate)
+    
     # Create a new DataFrame with x, y, and aggregated data
-    result = pd.DataFrame({x: agg_data.index})
-    result[y] = agg_data.values
+    result = pd.DataFrame({group_by_str: agg_data.index})
+    result[aggregate] = agg_data.values
 
     print("==================Result================", result)
 

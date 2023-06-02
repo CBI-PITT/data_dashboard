@@ -5,10 +5,18 @@ import React, { PureComponent } from 'react';
 import COLORS from './colors';
 import CoverImg from '../asset/CoverImg.png'
 
-function Plot({displayData, x_axis, y_axis, plotChoice}) {
+function Plot({displayData, x_axis, y_axis, groupBy, aggregation, plotChoice}) {
+  var groupByList = ''
+  groupBy.forEach(val => {
+    groupByList = groupByList + val + '_'
+  });
+  // for(let ind in groupBy)
+  // {
+  //     groupByList = groupByList + groupBy[ind] + '_'
+  // }
   // console.log("displayData", displayData)
-  // console.log("displayData", x_axis)
-  // console.log("displayData", y_axis)
+  // console.log("displayData", groupByList)
+  // console.log("displayData", aggregation)
   
 
   if (displayData === undefined) {
@@ -32,11 +40,11 @@ function Plot({displayData, x_axis, y_axis, plotChoice}) {
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey={x_axis} />
+          <XAxis dataKey={groupByList} />
           <YAxis />
           <Tooltip />
           <Legend />
-          <Bar dataKey={y_axis} fill="#8884d8" />
+          <Bar dataKey={aggregation} fill="#8884d8" />
         </BarChart>
       </ResponsiveContainer>
     );
@@ -46,8 +54,8 @@ function Plot({displayData, x_axis, y_axis, plotChoice}) {
       <ResponsiveContainer width="100%" aspect={2}>
         <PieChart width={400} height={400}>
           <Pie
-            dataKey={y_axis}
-            nameKey={x_axis}
+            dataKey={aggregation}
+            nameKey={groupByList}
             isAnimationActive={true}
             data={displayData}
             cx="50%"
@@ -88,10 +96,10 @@ function Plot({displayData, x_axis, y_axis, plotChoice}) {
             }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey={x_axis} />
+            <XAxis dataKey={groupByList} />
             <YAxis />
             <Tooltip />
-            <Line type='monotone' dataKey={y_axis} stroke="#82ca9d" fill="#82ca9d" />
+            <Line type='monotone' dataKey={aggregation} stroke="#82ca9d" fill="#82ca9d" />
             <Brush />
             <Legend/>
           </LineChart>
@@ -114,10 +122,10 @@ function Plot({displayData, x_axis, y_axis, plotChoice}) {
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey={x_axis} />
+          <XAxis dataKey={groupByList} />
           <YAxis />
           <Tooltip />
-          <Area type="monotone" dataKey={y_axis} stroke="#8884d8" fill="#8884d8" />
+          <Area type="monotone" dataKey={aggregation} stroke="#8884d8" fill="#8884d8" />
           <Brush />
           <Legend/>
         </AreaChart>

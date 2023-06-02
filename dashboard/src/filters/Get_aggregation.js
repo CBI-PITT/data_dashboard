@@ -36,6 +36,7 @@ function Get_Aggregation({list,formData}) {
                     // value=''
                     defaultValue={''}
                     label="aggregation *"
+                    name='aggregation'
                     onChange={(event) => {
                         console.log("component", event.target)
                         formData.aggregate = event.target.value

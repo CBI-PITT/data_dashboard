@@ -34,6 +34,7 @@ function Get_Y_axis({list, formData}) {
                     // value=''
                     defaultValue={''}
                     label="Y axis *"
+                    name='Y_axis'
                     onChange={(event) => {
                         console.log("component", event.target)
                         formData.y = event.target.value

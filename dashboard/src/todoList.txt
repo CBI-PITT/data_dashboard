@@ -1,3 +1,4 @@
 # reset button not work
-# continuous var - data retreive optimize
+# X, Y axis in fact not useful - remove?
 # layout problem on different devices
+# continuous initial state error

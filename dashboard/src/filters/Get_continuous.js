@@ -7,7 +7,7 @@ import * as React from 'react';
 
 
 
-function GetConti({key_Continuous, value_Continuous, formData}) {
+function GetConti({ key_Continuous, value_Continuous, formData }) {
     // const key = ["Treatment", "Time_Point"]
     // const value = [["eeve", "weev", "vvev"], [24, 48, 72, 96]]
     // const [valueSlider,setValueSlider] = useState([])
@@ -15,14 +15,21 @@ function GetConti({key_Continuous, value_Continuous, formData}) {
     // const onChangeValue = (event,newValue) =>{
     //     setValueSlider(newValue)
     // }
-    var contiSelected = new Map()
-    const handleChange = (event) =>{
-        contiSelected.set(event.target.name,event.target.value)
-        formData.filter.continuous = Object.fromEntries(contiSelected)
-    }
+
 
 
     if (key_Continuous !== undefined && value_Continuous !== undefined) {
+        var contiSelected = new Map()
+        for (let i = 0; i < key_Continuous.length; i++) {
+            contiSelected.set(key_Continuous[i], [value_Continuous[i].min, value_Continuous[i].max])
+        }
+        formData.filter.continuous = Object.fromEntries(contiSelected)
+        // console.log(formData.filter.continuous)
+        // console.log(contiSelected)
+        const handleChange = (event) => {
+            contiSelected.set(event.target.name, event.target.value)
+            formData.filter.continuous = Object.fromEntries(contiSelected)
+        }
         return (
             // <div>
             //     {
@@ -45,12 +52,12 @@ function GetConti({key_Continuous, value_Continuous, formData}) {
                 <center>
 
                     {key_Continuous.map((k, ind) => (
-                        
+
                         <div key={k}>
 
                             <br></br>
-                            
-                            <Typography  gutterBottom>
+
+                            <Typography gutterBottom>
                                 {k}
                             </Typography>
                             <div className='eachContinuousVar'>
@@ -59,7 +66,7 @@ function GetConti({key_Continuous, value_Continuous, formData}) {
                                 <Box className='slider'>
 
 
-                                    <Slider id={k} min={value_Continuous[ind].min} max={value_Continuous[ind].max} name={k}  defaultValue={[value_Continuous[ind].min, value_Continuous[ind].max]} onChange={handleChange} key={k}
+                                    <Slider id={k} min={value_Continuous[ind].min} max={value_Continuous[ind].max} name={k} defaultValue={[value_Continuous[ind].min, value_Continuous[ind].max]} onChange={handleChange} key={k}
                                         valueLabelDisplay="auto" size='small' marks={[{ value: value_Continuous[ind].min, label: value_Continuous[ind].min }, { value: value_Continuous[ind].max, label: value_Continuous[ind].max }]}></Slider>
                                     {/* <Slider id={k} min={value[ind].min} max={value[ind].max} name={k} defaultValue={[value[ind].min, value[ind].max]}
                                         valueLabelDisplay="auto" size='small' ></Slider> */}

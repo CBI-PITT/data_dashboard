@@ -35,6 +35,7 @@ function Get_X_axis({list, formData}) {
                     // value=''
                     defaultValue={''}
                     label="X axis *"
+                    name="X_axis"
                     onChange={(event) => {
                         console.log("component", event.target)
                         formData.x = event.target.value
