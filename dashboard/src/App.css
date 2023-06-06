@@ -50,8 +50,13 @@
   /* border: 3px; */
   width: 60%;
    /* display: flex; */
-  /* justify-content: center; 
-  align-items: center; */
+  
+  /* align-items: center; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  
+  /* align-items:center; */
 }
 
 .drawing_selection_container{
@@ -138,6 +143,9 @@
   margin: 2%;
   border-style:groove;
   border-radius: 10px;
+  /* display: flex;
+  justify-content: center; 
+  align-items:center; */
 }
 
 .plotButton{
@@ -152,4 +160,7 @@
 }
 #submit{
   margin-left: 5%;
+}
+#coverText{
+  font-size: calc(10px + 1vmin);
 }

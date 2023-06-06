@@ -22,7 +22,11 @@ function Plot({displayData, x_axis, y_axis, groupBy, aggregation, plotChoice}) {
   if (displayData === undefined) {
     // return <p>Loading....</p>
     return (
-      <img src={CoverImg} className="coverImg"></img>
+      <div>
+        <br></br>
+        <img src={CoverImg} className="coverImg"></img>
+        <h3 id='coverText'>Statistics and Visulization for Klimstra Project</h3>
+        </div>
     )
     
   }

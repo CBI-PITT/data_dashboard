@@ -1,4 +1,11 @@
+# Frontend
 # reset button not work
 # X, Y axis in fact not useful - remove?
 # layout problem on different devices
-# continuous initial state error
+
+
+# Backend
+# api for x y axis, group by, query is calling merge_cells_and_metadata() several times.
+# need to merge cells and metadata for indexing - use elastic search
+
+💡 seems only filter is needed for all query
