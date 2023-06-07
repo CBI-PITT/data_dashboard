@@ -1,11 +1,61 @@
-# Frontend
+----------------------- Frontend ------------------------
 # reset button not work
 # X, Y axis in fact not useful - remove?
 # layout problem on different devices
 
 
-# Backend
+----------------------- Backend ------------------------
 # api for x y axis, group by, query is calling merge_cells_and_metadata() several times.
-# need to merge cells and metadata for indexing - use elastic search
+# need to merge cells and metadata for indexing - used for elastic search
 
 💡 seems only filter is needed for all query
+GET /metadata/_search
+{
+  "size": 0, 
+  "query":{
+    
+    "bool": {
+        "filter": {
+            "bool" : {
+                "must" : [
+                  {"range": {
+                    "time_point": {
+                      "gte": 50,
+                      "lte": 90
+                    }
+                    }
+                  },
+                  {
+                    "bool" :{
+                      "should" : [
+                        {"term" : { "treatment" : "eeev" } },
+                        {"term" : { "treatment" : "weev" } },
+                        {"term" : { "treatment" : "veev" } }
+                      ]
+                    }
+                  }
+                ]
+             }
+         }
+    }
+  },
+  "aggs" : {
+        "categories" : {
+            "terms" :  {
+              "script" : "doc['treatment'].value + doc['time_point'].value"
+            },
+            "aggs": { 
+            "max_id": { 
+               "max": {
+                  "field": "id" 
+               }
+              },
+              "min_id":{
+                "min": {
+                  "field": "id"
+                }
+              }
+            }
+        }
+    }
+}
