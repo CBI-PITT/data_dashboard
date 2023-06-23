@@ -8,7 +8,7 @@ from utils import NumpyEncoder, merge_cells_and_metadata
 from elasticsearch import Elasticsearch
 
 es = Elasticsearch("http://localhost:9200")
-INDEX = 'klimstra4.0'
+INDEX = "klimstra4.0"
 
 app = Flask(__name__)
 CORS(app)
@@ -61,7 +61,6 @@ def get_data():
     return jsonify(data)
 
 
-
 @app.route("/api/filters")
 def get_filters():
     """
@@ -96,24 +95,16 @@ def get_filters():
         categorical_columns.remove("file_path")
     for column in categorical_columns:
         unique_values = list(metadata_df[column].unique())
-        print("column", column)
+        # print("column", column)
         for v in unique_values:
             print(v, type(v))
         if len(unique_values) > 1:
             categorical[column] = unique_values
     data["categorical"] = categorical
     data["continuous"] = continuous
-    print("Data", data)
-    data_str = json.dumps(
-        data,
-        indent=4,
-        sort_keys=True,
-        separators=(", ", ": "),
-        ensure_ascii=False,
-        cls=NumpyEncoder,
-    )
-    print("Data str", data_str)
-    response = jsonify(data_str)
+    print("Data", data, type(data))
+    # NaN value here, soc cant convert to json format
+    response = jsonify(data)
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
@@ -171,6 +162,28 @@ def get_aggregate_options():
     return response
 
 
+@app.route("/api/get-aggregate2")
+def get_aggregate():
+    """
+    response format:
+    {"data": ["count of distinct", "count of all", "total sum", "average", "min", "max"]}
+    """
+    data = {
+        "data": [
+            "avg",
+            "min",
+            "max",
+            "sum",
+            "value_count",
+            # "boxplot",
+            # "percentiles"
+        ]
+    }
+    response = jsonify(data)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
+
+
 @app.route("/api/query", methods=["POST"])
 def query_data_source():
     """
@@ -189,19 +202,6 @@ def query_data_source():
     :return: json with filtered/grouped/aggregated data
     """
     json_data = request.json
-
-    # # Test data
-    # json_data = {
-    #     # "y": "metadata",
-    #     "y": "uuid",
-    #     "x": "time_point",
-    #     "filter": {
-    #         "categorical": {},
-    #         "continuous": {}
-    #     },
-    #     "group_by": ["time_point"],
-    #     "aggregate": "count of distinct"
-    # }
 
     # Read the data into a Pandas DataFrame
     data = merge_cells_and_metadata()
@@ -248,53 +248,93 @@ def query_data_source():
     result = pd.DataFrame({group_by_str: agg_data.index})
     result[aggregate] = agg_data.values
 
-    print("==================Result================", result)
+    print(result)
 
     # Convert the DataFrame to JSON and return it
     data = result.to_json(orient="records")
     response = jsonify(data)
+    print(response)
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
+
 query = Query.Query()
-@app.route("/api/test")
-def test():
+
+
+@app.route("/api/filters2")
+def get_filters2():
     data = {}
     categorical = {}
     continuous = {}
-    
-    fileds = list(es.indices.get_mapping(index = INDEX)[INDEX]['mappings']['properties'].keys())
+
+    fileds = list(
+        es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"].keys()
+    )
     # print(fileds)
-    
+
     # munually setting cate and conti list
-    categorical_list = ['route', 'time_point', 'treatment']
-    continuous_list = ['x_raw', 'y_raw', 'z_raw', 'x_transformed', 'y_transformed', 'z_transformed']
-    
+    categorical_list = ["route", "time_point", "treatment"]
+    continuous_list = [
+        "x_raw_px",
+        "y_raw_px",
+        "z_raw_px",
+        "x_transformed",
+        "y_transformed",
+        "z_transformed",
+    ]
+
     for key in categorical_list:
-        resp = es.search(index = INDEX, body=query.filterCategorical(key))
+        resp = es.search(index=INDEX, body=query.filterCategorical(key))
         # print(resp.body["aggregations"][key]["buckets"])
         temp_dict = resp.body["aggregations"][key]["buckets"]
         # print (temp_dict[0])
         categorical[key] = []
         for val in temp_dict:
-            categorical[key].append(val['key'])
+            categorical[key].append(val["key"])
     # print (categorical)
 
     for key in continuous_list:
-        resp = es.search(index = INDEX, body=query.filterContinuous(key))
+        resp = es.search(index=INDEX, body=query.filterContinuous(key))
         # print(resp.body["aggregations"][key]["buckets"])
         continuous[key] = {}
-        continuous[key]["min"]  = resp.body["aggregations"]['min' + '_' + key]['value']
-        continuous[key]["max"]  = resp.body["aggregations"]['max' + '_' + key]['value']
-        
+        continuous[key]["min"] = resp.body["aggregations"]["min" + "_" + key]["value"]
+        continuous[key]["max"] = resp.body["aggregations"]["max" + "_" + key]["value"]
+
     # print (continuous)
 
-    data['continuous'] = continuous
-    data['categorical'] = categorical
-    print(data)
-    return "success"
+    data["continuous"] = continuous
+    data["categorical"] = categorical
+    # print("data",data)
+    response = jsonify(data)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 
+@app.route("/api/query2", methods=["POST"])
+def query_data_source2():
+    json_data = request.json
+    # data = query.formQuery(
+    #     json_data["field"],
+    #     json_data["filter"],
+    #     json_data["group_by"],
+    #     json_data["aggregate"],
+    # )
+    # print(jsonify(data))
+    # response = jsonify(data)
+    # response.headers.add("Access-Control-Allow-Origin", "*")
+    # return response
+
+    resp = es.search(
+        index=INDEX,
+        body=query.formQuery(
+            json_data["field"],
+            json_data["filter"],
+            json_data["group_by"],
+            json_data["aggregate"],
+        ),
+    )
+    # print(resp.body)
+    return jsonify(resp.body)
 
 
 if __name__ == "__main__":

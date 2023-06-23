@@ -28,17 +28,17 @@ function Get_X_axis({list, formData}) {
             //     </select>
             // </label>
             <FormControl required sx={{ m: 1, minWidth: 120 }}>
-                <InputLabel id="x-axis-required-label">X axis</InputLabel>
+                <InputLabel id="x-axis-required-label">Field</InputLabel>
                 <Select
                     labelId="x-axis-required-label"
                     id="x-axis-required"
                     // value=''
                     defaultValue={''}
-                    label="X axis *"
-                    name="X_axis"
+                    label="field *"
+                    name="field"
                     onChange={(event) => {
                         console.log("component", event.target)
-                        formData.x = event.target.value
+                        formData.field = event.target.value
                     }}
                 >
                     {

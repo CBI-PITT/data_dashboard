@@ -31,6 +31,7 @@ function Plot({displayData, x_axis, y_axis, groupBy, aggregation, plotChoice}) {
     
   }
   if (plotChoice === "bar") {
+    console.log("check here",displayData)
     return (
       <ResponsiveContainer width="100%" aspect={2}>
         <BarChart

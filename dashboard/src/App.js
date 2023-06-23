@@ -239,10 +239,10 @@ import areaImg from './asset/area.png'
 function App() {
     const urlPrefix = "http://127.0.0.1:5000"
     const url_xyAxis = "/api/get-xy"
-    const url_filter = "/api/filters"
+    const url_filter = "/api/filters2"
     const url_groupBy = "/api/get-group-by"
-    const url_aggregation = "/api/get-aggregate"
-    const url_query = "/api/query"
+    const url_aggregation = "/api/get-aggregate2"
+    const url_query = "/api/query2"
 
     //Initialize columns section
     const [X_axis_list, setX_axis_list] = useState()
@@ -268,11 +268,11 @@ function App() {
     //initialize Form Data
 
     const [formData, setFormData] = useState({
-        x: '',
-        y: '',
+        field: '',
+        // y: '',
         filter: { "categorical": {}, "continuous": {} },
         group_by: [],
-        aggregate: ''
+        aggregate: []
     })
     const plotButton = () => {
         const buttons = [
@@ -324,10 +324,12 @@ function App() {
         // formData.x = event.target.x.value;
         // console.log("now x:", event.target)
         // formData.y = event.target.y.value;
-        if (formData.x === formData.y) {
-            alert("X axis shoud not be same as y axis")
-            return
-        }
+
+        // if (formData.x === formData.y) {
+        //     alert("X axis shoud not be same as y axis")
+        //     return
+        // }
+
         // console.log(formData)
 
         // Categorical form data setting
@@ -427,9 +429,10 @@ function App() {
             res => res.json()
         ).then(
             data => {
+                console.log(typeof(data),data)
                 setTableData(data)
                 // console.log("setTableData", tableData)
-                setDisplayData(JSON.parse(data))
+                setDisplayData(data)
                 // console.log("setDisplayData", displayData)
             }
         )
@@ -459,9 +462,11 @@ function App() {
         // Request for filter(key,value)
         axios.get(urlPrefix + url_filter).then((response) => {
 
-            console.log("filter return", typeof (response.data))
+            // console.log("filter return", response.data)
 
-            let filter_return = JSON.parse(response.data.replace(/\bNaN\b/g, "null"));
+            // let filter_return = JSON.parse(response.data.replace(/\bNaN\b/g, "null"));
+            let filter_return = response.data;
+
             // console.log(filter_return)
             let agent_cate_key = []
             let agent_cate_value = []
@@ -574,9 +579,9 @@ function App() {
                             <br></br>
                             {/* {Get_X_axis(X_axis_list,formData)} */}
                             <Get_X_axis list = {X_axis_list} formData={formData}/>
-                            <br></br>
+                            {/* <br></br> */}
                             {/* {Get_Y_axis(Y_axis_list,formData)} */}
-                            <Get_Y_axis list = {Y_axis_list} formData={formData} />
+                            {/* <Get_Y_axis list = {Y_axis_list} formData={formData} /> */}
                             <br></br>
                         </div>
                         <div className='filter'>
