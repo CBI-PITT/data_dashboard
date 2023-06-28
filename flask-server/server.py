@@ -8,6 +8,10 @@ from utils import NumpyEncoder, merge_cells_and_metadata
 from elasticsearch import Elasticsearch
 
 es = Elasticsearch("http://localhost:9200")
+# to be constructed 
+# @app.route("/index")
+# def index():
+#   GET /_cat/indices or GET /_cat/indices?h=index
 INDEX = "klimstra4.0"
 
 app = Flask(__name__)
@@ -24,41 +28,7 @@ def index():
     return app.send_static_file("index.html")
 
 
-@app.route("/api/data")
-def get_data():
-    data = {
-        "cells": [
-            587,
-            3336,
-            411,
-            175,
-            73,
-            808,
-            29,
-            275,
-            44404,
-            4146,
-            101,
-            987,
-            797,
-            41,
-            46,
-            2775,
-            347,
-            131,
-            212,
-            4241,
-            711,
-            233,
-            378,
-            4230,
-            800,
-            76,
-            1131,
-            999,
-        ]
-    }
-    return jsonify(data)
+
 
 
 @app.route("/api/filters")
@@ -175,7 +145,7 @@ def get_aggregate():
             "max",
             "sum",
             "value_count",
-            # "boxplot",
+            "boxplot",
             # "percentiles"
         ]
     }
@@ -256,7 +226,22 @@ def query_data_source():
     print(response)
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
-
+@app.route("/api/field")
+def get_field():
+    fields = es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"]
+    fields_dict = {}
+    for field in fields:
+        fields_dict[field] = fields[field].get('type')
+    response = jsonify(fields_dict)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
+    
+@app.route("/api/group-by")
+def get_groupBy():
+    fields = list(es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"].keys())
+    response = jsonify(fields)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 query = Query.Query()
 
@@ -323,7 +308,7 @@ def query_data_source2():
     # response = jsonify(data)
     # response.headers.add("Access-Control-Allow-Origin", "*")
     # return response
-
+    
     resp = es.search(
         index=INDEX,
         body=query.formQuery(
@@ -334,7 +319,8 @@ def query_data_source2():
         ),
     )
     # print(resp.body)
-    return jsonify(resp.body)
+    response  = resp.body['aggregations']['categories']['buckets']
+    return jsonify(response)
 
 
 if __name__ == "__main__":

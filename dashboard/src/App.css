@@ -39,7 +39,8 @@
 }
 
 .display_container{
-  background-color: rgb(202, 211, 209);
+  background-color: rgb(211, 211, 202);
+  
   margin-top: 2%;
   margin-left: 2%;
   margin-bottom: 2%;
@@ -163,4 +164,9 @@
 }
 #coverText{
   font-size: calc(10px + 1vmin);
+}
+.pie_container{
+  display:flex;
+  flex-direction: column;
+  
 }

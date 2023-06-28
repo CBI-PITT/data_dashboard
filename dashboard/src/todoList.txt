@@ -49,13 +49,13 @@ GET /metadata/_search
                "max": {
                   "field": "id" 
                }
-              },
-              "min_id":{
+            },
+            "min_id":{
                 "min": {
                   "field": "id"
                 }
               }
-            }
+          }
         }
     }
 }

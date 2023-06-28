@@ -20,6 +20,7 @@ const MenuProps = {
 function Get_Aggregation({list,formData}) {
     const [aggregationSelected, setAggregationSelected] = React.useState([])
     const handleChange = (event) => {
+        console.log(event.target.value)
         setAggregationSelected(event.target.value)
         formData.aggregate = event.target.value
     };

@@ -1,4 +1,5 @@
-import * as React from 'react';
+
+import React, { useEffect, useState } from 'react';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -29,14 +30,26 @@ function GetCate({ key_category, value_category, formData }) {
     //    new Map()
     // )
     // console.log(cateSelected)
-    var cateSelected = new Map()
+    const [cateSelected,setCateSelected] = useState(() => {
+        const initialMap = new Map();
+        key_category.forEach(item => {
+          initialMap.set(item, []);
+        });
+        return initialMap;
+      });
+    console.log("map", cateSelected)
+    formData.filter.categorical = Object.fromEntries(cateSelected)
+    // formData.filter.categorical = Object.fromEntries(cateSelected)
     // console.log(formData)
     const handleChange = (event) => {
-        // console.log(event.target.value)
-        // console.log(event.target.name)
-        cateSelected.set(event.target.name,event.target.value)
+        console.log(event.target.name, event.target.value)
+        const newMap = new Map(cateSelected);
+        newMap.set(event.target.name, event.target.value);
+        setCateSelected(newMap);
+        // cateSelected.set(event.target.name,event.target.value)
+        // console.log("map", cateSelected)
         
-        formData.filter.categorical = Object.fromEntries(cateSelected)
+        
         // setContiSelected(event.target.value)
         // formData.filter.categorical = event.target.value
     };

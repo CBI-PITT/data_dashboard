@@ -2,22 +2,23 @@ import './App.css';
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
 
-import Get_X_axis from './filters/Get_X_axis';
-import Get_Y_axis from './filters/Get_Y_axis';
+import Get_field from './filters/Get_field';
+// import Get_Y_axis from './filters/Get_Y_axis';
 import GetCate from './filters/Get_categorical';
 import GetConti from './filters/Get_continuous';
 import Get_GroupBy from './filters/Get_groupBy';
 import Get_Aggregation from './filters/Get_aggregation';
 import Plot from './plot/Plot';
+import PlotChoice from './plotChoices/PlotChoices';
 import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import Box from '@mui/material/Box';
-import barImg from './asset/bar.png'
-import boxImg from './asset/box.png'
-import dotImg from './asset/dot.png'
-import pieImg from './asset/pie.png'
-import lineImg from './asset/line.png'
-import areaImg from './asset/area.png'
+// import ButtonGroup from '@mui/material/ButtonGroup';
+// import Box from '@mui/material/Box';
+// import barImg from './asset/bar.png'
+// import boxImg from './asset/box.png'
+// import dotImg from './asset/dot.png'
+// import pieImg from './asset/pie.png'
+// import lineImg from './asset/line.png'
+// import areaImg from './asset/area.png'
 
 
 // function get_X_axis(list) {
@@ -238,21 +239,24 @@ import areaImg from './asset/area.png'
 
 function App() {
     const urlPrefix = "http://127.0.0.1:5000"
-    const url_xyAxis = "/api/get-xy"
+    const url_xyAxis = "/api/field"
     const url_filter = "/api/filters2"
-    const url_groupBy = "/api/get-group-by"
+    const url_groupBy = "/api/group-by"
     const url_aggregation = "/api/get-aggregate2"
     const url_query = "/api/query2"
 
     //Initialize columns section
-    const [X_axis_list, setX_axis_list] = useState()
-    const [Y_axis_list, setY_axis_list] = useState()
+    const [Field_axis_list, setField_axis_list] = useState()
+    // const [Y_axis_list, setY_axis_list] = useState()
 
+    //Initialize type dict for recording all types of fileds
+    var type_fields_dict = {}
+    
     //Initialize filter section
     const [key_Category, setkey_Category] = useState([])
     const [value_Category, setvalue_Category] = useState([])
-    const [key_Continuous, setkey_Continuous] = useState()
-    const [value_Continuous, setvalue_Continuous] = useState()
+    const [key_Continuous, setkey_Continuous] = useState([])
+    const [value_Continuous, setvalue_Continuous] = useState([])
     const [tableData, setTableData] = useState()
     const [displayData, setDisplayData] = useState()
 
@@ -274,51 +278,45 @@ function App() {
         group_by: [],
         aggregate: []
     })
-    const plotButton = () => {
-        const buttons = [
+    // const plotButton = () => {
+    //     const buttons = [
         
-            <Button key="bar" onClick={() => {setPlotChoice("bar")}} ><img src={barImg} className="plotButton"></img></Button>,
-            <Button key="box" onClick={() => {setPlotChoice("box")}} ><img src={boxImg} className="plotButton"></img></Button>,
-            <Button key="dot" onClick={() => {setPlotChoice("dot")}}><img src={dotImg} className="plotButton"></img></Button>,
-            <Button key="pie" onClick={() => {setPlotChoice("pie")}} ><img src={pieImg} className="plotButton"></img></Button>,
-            <Button key="line" onClick={() => {setPlotChoice("line")}}><img src={lineImg} className="plotButton"></img></Button>,
-            <Button key="area" onClick={() => {setPlotChoice("area")}}><img src={areaImg} className="plotButton"></img></Button>
-        ];
-        return (
+    //         <Button key="bar" onClick={() => {setPlotChoice("bar")}} ><img src={barImg} className="plotButton"></img></Button>,
+    //         <Button key="box" onClick={() => {setPlotChoice("box")}} ><img src={boxImg} className="plotButton"></img></Button>,
+    //         <Button key="dot" onClick={() => {setPlotChoice("scatter")}}><img src={dotImg} className="plotButton"></img></Button>,
+    //         <Button key="pie" onClick={() => {setPlotChoice("pie")}} ><img src={pieImg} className="plotButton"></img></Button>,
+    //         <Button key="line" onClick={() => {setPlotChoice("line")}}><img src={lineImg} className="plotButton"></img></Button>,
+    //         <Button key="area" onClick={() => {setPlotChoice("area")}}><img src={areaImg} className="plotButton"></img></Button>
+    //     ];
+    //     return (
     
-            <Box 
-                sx={{
-                    display: 'flex',
-                    '& > *': {
-                        m: 1,
-                    },
-                }}
-            >
+    //         <Box 
+    //             sx={{
+    //                 display: 'flex',
+    //                 '& > *': {
+    //                     m: 1,
+    //                 },
+    //             }}
+    //         >
     
-                <ButtonGroup
-                    orientation="vertical"
-                    aria-label="vertical contained button group"
-                    variant= 'text'
-                    color="inherit"                   
-                >
-                    {buttons}
-                </ButtonGroup>
+    //             <ButtonGroup
+    //                 orientation="vertical"
+    //                 aria-label="vertical contained button group"
+    //                 variant= 'text'
+    //                 color="inherit"                   
+    //             >
+    //                 {buttons}
+    //             </ButtonGroup>
     
-            </Box>
+    //         </Box>
     
-        );
-    }
+    //     );
+    // }
 
-    // var formData={
-    //         x: '',
-    //         y: '',
-    //         filter: { "categorical": {}, "continuous": {} },
-    //         group_by: [],
-    //         aggregate: ''
-    //     }
+    
     const handleSubmit = (event) => {
         event.preventDefault();
-        let breakFlag = false;
+        // let breakFlag = false;
         // formData.x = event.target.x.value;
 
         // formData.x = event.target.x.value;
@@ -360,9 +358,9 @@ function App() {
 
         // );
 
-        if (breakFlag) {
-            return
-        }
+        // if (breakFlag) {
+        //     return
+        // }
 
 
         // Continuous form data setting
@@ -424,7 +422,6 @@ function App() {
             headers: { 'Content-Type': 'application/json' },
             method: 'POST',
             body: formData_send
-
         }).then(
             res => res.json()
         ).then(
@@ -440,21 +437,14 @@ function App() {
     };
 
     useEffect(() => {
-        // fetch("/api/query").then(
-        //     res => res.json()
-        // ).then(
-        //     data => {
-        //         setTableData(data)
-        //         console.log(data)
-        //     }
-        // )
-
-        // Request for xy axis list
+        // Request for field list
         axios.get(urlPrefix + url_xyAxis).then((response) => {
-            let xyAxis_list_return = response.data.data
-            // console.log(xyAxis_list_return)
-            setX_axis_list(xyAxis_list_return)
-            setY_axis_list(xyAxis_list_return)
+            type_fields_dict = response.data
+            let field_list_return = Object.keys(response.data)
+            // console.log(type_fields_dict)
+            
+            setField_axis_list(field_list_return)
+            // setY_axis_list(xyAxis_list_return)
             // console.log(X_axis_list)
         })
 
@@ -493,8 +483,8 @@ function App() {
 
         // Request for groupBy list
         axios.get(urlPrefix + url_groupBy).then((response) => {
-            console.log("groupBy return", typeof (response.data.data))
-            let groupBy_list_return = response.data.data
+            console.log("groupBy return", typeof (response.data))
+            let groupBy_list_return = response.data
             setGroupBy_List(groupBy_list_return)
             //  console.log(GroupBy_list)
         })
@@ -578,7 +568,7 @@ function App() {
                         <div className='columns'>
                             <br></br>
                             {/* {Get_X_axis(X_axis_list,formData)} */}
-                            <Get_X_axis list = {X_axis_list} formData={formData}/>
+                            <Get_field list = {Field_axis_list} formData={formData}/>
                             {/* <br></br> */}
                             {/* {Get_Y_axis(Y_axis_list,formData)} */}
                             {/* <Get_Y_axis list = {Y_axis_list} formData={formData} /> */}
@@ -630,16 +620,18 @@ function App() {
                         )}
                     </div>
                     <br></br> */}
-                    
                     <div className='chart'>
                         {/* {
                             Plot(displayData, formData.x, formData.y,plotChoice)
                         } */}
-                        <Plot displayData={displayData} x_axis={formData.x} y_axis={formData.y} groupBy={formData.group_by} aggregation={formData.aggregate} plotChoice ={plotChoice}/>
+                        <Plot displayData={displayData} field={formData.field}  groupBy={formData.group_by} aggregation={formData.aggregate} plotChoice ={plotChoice}/>
                     </div>
                 </div>
-                <div className='drawing_selection_container'>
+                {/* <div className='drawing_selection_container'>
                     {plotButton()}
+                </div> */}
+                <div className='drawing_selection_container'>
+                    <PlotChoice setPlotChoice = {setPlotChoice} />
                 </div>
             </div>
 

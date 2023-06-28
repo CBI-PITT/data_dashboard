@@ -1,6 +1,7 @@
 class Query:
     def filterContinuous(self, continuous_name):
         continuousName = continuous_name
+        sizeValue = 10000
         filterRetrieve_query_body = {
             "size": 0,
             "aggs": {
@@ -22,6 +23,7 @@ class Query:
         return filterRetrieve_query_body
 
     def formQuery(self, field: str, filters: dict, groupBy: list, aggregation: list):
+        sizeValue = 10000
         form_query_body = {
             "size": 0,
             "query": {"bool": {"filter": {"bool": {"must": []}}}},
@@ -33,9 +35,9 @@ class Query:
             },
         }
         if len(groupBy) == 1:
-            form_query_body["aggs"]["categories"]["terms"] = {"field": groupBy[0]}
+            form_query_body["aggs"]["categories"]["terms"] = {"field": groupBy[0], "size": sizeValue}
         else:
-            form_query_body["aggs"]["categories"]["multi_terms"] = {"terms": []}
+            form_query_body["aggs"]["categories"]["multi_terms"] = {"terms": [], "size" : sizeValue}
             for item in groupBy:
                 form_query_body["aggs"]["categories"]["multi_terms"]["terms"].append(
                     {"field": item}
