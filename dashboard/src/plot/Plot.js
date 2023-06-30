@@ -233,28 +233,74 @@ function Plot({ displayData, field, groupBy, aggregation, plotChoice }) {
   }
 
   else if (plotChoice === "box") {
+    // const urlPrefix = "http://127.0.0.1:5000"
     
-    
-    let val = "boxplot" + '_' +field
+    // const url_query = "/api/query2"
+    // let formData_copy = formData
+    // formData.aggregate.push('boxplot')
+    // let formData_send = JSON.stringify(formData_copy)
+    // console.log(formData_copy)
+    // console.log(formData_send)
+    // // console.log("formdata_send", typeof (formData_send))
+
+    // fetch(urlPrefix + url_query, {
+    //   headers: { 'Content-Type': 'application/json' },
+    //   method: 'POST',
+    //   body: formData_send
+    // }).then(
+    //   res => res.json()
+    // ).then(
+    //   data => {
+    //     console.log(typeof (data), data)
+        
+    //     setDisplayData(data)
+    //     // console.log("setDisplayData", displayData)
+    //   }
+    // )
+    // if(!aggregation.includes('boxplot'))
+    // {
+    //   return <h1>Please select boxplot choice in aggregation section</h1>
+    // }
+    let boxplot_data_list = []
+    let boxplot_name = 'boxplot' + '_' + field
+    // console.log("boxplot_name",element[boxplot_name])
+    displayData.forEach(element => {
+      let temp = {
+        'x': groupBy.length == 1 ? element['key'] : element['key_as_string'],
+        'min': element[boxplot_name]['min'],
+        'q1': element[boxplot_name]['q1'],
+        'median': element[boxplot_name]['q2'],
+        'q3': element[boxplot_name]['q3'],
+        'max': element[boxplot_name]['max']
+      }
+      boxplot_data_list.push(temp)
+    });
+    console.log("boxplot_data_list", boxplot_data_list)
+
+    let boxplot_data_block = "boxplot" + '_' + field
+    // let q1 = "boxplot" + '_' +field + "['q1']"
+    // let median = "boxplot" + '_' +field + "['q2']"
+    // let q3 = "boxplot" + '_' +field + "['q3']"
     console.log()
     const config = {
       width: 400,
       height: 500,
-      data: displayData,
-      xField: groupBy.length == 1 ? 'key' : 'key_as_string',
-      yField: ['val.min', 'val.q1', 'val.q2', 'val.q3', 'val.max'],
+      data: boxplot_data_list,
+      xField: 'x',
+      yField: ['min', "q1", 'median', 'q3', 'max'],
       boxStyle: {
         stroke: '#545454',
-        fill: '#333333',
-        fillOpacity: 0.3,
+        fill: '#292929',
+        fillOpacity: 0.6,
       },
       animation: true,
     };
     return (
       <ResponsiveContainer width="100%" aspect={2}>
         <Box{...config} />
+
       </ResponsiveContainer>
-      
+
     )
   }
 
@@ -262,7 +308,7 @@ function Plot({ displayData, field, groupBy, aggregation, plotChoice }) {
     if (aggregation.length > 2) {
       return (
         <div>
-          <h1>GroupBy parameters selected should be equal to 2 for scatter plot</h1>
+          <h1>Aggregation parameters selected should be equal to 2 for scatter plot</h1>
         </div>
       )
     }

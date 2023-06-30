@@ -231,7 +231,7 @@ import Button from '@mui/material/Button';
 //     }
 // }
 
-    
+
 
 
 
@@ -251,7 +251,7 @@ function App() {
 
     //Initialize type dict for recording all types of fileds
     var type_fields_dict = {}
-    
+
     //Initialize filter section
     const [key_Category, setkey_Category] = useState([])
     const [value_Category, setvalue_Category] = useState([])
@@ -267,7 +267,7 @@ function App() {
     const [Aggregation_list, setAggregation_list] = useState()
 
     //Initialize plot button
-    const [plotChoice,setPlotChoice] = useState("bar")
+    const [plotChoice, setPlotChoice] = useState("bar")
 
     //initialize Form Data
 
@@ -280,7 +280,7 @@ function App() {
     })
     // const plotButton = () => {
     //     const buttons = [
-        
+
     //         <Button key="bar" onClick={() => {setPlotChoice("bar")}} ><img src={barImg} className="plotButton"></img></Button>,
     //         <Button key="box" onClick={() => {setPlotChoice("box")}} ><img src={boxImg} className="plotButton"></img></Button>,
     //         <Button key="dot" onClick={() => {setPlotChoice("scatter")}}><img src={dotImg} className="plotButton"></img></Button>,
@@ -289,7 +289,7 @@ function App() {
     //         <Button key="area" onClick={() => {setPlotChoice("area")}}><img src={areaImg} className="plotButton"></img></Button>
     //     ];
     //     return (
-    
+
     //         <Box 
     //             sx={{
     //                 display: 'flex',
@@ -298,7 +298,7 @@ function App() {
     //                 },
     //             }}
     //         >
-    
+
     //             <ButtonGroup
     //                 orientation="vertical"
     //                 aria-label="vertical contained button group"
@@ -307,118 +307,37 @@ function App() {
     //             >
     //                 {buttons}
     //             </ButtonGroup>
-    
+
     //         </Box>
-    
+
     //     );
     // }
 
-    
+
     const handleSubmit = (event) => {
         event.preventDefault();
-        // let breakFlag = false;
-        // formData.x = event.target.x.value;
+        
+        
 
-        // formData.x = event.target.x.value;
-        // console.log("now x:", event.target)
-        // formData.y = event.target.y.value;
+        // Boxplot testing (no choice in aggregation)
+        let formData_boxplot_add = {
+            "field": formData.field,
+            "filter": formData.filter,
+            "group_by": formData.group_by,
+            "aggregate": []
+        }
+        formData["aggregate"].forEach(element => {
+            formData_boxplot_add["aggregate"].push(element)
+        });
+        formData_boxplot_add["aggregate"].push("boxplot")
+        var formData_send = JSON.stringify(formData_boxplot_add)
 
-        // if (formData.x === formData.y) {
-        //     alert("X axis shoud not be same as y axis")
-        //     return
-        // }
-
-        // console.log(formData)
-
-        // Categorical form data setting
-        // const map_categorical = new Map()
-        // key_Category.forEach(element => {
-        //     if (breakFlag) {
-        //         return
-        //     }
-        //     // console.log("event.target.element", document.getElementById(element))
-        //     let all_choice_keyInCategorical = document.getElementById(element)
-        //     let select_keyInCategorical = [];
-        //     for (let i = 0; i < all_choice_keyInCategorical.length; i++) {
-        //         // console.log(all_choice_keyInCategorical.options[1])
-        //         if (all_choice_keyInCategorical.options[i].selected) {
-        //             select_keyInCategorical.push(all_choice_keyInCategorical[i].value)
-        //         }
-        //         map_categorical.set(element, select_keyInCategorical)
-        //     }
-        //     if (select_keyInCategorical.length === 0) {
-        //         alert("Please fill the required section!")
-        //         breakFlag = true;
-        //         return
-        //     }
-
-        //     formData.filter.categorical = Object.fromEntries(map_categorical)
-        //     // formData.filter.categorical = map_categorical
-        // }
-
-        // );
-
-        // if (breakFlag) {
-        //     return
-        // }
-
-
-        // Continuous form data setting
-        // const map_continuous = new Map()
-        // key_Continuous.forEach(element => {
-
-        //     // console.log("event.target.element", document.getElementById(element))
-        //     let selectValue_keyInContinuous = []
-        //     // selectValue_keyInContinuous[0] = document.getElementById(element).children[2].children[0].value
-        //     // selectValue_keyInContinuous[1] = document.getElementById(element).children[3].children[0].value
-        //     selectValue_keyInContinuous.push(parseInt(document.getElementById(element).children[6].children[0].value))
-        //     selectValue_keyInContinuous.push(parseInt(document.getElementById(element).children[7].children[0].value))
-        //     map_continuous.set(element, selectValue_keyInContinuous)
-        //     // console.log(selectValue_keyInContinuous[0])
-
-        // });
-        // formData.filter.continuous = Object.fromEntries(map_continuous)
-
-
-        // formData.filter.continuous = { "time_point": [24, 96] }
-        // console.log(map_continuous)
-
-
-        // let all_choice_groupBy = document.getElementById("groupBy")
-        // let select_groupBy = [];
-        // for (let i = 0; i < all_choice_groupBy.length; i++) {
-        //     if (all_choice_groupBy.options[i].selected) {
-        //         select_groupBy.push(all_choice_groupBy[i].value);
-        //     }
-        // }
-        // if (select_groupBy.length === 0) {
-        //     alert("Please fill the required section!")
-        //     return
-        // }
-        // console.log("groupBy:",select_groupBy)
-
-        // group_by setting
-        // formData.group_by = select_groupBy;
-
-
-        // formData.aggregate = event.target.aggregate.value
-
-
-        // console.log("formData type", typeof (formData));
-        // // console.log(formData.x);
-        // // console.log(formData.y);
-        // // console.log(formData.filter)
-        // // console.log(formData.group_by);
-        // // console.log(formData.aggregate);
-
-
-
-        var formData_send = JSON.stringify(formData)
+        // var formData_send = JSON.stringify(formData)
         console.log(formData)
         console.log(formData_send)
         // console.log("formdata_send", typeof (formData_send))
 
-        fetch(urlPrefix+ url_query, {
+        fetch(urlPrefix + url_query, {
             headers: { 'Content-Type': 'application/json' },
             method: 'POST',
             body: formData_send
@@ -426,14 +345,14 @@ function App() {
             res => res.json()
         ).then(
             data => {
-                console.log(typeof(data),data)
+                console.log(typeof (data), data)
                 setTableData(data)
                 // console.log("setTableData", tableData)
                 setDisplayData(data)
                 // console.log("setDisplayData", displayData)
             }
         )
-        
+
     };
 
     useEffect(() => {
@@ -442,7 +361,7 @@ function App() {
             type_fields_dict = response.data
             let field_list_return = Object.keys(response.data)
             // console.log(type_fields_dict)
-            
+
             setField_axis_list(field_list_return)
             // setY_axis_list(xyAxis_list_return)
             // console.log(X_axis_list)
@@ -568,7 +487,7 @@ function App() {
                         <div className='columns'>
                             <br></br>
                             {/* {Get_X_axis(X_axis_list,formData)} */}
-                            <Get_field list = {Field_axis_list} formData={formData}/>
+                            <Get_field list={Field_axis_list} formData={formData} />
                             {/* <br></br> */}
                             {/* {Get_Y_axis(Y_axis_list,formData)} */}
                             {/* <Get_Y_axis list = {Y_axis_list} formData={formData} /> */}
@@ -577,35 +496,35 @@ function App() {
                         <div className='filter'>
                             <div className='continuous'>
                                 {/* {getConti(key_Continuous, value_Continuous)} */}
-                                <GetConti key_Continuous = {key_Continuous} value_Continuous = {value_Continuous} formData={formData} />
+                                <GetConti key_Continuous={key_Continuous} value_Continuous={value_Continuous} formData={formData} />
                             </div>
                             <div className='categorical'>
                                 {/* {GetCate(key_Category, value_Category,formData)} */}
-                                <GetCate key_category={key_Category} value_category={value_Category} formData = {formData}/>
+                                <GetCate key_category={key_Category} value_category={value_Category} formData={formData} />
                             </div>
                             <br></br>
                         </div>
                         <div className='groupBy'>
                             {/* {Get_GroupBy(GroupBy_list)} */}
                             <br></br>
-                            <Get_GroupBy list = {GroupBy_list} formData={formData}/>
+                            <Get_GroupBy list={GroupBy_list} formData={formData} />
                             <br></br>
                         </div>
                         <div className='aggregation'>
                             <br></br>
                             {/* {Get_Aggregation(Aggregation_list, formData)} */}
-                            <Get_Aggregation list = {Aggregation_list} formData={formData}/>
+                            <Get_Aggregation list={Aggregation_list} formData={formData} />
                             <br></br>
                         </div>
                         <br></br>
                         <div>
                             {/* <button>submit</button> */}
                             {/* <input type="reset" value="Reset" /> */}
-                            
+
                             {/* <input type="submit" value="Submit" /> */}
-                            <Button type='reset' variant='outlined' size='small' id = "reset">Reset</Button>
-                            
-                            <Button type='submit' variant='outlined' size='small'id = "submit">Submit</Button>
+                            <Button type='reset' variant='outlined' size='small' id="reset">Reset</Button>
+
+                            <Button type='submit' variant='outlined' size='small' id="submit">Submit</Button>
                         </div>
                         <br></br>
                     </form>
@@ -624,14 +543,14 @@ function App() {
                         {/* {
                             Plot(displayData, formData.x, formData.y,plotChoice)
                         } */}
-                        <Plot displayData={displayData} field={formData.field}  groupBy={formData.group_by} aggregation={formData.aggregate} plotChoice ={plotChoice}/>
+                        <Plot displayData={displayData} field={formData.field} groupBy={formData.group_by} aggregation={formData.aggregate} plotChoice={plotChoice} />
                     </div>
                 </div>
                 {/* <div className='drawing_selection_container'>
                     {plotButton()}
                 </div> */}
                 <div className='drawing_selection_container'>
-                    <PlotChoice setPlotChoice = {setPlotChoice} />
+                    <PlotChoice setPlotChoice={setPlotChoice} />
                 </div>
             </div>
 

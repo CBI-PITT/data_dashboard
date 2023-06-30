@@ -17,12 +17,13 @@ const MenuProps = {
         },
     },
 };
-function Get_Aggregation({list,formData}) {
+function Get_Aggregation({ list, formData }) {
     const [aggregationSelected, setAggregationSelected] = React.useState([])
     const handleChange = (event) => {
         console.log(event.target.value)
         setAggregationSelected(event.target.value)
         formData.aggregate = event.target.value
+        
     };
     // console.log(list)
     if (list !== undefined) {
@@ -70,26 +71,30 @@ function Get_Aggregation({list,formData}) {
             //     </Select>
 
             // </FormControl>
-            <FormControl required sx={{ m: 1, width: '95%'}}>
-            <InputLabel id="aggregation-multiple-checkbox-label">Aggregation</InputLabel>
-            <Select
-                labelId="aggregation-multiple-checkbox-label"
-                id="aggregation-multiple-checkbox"
-                multiple
-                value={aggregationSelected}
-                onChange={handleChange}
-                input={<OutlinedInput label="Tag" />}
-                renderValue={(selected) => selected.join(', ')}
-                MenuProps={MenuProps}
-            >
-                {list.map((name) => (
-                    <MenuItem key={name} value={name}>
-                        <Checkbox checked={aggregationSelected.indexOf(name) > -1} />
-                        <ListItemText primary={name} />
-                    </MenuItem>
-                ))}
-            </Select>
-        </FormControl>
+            <FormControl required sx={{ m: 1, width: '95%' }}>
+                <InputLabel id="aggregation-multiple-checkbox-label">Aggregation</InputLabel>
+                <Select
+                    labelId="aggregation-multiple-checkbox-label"
+                    id="aggregation-multiple-checkbox"
+                    multiple
+                    value={aggregationSelected}
+                    onChange={handleChange}
+                    input={<OutlinedInput label="Tag" />}
+                    renderValue={(selected) => 
+                        {   
+                            console.log("selected",selected)
+                            return selected.join(', ')}
+                    }
+                    MenuProps={MenuProps}
+                >
+                    {list.map((name) => (
+                        <MenuItem key={name} value={name}>
+                            <Checkbox checked={aggregationSelected.indexOf(name) > -1} />
+                            <ListItemText primary={name} />
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
 
         )
     }

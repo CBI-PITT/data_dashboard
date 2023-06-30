@@ -18,7 +18,7 @@ class Query:
             "size": 0,
             "aggs": {
                 categoryName: {"terms": {"field": categoryName, "size": sizeValue}}
-            },
+            }
         }
         return filterRetrieve_query_body
 

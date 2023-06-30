@@ -145,7 +145,7 @@ def get_aggregate():
             "max",
             "sum",
             "value_count",
-            "boxplot",
+            # "boxplot",
             # "percentiles"
         ]
     }
