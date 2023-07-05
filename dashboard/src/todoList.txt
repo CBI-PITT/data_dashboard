@@ -59,3 +59,7 @@ GET /metadata/_search
         }
     }
 }
+
+
+# "Field [atlas_name] of type [keyword] is not supported for aggregation [boxplot]"
+# group by route/time_point/treatment

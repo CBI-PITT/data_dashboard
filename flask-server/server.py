@@ -319,6 +319,8 @@ def query_data_source2():
         ),
     )
     # print(resp.body)
+     
+
     response  = resp.body['aggregations']['categories']['buckets']
     return jsonify(response)
 
