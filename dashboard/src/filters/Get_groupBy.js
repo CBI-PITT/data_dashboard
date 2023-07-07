@@ -20,13 +20,19 @@ const MenuProps = {
 
 
 
-function Get_GroupBy({ list, formData }) {
+function Get_GroupBy({ list, form_Data, set_FormData }) {
 
-    
+
     const [groupBySelected, setGroupBySelected] = React.useState([])
     const handleChange = (event) => {
         setGroupBySelected(event.target.value)
-        formData.group_by = event.target.value
+        // let newFormData = form_Data
+        // newFormData.group_by = event.target.value
+
+        const updatedFormData = { ...form_Data }
+        updatedFormData.group_by = event.target.value
+        set_FormData(updatedFormData)
+        // formData.group_by = event.target.value
     };
     // console.log(list)
     if (list !== undefined) {
@@ -43,8 +49,8 @@ function Get_GroupBy({ list, formData }) {
             //             }
             //         </select>
             //     </label> */}
-               
-                <FormControl required sx={{ m: 1, width: '95%'}}>
+
+                <FormControl required sx={{ m: 1, width: '95%' }}>
                     <InputLabel id="groupBy-multiple-checkbox-label">GroupBy</InputLabel>
                     <Select
                         labelId="groupBy-multiple-checkbox-label"

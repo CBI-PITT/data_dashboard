@@ -21,26 +21,33 @@ const MenuProps = {
 };
 
 
-function GetCate({ key_category, value_category, formData }) {
+function GetCate({ key_category, value_category, form_Data, setFormData }) {
     // const key = ["Treatment", "Time_Point"]
     // const value = [["eeve", "weev", "vvev"], [24, 48, 72, 96]]
-    
-    
+
+
     // const [cateSelected, setCateSelected] = React.useState(
     //    new Map()
     // )
     // console.log(cateSelected)
-    const [cateSelected,setCateSelected] = useState(() => {
+    const [cateSelected, setCateSelected] = useState(() => {
         const initialMap = new Map();
         key_category.forEach(item => {
-          initialMap.set(item, []);
+            initialMap.set(item, []);
         });
         return initialMap;
-      });
-    console.log("map", cateSelected)
-    formData.filter.categorical = Object.fromEntries(cateSelected)
-    // formData.filter.categorical = Object.fromEntries(cateSelected)
-    // console.log(formData)
+    });
+    // console.log("map", cateSelected)
+
+    // let newFormData = formData
+    // newFormData.filter.categorical = Object.fromEntries(cateSelected)
+    // setFormData(newFormData)
+    // const updatedFormData = {...form_Data}
+    // updatedFormData.filter.categorical = Object.fromEntries(cateSelected)
+    // setFormData(updatedFormData)
+    form_Data.filter.categorical = Object.fromEntries(cateSelected)
+
+
     const handleChange = (event) => {
         console.log(event.target.name, event.target.value)
         const newMap = new Map(cateSelected);
@@ -48,14 +55,14 @@ function GetCate({ key_category, value_category, formData }) {
         setCateSelected(newMap);
         // cateSelected.set(event.target.name,event.target.value)
         // console.log("map", cateSelected)
-        
-        
+
+
         // setContiSelected(event.target.value)
         // formData.filter.categorical = event.target.value
     };
-    
+
     if (key_category !== undefined && value_category !== undefined) {
-        
+
         return (
 
             // current like{"treatment" : ["weev","veev"]}

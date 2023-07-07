@@ -11,10 +11,10 @@ import COLORS from './colors';
 import CoverImg from '../asset/CoverImg.png'
 
 function Plot({ displayData, field, groupBy, aggregation, plotChoice }) {
-  var groupByList = ''
-  groupBy.forEach(val => {
-    groupByList = groupByList + val + '_'
-  });
+  // var groupByList = ''
+  // groupBy.forEach(val => {
+  //   groupByList = groupByList + val + '_'
+  // });
   // for(let ind in groupBy)
   // {
   //     groupByList = groupByList + groupBy[ind] + '_'
@@ -58,12 +58,13 @@ function Plot({ displayData, field, groupBy, aggregation, plotChoice }) {
   //     </ResponsiveContainer>
   //   );
   // }
+  // console.log(displayData)
   let data = []
   displayData.forEach(element => {
     
     aggregation.forEach(agg => {
       let block = {
-        X_axis: groupBy.length == 1 ? element['key'] : element['key_as_string']
+        X_axis: groupBy.length == 1 ? element['key'].toString() : element['key_as_string']
       }
       block['type'] = agg + '_' + field
       block['value'] = element[agg + '_' + field]['value']
@@ -73,9 +74,9 @@ function Plot({ displayData, field, groupBy, aggregation, plotChoice }) {
   });
 
   if (plotChoice === "bar") {
-    console.log("check here", displayData)
-    
-    console.log("bar",data)
+    // console.log("check here", displayData)
+    // console.log("bar",data)
+
     const config = {
       data,
       isStack: true,
@@ -86,24 +87,24 @@ function Plot({ displayData, field, groupBy, aggregation, plotChoice }) {
         start: 0,
         end: 1,
       },
-      label: {
-        // 可手动配置 label 数据标签位置
-        position: 'middle',
-        // 'top', 'bottom', 'middle'
-        // 可配置附加的布局方法
-        layout: [
-          // 柱形图数据标签位置自动调整
-          {
-            type: 'interval-adjust-position',
-          }, // 数据标签防遮挡
-          {
-            type: 'interval-hide-overlap',
-          }, // 数据标签文颜色自动调整
-          {
-            type: 'adjust-color',
-          },
-        ],
-      },
+      // label: {
+      //   // 可手动配置 label 数据标签位置
+      //   position: 'middle',
+      //   // 'top', 'bottom', 'middle'
+      //   // 可配置附加的布局方法
+      //   layout: [
+      //     // 柱形图数据标签位置自动调整
+      //     {
+      //       type: 'interval-adjust-position',
+      //     }, // 数据标签防遮挡
+      //     {
+      //       type: 'interval-hide-overlap',
+      //     }, // 数据标签文颜色自动调整
+      //     {
+      //       type: 'adjust-color',
+      //     },
+      //   ],
+      // },
       interactions: [
         {
           type: 'active-region',
@@ -223,6 +224,16 @@ function Plot({ displayData, field, groupBy, aggregation, plotChoice }) {
             type: 'spider',
             labelHeight: 28,
             content: '{name}\n{percentage}',
+            layout: [
+                  // 柱形图数据标签位置自动调整
+                  // 数据标签防遮挡
+                  // {
+                  //   type: 'interval-hide-overlap',
+                  // }, // 数据标签文颜色自动调整
+                  // {
+                  //   type: 'adjust-color',
+                  // },
+                ],
           },
           interactions: [
             {
@@ -235,7 +246,7 @@ function Plot({ displayData, field, groupBy, aggregation, plotChoice }) {
         }
 
         // return <h1>hello</h1>
-        return <div><Pie {...config} /><br /></div>;
+        return <div><h3>{agg+'_'+field}</h3><Pie {...config} /><br /></div>;
       }
 
       )
@@ -312,39 +323,39 @@ function Plot({ displayData, field, groupBy, aggregation, plotChoice }) {
 
 
 
-    return (
-      <ResponsiveContainer width="100%" aspect={2}>
-        <LineChart
-          width={500}
-          height={300}
-          data={displayData}
-          margin={{
-            top: 20,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey={groupBy.length == 1 ? 'key' : 'key_as_string'} />
-          <YAxis />
-          <Tooltip />
-          {
-            aggregation.map((agg, ind) => {
+    // return (
+    //   <ResponsiveContainer width="100%" aspect={2}>
+    //     <LineChart
+    //       width={500}
+    //       height={300}
+    //       data={displayData}
+    //       margin={{
+    //         top: 20,
+    //         right: 30,
+    //         left: 20,
+    //         bottom: 5,
+    //       }}
+    //     >
+    //       <CartesianGrid strokeDasharray="3 3" />
+    //       <XAxis dataKey={groupBy.length == 1 ? 'key' : 'key_as_string'} />
+    //       <YAxis />
+    //       <Tooltip />
+    //       {
+    //         aggregation.map((agg, ind) => {
 
-              let val = agg + '_' + field + "['value']"
-              return (
-                <Line type="monotone" dataKey={val} strokeWidth={2} stroke={COLORS[ind % COLORS.length]} />
-              )
-              // console.log(agg + "_" + field['value'],ind)
-              // console.log('min_metadata'['value'])
-            })
-          }
-          <Brush />
-          <Legend />
-        </LineChart>
-      </ResponsiveContainer>
-    )
+    //           let val = agg + '_' + field + "['value']"
+    //           return (
+    //             <Line type="monotone" dataKey={val} strokeWidth={2} stroke={COLORS[ind % COLORS.length]} />
+    //           )
+    //           // console.log(agg + "_" + field['value'],ind)
+    //           // console.log('min_metadata'['value'])
+    //         })
+    //       }
+    //       <Brush />
+    //       <Legend />
+    //     </LineChart>
+    //   </ResponsiveContainer>
+    // )
   }
   else if (plotChoice === "area") {
 
@@ -362,41 +373,41 @@ function Plot({ displayData, field, groupBy, aggregation, plotChoice }) {
     };
     return <ResponsiveContainer width="100%" aspect={2}><Area {...config} /></ResponsiveContainer>;
 
-    console.log("area")
-    return (
-      <ResponsiveContainer width="100%" aspect={2}>
-        <AreaChart
-          width={500}
-          height={300}
-          data={displayData}
-          margin={{
-            top: 20,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey={groupBy.length == 1 ? 'key' : 'key_as_string'} />
-          <YAxis />
-          <Tooltip />
-          {/* <Area type="monotone" dataKey={aggregation} stroke="#8884d8" fill="#8884d8" /> */}
-          {
-            aggregation.map((agg, ind) => {
+    // console.log("area")
+    // return (
+    //   <ResponsiveContainer width="100%" aspect={2}>
+    //     <AreaChart
+    //       width={500}
+    //       height={300}
+    //       data={displayData}
+    //       margin={{
+    //         top: 20,
+    //         right: 30,
+    //         left: 20,
+    //         bottom: 5,
+    //       }}
+    //     >
+    //       <CartesianGrid strokeDasharray="3 3" />
+    //       <XAxis dataKey={groupBy.length == 1 ? 'key' : 'key_as_string'} />
+    //       <YAxis />
+    //       <Tooltip />
+    //       {/* <Area type="monotone" dataKey={aggregation} stroke="#8884d8" fill="#8884d8" /> */}
+    //       {
+    //         aggregation.map((agg, ind) => {
 
-              let val = agg + '_' + field + "['value']"
-              return (
-                <Area type="monotone" dataKey={val} stackId='a' stroke={COLORS[ind % COLORS.length]} fill={COLORS[ind % COLORS.length]} />
-              )
-              // console.log(agg + "_" + field['value'],ind)
-              // console.log('min_metadata'['value'])
-            })
-          }
-          <Brush />
-          <Legend />
-        </AreaChart>
-      </ResponsiveContainer>
-    );
+    //           let val = agg + '_' + field + "['value']"
+    //           return (
+    //             <Area type="monotone" dataKey={val} stackId='a' stroke={COLORS[ind % COLORS.length]} fill={COLORS[ind % COLORS.length]} />
+    //           )
+    //           // console.log(agg + "_" + field['value'],ind)
+    //           // console.log('min_metadata'['value'])
+    //         })
+    //       }
+    //       <Brush />
+    //       <Legend />
+    //     </AreaChart>
+    //   </ResponsiveContainer>
+    // );
   }
 
   else if (plotChoice === "box") {
@@ -431,6 +442,8 @@ function Plot({ displayData, field, groupBy, aggregation, plotChoice }) {
     let boxplot_data_list = []
     let boxplot_name = 'boxplot' + '_' + field
     // console.log("boxplot_name",element[boxplot_name])
+    console.log(displayData)
+    
     displayData.forEach(element => {
       let temp = {
         'x': groupBy.length == 1 ? element['key'] : element['key_as_string'],
@@ -444,7 +457,7 @@ function Plot({ displayData, field, groupBy, aggregation, plotChoice }) {
     });
     console.log("boxplot_data_list", boxplot_data_list)
 
-    let boxplot_data_block = "boxplot" + '_' + field
+    // let boxplot_data_block = "boxplot" + '_' + field
     // let q1 = "boxplot" + '_' +field + "['q1']"
     // let median = "boxplot" + '_' +field + "['q2']"
     // let q3 = "boxplot" + '_' +field + "['q3']"
@@ -469,9 +482,12 @@ function Plot({ displayData, field, groupBy, aggregation, plotChoice }) {
       </ResponsiveContainer>
 
     )
+    
+    
   }
 
   else if (plotChoice === "scatter") {
+    return <h1>🚧 To Be Constructed 🚧</h1>
     if (aggregation.length !== 2) {
       return (
         <div>

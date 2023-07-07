@@ -74,7 +74,7 @@
   
 }
 
-.columns{
+.field{
   display: flex;
   flex-direction: column;
   border: 3px;
@@ -141,7 +141,7 @@
 
 .chart{
   /* background-color:rgb(246, 241, 228); */
-  background-color:rgb(255, 255, 255);
+  background-color:rgb(245, 235, 235);
   margin: 2%;
   border-style:groove;
   border-radius: 10px;

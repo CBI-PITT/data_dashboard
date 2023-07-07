@@ -7,7 +7,7 @@ import * as React from 'react';
 
 
 
-function GetConti({ key_Continuous, value_Continuous, formData }) {
+function GetConti({ key_Continuous, value_Continuous, form_Data,  set_FormData }) {
     // const key = ["Treatment", "Time_Point"]
     // const value = [["eeve", "weev", "vvev"], [24, 48, 72, 96]]
     // const [valueSlider,setValueSlider] = useState([])
@@ -25,7 +25,14 @@ function GetConti({ key_Continuous, value_Continuous, formData }) {
     // console.log("contiselected", contiSelected)
 
     const [contiSelected,setContiSelected] = useState(new Map())
-    formData.filter.continuous = Object.fromEntries(contiSelected)
+
+    
+
+    // const updatedFormData = {...form_Data}
+    // updatedFormData.filter.continuous = Object.fromEntries(contiSelected)
+    // set_FormData(updatedFormData)
+    form_Data.filter.continuous = Object.fromEntries(contiSelected)
+
     // if(key_Continuous.length!=0)
     // {
     //     const firstMap = new Map()
