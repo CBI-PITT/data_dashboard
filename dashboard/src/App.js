@@ -4,8 +4,9 @@ import React, { useEffect, useState } from 'react';
 import Plot from './plot/Plot';
 import PlotChoice from './plotChoices/PlotChoices';
 
-import Form from './filters/Form';
-
+import Form from './Form/Form';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 
@@ -56,6 +57,9 @@ function App() {
         group_by: [],
         aggregate: []
     })
+
+    // backdrop setting
+    // const [open, setOpen] = useState(false);
 
     // const [formDataUpdated, setFormDataUpdated] = useState({
     //     field: '',
@@ -230,7 +234,12 @@ function App() {
     // }, [])
 
 
-
+    // const handleClose = () => {
+    //     setOpen(false);
+    // };
+    // const handleOpen = () => {
+    //     setOpen(true);
+    // };
 
 
     return (
@@ -249,15 +258,25 @@ function App() {
                 <div className='display_container'>
 
                     <div className='chart'>
-                        
+                        {/* <Backdrop
+                            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                            open={open}
+                            
+                        >
+                            <CircularProgress color='success' />
+                        </Backdrop> */}
                         <Plot displayData={displayData} field={formDataCurrent.field} groupBy={formDataCurrent.group_by} aggregation={formDataCurrent.aggregate} plotChoice={plotChoice} />
                     </div>
                 </div>
-                
+
                 <div className='drawing_selection_container'>
                     <PlotChoice setPlotChoice={setPlotChoice} field_status={type_fields_dict[formDataCurrent.field]} />
                 </div>
             </div>
+
+            <header className="App-footer">
+                <h4>Any using problems and suggestions, please contact collin9527@gmail.com</h4>
+            </header>
 
 
         </div>

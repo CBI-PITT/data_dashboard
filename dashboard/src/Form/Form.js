@@ -1,14 +1,15 @@
-import Get_Aggregation from "./Get_aggregation";
+import GetAggregation from "./Get_aggregation";
 import GetCate from "./Get_categorical";
 import GetConti from "./Get_continuous";
-import Get_field from "./Get_field";
-import Get_GroupBy from "./Get_groupBy";
+import GetField from "./Get_field";
+import GetGroupBy from "./Get_groupBy";
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
 import Button from '@mui/material/Button';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
-
-function Form({setDisplayData, setFormDataCurrent, type_fields_dict, setType_field_dict }) {
+function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_field_dict }) {
     const [Field_axis_list, setField_axis_list] = useState()
     // const [Y_axis_list, setY_axis_list] = useState()
 
@@ -20,8 +21,8 @@ function Form({setDisplayData, setFormDataCurrent, type_fields_dict, setType_fie
     const [value_Category, setvalue_Category] = useState([])
     const [key_Continuous, setkey_Continuous] = useState([])
     const [value_Continuous, setvalue_Continuous] = useState([])
-    
-    
+
+
 
     //Initialize GroupBy section
     const [GroupBy_list, setGroupBy_List] = useState()
@@ -30,7 +31,7 @@ function Form({setDisplayData, setFormDataCurrent, type_fields_dict, setType_fie
     const [Aggregation_list, setAggregation_list] = useState()
 
     //Initialize plot button
-    const [plotChoice, setPlotChoice] = useState("bar")
+
     const urlPrefix = "http://127.0.0.1:5000"
     const url_field = "/api/field"
     const url_filter = "/api/filters2"
@@ -38,13 +39,21 @@ function Form({setDisplayData, setFormDataCurrent, type_fields_dict, setType_fie
     const url_aggregation = "/api/get-aggregate2"
     const url_query = "/api/query2"
 
+    const [formDataUpdated, setFormDataUpdated] = useState({
+        field: '',
+        filter: { "categorical": {}, "continuous": {} },
+        group_by: [],
+        aggregate: []
+    })
+    const [open, setOpen] = useState(false);
+
 
     useEffect(() => {
         // Request for field list
         axios.get(urlPrefix + url_field).then((response) => {
             setType_field_dict(response.data)
-            
-            
+
+
             let field_list_return = Object.keys(response.data)
             // console.log(type_fields_dict)
 
@@ -103,10 +112,11 @@ function Form({setDisplayData, setFormDataCurrent, type_fields_dict, setType_fie
         })
 
 
-        
+
     }, [])
     const handleSubmit = (event) => {
         event.preventDefault();
+        setOpen(true)
         // Boxplot testing (no choice in aggregation)
         let formData_boxplot_add = {
             "field": formDataUpdated.field,
@@ -124,12 +134,13 @@ function Form({setDisplayData, setFormDataCurrent, type_fields_dict, setType_fie
             formData_boxplot_add["aggregate"].push("boxplot")
         }
         var formData_send = JSON.stringify(formData_boxplot_add)
-    
+
         // var formData_send = JSON.stringify(formData)
-        console.log(formDataUpdated)
+        // console.log(formDataUpdated)
         console.log(formData_send)
+        console.log("request send")
         // console.log("formdata_send", typeof (formData_send))
-    
+
         fetch(urlPrefix + url_query, {
             headers: { 'Content-Type': 'application/json' },
             method: 'POST',
@@ -143,24 +154,27 @@ function Form({setDisplayData, setFormDataCurrent, type_fields_dict, setType_fie
                 // console.log("setTableData", tableData)
                 setDisplayData(data)
                 setFormDataCurrent(formDataUpdated)
+                setOpen(false)
+                console.log("response received")
                 // console.log("setDisplayData", displayData)
             }
         )
-    
+
     };
-    const [formDataUpdated, setFormDataUpdated] = useState({
-        field: '',
-        filter: { "categorical": {}, "continuous": {} },
-        group_by: [],
-        aggregate: []
-    })
+
     return (
         <form className='form_data' onSubmit={handleSubmit}>
-        
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={open}
+
+            >
+                <CircularProgress color='success' />
+            </Backdrop>
             <div className='field'>
                 <br></br>
                 {/* {Get_X_axis(X_axis_list,formData)} */}
-                <Get_field list={Field_axis_list} form_Data={formDataUpdated} set_FormData={setFormDataUpdated} />
+                <GetField list={Field_axis_list} form_Data={formDataUpdated} set_FormData={setFormDataUpdated} />
                 {/* <br></br> */}
                 {/* {Get_Y_axis(Y_axis_list,formData)} */}
                 {/* <Get_Y_axis list = {Y_axis_list} formData={formData} /> */}
@@ -180,13 +194,13 @@ function Form({setDisplayData, setFormDataCurrent, type_fields_dict, setType_fie
             <div className='groupBy'>
                 {/* {Get_GroupBy(GroupBy_list)} */}
                 <br></br>
-                <Get_GroupBy list={GroupBy_list} form_Data={formDataUpdated} set_FormData={setFormDataUpdated} />
+                <GetGroupBy list={GroupBy_list} form_Data={formDataUpdated} set_FormData={setFormDataUpdated} />
                 <br></br>
             </div>
             <div className='aggregation'>
                 <br></br>
                 {/* {Get_Aggregation(Aggregation_list, formData)} */}
-                <Get_Aggregation list={Aggregation_list} form_Data={formDataUpdated} set_FormData={setFormDataUpdated} field_status={type_fields_dict[formDataUpdated.field]} />
+                <GetAggregation list={Aggregation_list} form_Data={formDataUpdated} set_FormData={setFormDataUpdated} field_status={type_fields_dict[formDataUpdated.field]} />
                 <br></br>
             </div>
             <br></br>
@@ -195,12 +209,12 @@ function Form({setDisplayData, setFormDataCurrent, type_fields_dict, setType_fie
                 {/* <input type="reset" value="Reset" /> */}
 
                 {/* <input type="submit" value="Submit" /> */}
-                <Button type='reset' variant='outlined' size='small' id="reset">Reset</Button>
+                <Button type='reset' variant='contained' size='small' id="reset">Reset</Button>
 
-                <Button type='submit' variant='outlined' size='small' id="submit">Submit</Button>
+                <Button type='submit' variant='contained' size='small' id="submit">Submit</Button>
             </div>
             <br></br>
-            </form>
+        </form>
 
     )
 }

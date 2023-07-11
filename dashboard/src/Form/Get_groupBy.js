@@ -20,7 +20,7 @@ const MenuProps = {
 
 
 
-function Get_GroupBy({ list, form_Data, set_FormData }) {
+function GetGroupBy({ list, form_Data, set_FormData }) {
 
 
     const [groupBySelected, setGroupBySelected] = React.useState([])
@@ -78,4 +78,4 @@ function Get_GroupBy({ list, form_Data, set_FormData }) {
     }
 }
 
-export default Get_GroupBy;
+export default GetGroupBy;

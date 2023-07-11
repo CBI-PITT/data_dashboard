@@ -1,15 +1,15 @@
 
 import Box from '@mui/material/Box';
-import barImg from '../asset/bar.png'
-import boxImg from '../asset/box.png'
-import dotImg from '../asset/dot.png'
-import pieImg from '../asset/pie.png'
-import lineImg from '../asset/line.png'
-import areaImg from '../asset/area.png'
+import barImg from '../asset/Bar.png'
+import boxImg from '../asset/Box.png'
+import dotImg from '../asset/Scatter.png'
+import pieImg from '../asset/Pie.png'
+import lineImg from '../asset/Line.png'
+import areaImg from '../asset/Area.png'
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 function plotChoice({ setPlotChoice, field_status }) {
-    console.log(field_status)
+    // console.log(field_status)
 
     const buttons = [
 
@@ -34,7 +34,7 @@ function plotChoice({ setPlotChoice, field_status }) {
             <ButtonGroup
                 orientation="vertical"
                 aria-label="vertical contained button group"
-                variant='text'
+                variant='contained'
                 color="inherit"
             >
                 {buttons}

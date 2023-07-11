@@ -5,7 +5,8 @@ import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-function Get_field({list,  form_Data,  set_FormData}) {
+function GetField({list,  form_Data,  set_FormData}) {
+    
     // console.log(list)
     if (list !== undefined) {
         return (
@@ -65,4 +66,4 @@ function Get_field({list,  form_Data,  set_FormData}) {
     }
 }
 
-export default Get_field;
+export default GetField;

@@ -39,9 +39,7 @@ function GetCate({ key_category, value_category, form_Data, setFormData }) {
     });
     // console.log("map", cateSelected)
 
-    // let newFormData = formData
-    // newFormData.filter.categorical = Object.fromEntries(cateSelected)
-    // setFormData(newFormData)
+    
     // const updatedFormData = {...form_Data}
     // updatedFormData.filter.categorical = Object.fromEntries(cateSelected)
     // setFormData(updatedFormData)

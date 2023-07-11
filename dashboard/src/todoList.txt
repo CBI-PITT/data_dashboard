@@ -1,12 +1,10 @@
 ----------------------- Frontend ------------------------
-# reset button not work
-# X, Y axis in fact not useful - remove?
-# layout problem on different devices
+# cant refresh aggregation selected when change field from numeric datatype to keyword datatype
+# modified the way that formDataUpdated update to field, group_by, aggregation. Except for filter section (conti and cate).
+  reason: referesh infinite loop and warning message.
+# distict count added, but need modify the aggtegation part regards of verified keyword and numeric
+----------------------- Backend -------------------------
 
-
------------------------ Backend ------------------------
-# api for x y axis, group by, query is calling merge_cells_and_metadata() several times.
-# need to merge cells and metadata for indexing - used for elastic search
 
 💡 seems only filter is needed for all query
 GET /metadata/_search
@@ -61,5 +59,48 @@ GET /metadata/_search
 }
 
 
-# "Field [atlas_name] of type [keyword] is not supported for aggregation [boxplot]"
-# group by route/time_point/treatment
+
+
+{/* <div className='field'>
+                            <br></br>
+                            {/* {Get_X_axis(X_axis_list,formData)} */}
+                            <Get_field list={Field_axis_list} form_Data={formDataUpdated} set_FormData={setFormDataUpdated}/>
+                            {/* <br></br> */}
+                            {/* {Get_Y_axis(Y_axis_list,formData)} */}
+                            {/* <Get_Y_axis list = {Y_axis_list} formData={formData} /> */}
+                            <br></br>
+                        </div>
+                        <div className='filter'>
+                            <div className='continuous'>
+                                {/* {getConti(key_Continuous, value_Continuous)} */}
+                                <GetConti key_Continuous={key_Continuous} value_Continuous={value_Continuous} form_Data={formDataUpdated} set_FormData={setFormDataUpdated}/>
+                            </div>
+                            <div className='categorical'>
+                                {/* {GetCate(key_Category, value_Category,formData)} */}
+                                <GetCate key_category={key_Category} value_category={value_Category} form_Data={formDataUpdated} set_FormData={setFormDataUpdated}/>
+                            </div>
+                            <br></br>
+                        </div>
+                        <div className='groupBy'>
+                            {/* {Get_GroupBy(GroupBy_list)} */}
+                            <br></br>
+                            <Get_GroupBy list={GroupBy_list} form_Data={formDataUpdated} set_FormData={setFormDataUpdated}/>
+                            <br></br>
+                        </div>
+                        <div className='aggregation'>
+                            <br></br>
+                            {/* {Get_Aggregation(Aggregation_list, formData)} */}
+                            <Get_Aggregation list={Aggregation_list} form_Data={formDataUpdated} set_FormData={setFormDataUpdated} field_status={type_fields_dict[formDataUpdated.field]}/>
+                            <br></br>
+                        </div>
+                        <br></br>
+                        <div>
+                            {/* <button>submit</button> */}
+                            {/* <input type="reset" value="Reset" /> */}
+
+                            {/* <input type="submit" value="Submit" /> */}
+                            <Button type='reset' variant='outlined' size='small' id="reset">Reset</Button>
+
+                            <Button type='submit' variant='outlined' size='small' id="submit">Submit</Button>
+                        </div>
+                        <br></br> */}

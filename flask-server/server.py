@@ -2,6 +2,9 @@ import json
 
 import pandas as pd
 import DSL_Query.DSL_Query as Query
+import time
+import datasets.klimstra as klimstra
+import datasets.datasets_collection as datasets_collection
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from utils import NumpyEncoder, merge_cells_and_metadata
@@ -12,7 +15,9 @@ es = Elasticsearch("http://localhost:9200")
 # @app.route("/index")
 # def index():
 #   GET /_cat/indices or GET /_cat/indices?h=index
-INDEX = "klimstra4.0"
+
+
+
 
 app = Flask(__name__)
 CORS(app)
@@ -21,7 +26,8 @@ CORS(app)
 #         "origins":"*"
 #     }
 # })
-
+# dataset = datasets.klimstra
+collection = datasets_collection.datasets_collection()
 
 @app.route("/")
 def index():
@@ -30,220 +36,30 @@ def index():
 
 
 
+dataset = klimstra.klimstra()
+INDEX = dataset.index
+@app.route("/api/datasets")
+def get_dataset():
+    return list(collection.indexMap.keys())
+    # receive dataset users select
+    # to do in future
+@app.route("/api/datasets_choosen", methods = ['post'])
+def choose_dataset():
+    return ''
 
-@app.route("/api/filters")
-def get_filters():
-    """
-    response format:
-    {
-        "categorical": { "Treatment": ["eeev", "veev","weev"], "Time_point": [24, 48, 72, 96],"Route": ['subcutaneous'] },
-        "continuous": { "Age": { "min": 0.5, "max": 5 },"Metadata":{"min":1,"max":29} }
-    }
-    # TODO: join with cels table
-    """
-    data = {}
-    categorical = {}
-    continuous = {}
-    # cells_csv = 'Integrated.csv'
-    metadata_csv = "metadata.csv"
-    # cells_df = pd.read_csv(cells_csv)
-    metadata_df = pd.read_csv(metadata_csv)
-    metadata_df = metadata_df.dropna(axis=1, how="all")
-    continuous_dtypes = metadata_df.select_dtypes(include="number")
-    categorical_dtypes = metadata_df.select_dtypes(exclude="number")
-    continuous_columns = continuous_dtypes.columns.to_list()
-    if "id" in continuous_columns:
-        continuous_columns.remove("id")
-    for column in continuous_columns:
-        column_data = pd.to_numeric(metadata_df[column])
-        if len(column_data.unique()) > 1:
-            continuous[column] = {"min": column_data.min(), "max": column_data.max()}
-    categorical_columns = categorical_dtypes.columns.to_list()
-    if "uuid" in categorical_columns:
-        categorical_columns.remove("uuid")
-    if "file_path" in categorical_columns:
-        categorical_columns.remove("file_path")
-    for column in categorical_columns:
-        unique_values = list(metadata_df[column].unique())
-        # print("column", column)
-        for v in unique_values:
-            print(v, type(v))
-        if len(unique_values) > 1:
-            categorical[column] = unique_values
-    data["categorical"] = categorical
-    data["continuous"] = continuous
-    print("Data", data, type(data))
-    # NaN value here, soc cant convert to json format
-    response = jsonify(data)
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
-
-
-@app.route("/api/get-xy")
-def get_axis_options():
-    """
-    response format:
-    {"data": ["id", "time_point", "structure_id"]}
-    :return: list of column names from the metadata table
-    # TODO: join with cels table
-    """
-    data = {}
-    df = merge_cells_and_metadata()
-    data["data"] = df.columns.to_list()
-    response = jsonify(data)
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
-
-
-@app.route("/api/get-group-by")
-def get_group_by_options():
-    """
-    response format:
-    {"data": ["id", "time_point", "structure_id"]}
-    :return: list of column names from the metadata table
-    # TODO: join with cels table
-    """
-    data = {}
-    df = merge_cells_and_metadata()
-    data["data"] = df.columns.to_list()
-    response = jsonify(data)
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
-
-
-@app.route("/api/get-aggregate")
-def get_aggregate_options():
-    """
-    response format:
-    {"data": ["count of distinct", "count of all", "total sum", "average", "min", "max"]}
-    """
-    data = {
-        "data": [
-            "count of distinct",
-            "count of all",
-            "total sum",
-            "average",
-            "min",
-            "max",
-        ]
-    }
-    response = jsonify(data)
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
-
-
-@app.route("/api/get-aggregate2")
-def get_aggregate():
-    """
-    response format:
-    {"data": ["count of distinct", "count of all", "total sum", "average", "min", "max"]}
-    """
-    data = {
-        "data": [
-            "avg",
-            "min",
-            "max",
-            "sum",
-            "value_count",
-            # "boxplot",
-            # "percentiles"
-        ]
-    }
-    response = jsonify(data)
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
-
-
-@app.route("/api/query", methods=["POST"])
-def query_data_source():
-    """
-    request JSON format:
-    {
-        "x": "<column_name>",
-        "y": "<column_name>",
-        "filter": {
-            "categorical": {"<column_name>": [<value1>, <value2>], "<column_name>": [<value1>, <value2>]},
-            "continuous": {"<column_name>": [<min>, <max>], "<column_name>": [<min>, <max>]}
-        },
-        "group_by": ["<column_name1>", "<column_name2>"],
-        "aggregate": <value>
-    }
-
-    :return: json with filtered/grouped/aggregated data
-    """
-    json_data = request.json
-
-    # Read the data into a Pandas DataFrame
-    data = merge_cells_and_metadata()
-
-    # Get the values from the JSON
-    x = json_data["x"]
-    y = json_data["y"]
-    filter_cat = json_data["filter"]["categorical"]
-    filter_cont = json_data["filter"]["continuous"]
-    group_by = json_data["group_by"]
-    aggregate = json_data["aggregate"]
-
-    # Apply filters to the data
-    for column, values in filter_cat.items():
-        data = data[data[column].isin(values)]
-
-    for column, (min_val, max_val) in filter_cont.items():
-        data = data[(data[column] >= min_val) & (data[column] <= max_val)]
-
-    # Group the data
-    data_grouped = data.groupby(group_by)
-
-    # Aggregate the data
-    if aggregate == "count of distinct":
-        agg_data = data_grouped[y].nunique()
-    elif aggregate == "count of all":
-        agg_data = data_grouped[y].count()
-    elif aggregate == "total sum":
-        agg_data = data_grouped[y].sum()
-    elif aggregate == "average":
-        agg_data = data_grouped[y].mean()
-    elif aggregate == "min":
-        agg_data = data_grouped[y].min()
-    elif aggregate == "max":
-        agg_data = data_grouped[y].max()
-    group_by_str = ""
-    for val in group_by:
-        group_by_str = val + "_"
-
-    print(group_by_str)
-    print(aggregate)
-
-    # Create a new DataFrame with x, y, and aggregated data
-    result = pd.DataFrame({group_by_str: agg_data.index})
-    result[aggregate] = agg_data.values
-
-    print(result)
-
-    # Convert the DataFrame to JSON and return it
-    data = result.to_json(orient="records")
-    response = jsonify(data)
-    print(response)
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
 @app.route("/api/field")
 def get_field():
-    fields = es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"]
-    fields_dict = {}
-    for field in fields:
-        fields_dict[field] = fields[field].get('type')
-    response = jsonify(fields_dict)
+    # fields = es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"]
+    # fields_dict = {}
+    # for field in fields:
+    #     fields_dict[field] = fields[field].get('type')
+    # response = jsonify(fields_dict)
+    # response.headers.add("Access-Control-Allow-Origin", "*")
+    # return response
+    field = dataset.field
+    response = jsonify(field)
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
-    
-@app.route("/api/group-by")
-def get_groupBy():
-    fields = list(es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"].keys())
-    response = jsonify(fields)
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
-
-query = Query.Query()
 
 
 @app.route("/api/filters2")
@@ -252,21 +68,16 @@ def get_filters2():
     categorical = {}
     continuous = {}
 
-    fileds = list(
-        es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"].keys()
-    )
+    # fileds = list(
+    #     es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"].keys()
+    # )
     # print(fileds)
 
     # munually setting cate and conti list
-    categorical_list = ["route", "time_point", "treatment"]
-    continuous_list = [
-        "x_raw_px",
-        "y_raw_px",
-        "z_raw_px",
-        "x_transformed",
-        "y_transformed",
-        "z_transformed",
-    ]
+    # categorical_list = ["route", "time_point", "treatment"]
+    continuous_list = dataset.filter['continuous']
+    categorical_list = dataset.filter['categorical']
+    
 
     for key in categorical_list:
         resp = es.search(index=INDEX, body=query.filterCategorical(key))
@@ -292,11 +103,47 @@ def get_filters2():
     # print("data",data)
     response = jsonify(data)
     response.headers.add("Access-Control-Allow-Origin", "*")
+    return response 
+
+@app.route("/api/group-by")
+def get_groupBy():
+    # gourp_by_list = list(es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"].keys())
+    gourp_by_list = dataset.group_by
+    response = jsonify(gourp_by_list)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
+
+query = Query.Query()
+
+
+
+@app.route("/api/get-aggregate2")
+def get_aggregate():
+    """
+    response format:
+    {"data": ["count of distinct", "count of all", "total sum", "average", "min", "max"]}
+    """
+    # data = {
+    #     "data": [
+    #         "avg",
+    #         "min",
+    #         "max",
+    #         "sum",
+    #         "value_count",
+    #         "cardinality"
+    #         # "boxplot",
+    #         # "percentiles"
+    #     ]
+    # }
+    data = {"data":dataset.aggregate}
+    response = jsonify(data)
+    response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
 
 @app.route("/api/query2", methods=["POST"])
 def query_data_source2():
+    
     json_data = request.json
     # data = query.formQuery(
     #     json_data["field"],
@@ -308,6 +155,8 @@ def query_data_source2():
     # response = jsonify(data)
     # response.headers.add("Access-Control-Allow-Origin", "*")
     # return response
+    print ("before: "+ time.asctime(time.localtime(time.time())))
+    
     
     resp = es.search(
         index=INDEX,
@@ -319,9 +168,10 @@ def query_data_source2():
         ),
     )
     # print(resp.body)
-     
-
+    print ("after: " + time.asctime(time.localtime(time.time())))
+    
     response  = resp.body['aggregations']['categories']['buckets']
+    # print ("after: " + time.asctime(time.localtime(time.time())))
     return jsonify(response)
 
 

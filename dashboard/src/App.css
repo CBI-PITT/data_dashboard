@@ -17,6 +17,21 @@
   font-size: calc(10px + 2vmin);
   color: white;
 }
+
+.App-footer {
+  background-color: #8f9196;
+  /*display: flex;*/
+  /* flex-direction: column;
+  align-items: center; */
+  /* justify-content: center; */
+  margin-top: 2%;
+  font-size: calc(5px + 2vmin);
+  color: white;
+  padding-top: 1px;
+  padding-bottom: 1px
+  
+}
+
 .main_sec{
   width: 100%;
   background-color: antiquewhite;

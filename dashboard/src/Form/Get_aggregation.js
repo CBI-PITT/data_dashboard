@@ -7,6 +7,7 @@ import Select from '@mui/material/Select';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
+import { useEffect, useState } from 'react';
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -17,13 +18,18 @@ const MenuProps = {
         },
     },
 };
-function Get_Aggregation({ list, form_Data, set_FormData, field_status }) {
-    const [aggregationSelected, setAggregationSelected] = React.useState([])
-    console.log(field_status)
+function GetAggregation({ list, form_Data, set_FormData, field_status }) {
+    const [aggregationSelected, setAggregationSelected] = useState([])
+    // console.log(field_status)
     // if(field_status === 'keyword')
     // {
     //     setAggregationSelected([])
     // }
+    useEffect(() => {
+        if (field_status === 'keyword') {
+          setAggregationSelected([]);
+        }
+      }, [field_status]);
     const handleChange = (event) => {
         // console.log(event.target.value)
         setAggregationSelected(event.target.value)
@@ -102,7 +108,7 @@ function Get_Aggregation({ list, form_Data, set_FormData, field_status }) {
 
                     {list.map((name) => (
 
-                        <MenuItem key={name} value={name} disabled={name !== 'value_count' && field_status == 'keyword' ? true : false}>
+                        <MenuItem key={name} value={name} disabled={(name !== 'value_count'&&name!=='cardinality') && field_status === 'keyword' ? true : false}>
                             <Checkbox checked={aggregationSelected.indexOf(name) > -1} />
                             <ListItemText primary={name} />
                         </MenuItem>
@@ -114,4 +120,4 @@ function Get_Aggregation({ list, form_Data, set_FormData, field_status }) {
     }
 }
 
-export default Get_Aggregation;
+export default GetAggregation;
