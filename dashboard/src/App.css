@@ -173,10 +173,10 @@
 }
 
 #reset{
-  margin-right: 5%;
+  margin-right: 15%;
 }
 #submit{
-  margin-left: 5%;
+  margin-left: 15%;
 }
 #coverText{
   font-size: calc(10px + 1vmin);

@@ -8,7 +8,8 @@ import axios from "axios";
 import Button from '@mui/material/Button';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
-
+import SendIcon from '@mui/icons-material/Send';
+import DeleteIcon from '@mui/icons-material/Delete';
 function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_field_dict }) {
     const [Field_axis_list, setField_axis_list] = useState()
     // const [Y_axis_list, setY_axis_list] = useState()
@@ -209,9 +210,10 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
                 {/* <input type="reset" value="Reset" /> */}
 
                 {/* <input type="submit" value="Submit" /> */}
-                <Button type='reset' variant='contained' size='small' id="reset">Reset</Button>
+                <Button type='reset' variant='contained' color='inherit' size='small' id="reset" endIcon={<DeleteIcon />}>Reset</Button>
 
-                <Button type='submit' variant='contained' size='small' id="submit">Submit</Button>
+                <Button type='submit' variant='contained' color='inherit' size='small' id="send" endIcon={<SendIcon />}>Send</Button>
+                
             </div>
             <br></br>
         </form>
