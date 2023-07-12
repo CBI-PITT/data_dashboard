@@ -1,21 +1,12 @@
 import './App.css';
 import React, { useEffect, useState } from 'react';
 
-import Plot from './plot/Plot';
+import Plot from './plot/Chart';
 import PlotChoice from './plotChoices/PlotChoices';
 
-import Form from './Form/Form';
+import Form from './form/Form';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
-
-
-
-
-
-
-
-
-
 function App() {
     const urlPrefix = "http://127.0.0.1:5000"
     const url_field = "/api/field"
@@ -49,7 +40,6 @@ function App() {
     const [plotChoice, setPlotChoice] = useState("bar")
 
     //initialize Form Data
-
     const [formDataCurrent, setFormDataCurrent] = useState({
         field: '',
         // y: '',

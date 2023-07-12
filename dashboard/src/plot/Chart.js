@@ -10,7 +10,7 @@ import React, { PureComponent } from 'react';
 import COLORS from './colors';
 import CoverImg from '../asset/CoverImg.png'
 
-function Plot({ displayData, field, groupBy, aggregation, plotChoice }) {
+function Chart({ displayData, field, groupBy, aggregation, plotChoice }) {
   // var groupByList = ''
   // groupBy.forEach(val => {
   //   groupByList = groupByList + val + '_'
@@ -520,7 +520,7 @@ function Plot({ displayData, field, groupBy, aggregation, plotChoice }) {
 
 }
 
-export default Plot;
+export default Chart;
 
 
 
