@@ -1,12 +1,13 @@
 import * as React from 'react';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import FormHelperText from '@mui/material/FormHelperText';
+
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
+import { useEffect, useState } from 'react';
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -17,14 +18,33 @@ const MenuProps = {
         },
     },
 };
-function Get_Aggregation({list,formData}) {
-    const [aggregationSelected, setAggregationSelected] = React.useState([])
+function GetAggregation({ list, form_Data, set_FormData, field_status }) {
+    const [aggregationSelected, setAggregationSelected] = useState([])
+    // console.log(field_status)
+    // if(field_status === 'keyword')
+    // {
+    //     setAggregationSelected([])
+    // }
+    useEffect(() => {
+        if (field_status === 'keyword') {
+          setAggregationSelected([]);
+        }
+      }, [field_status]);
     const handleChange = (event) => {
+        // console.log(event.target.value)
         setAggregationSelected(event.target.value)
-        formData.aggregate = event.target.value
+        // let newFormData = form_Data
+        // newFormData.aggregate = event.target.value
+
+        const updatedFormData = { ...form_Data }
+        updatedFormData.aggregate = event.target.value
+        set_FormData(updatedFormData)
+        // formData.aggregate = event.target.value
+
     };
     // console.log(list)
     if (list !== undefined) {
+
         return (
             // <div>
             //     {
@@ -69,29 +89,35 @@ function Get_Aggregation({list,formData}) {
             //     </Select>
 
             // </FormControl>
-            <FormControl required sx={{ m: 1, width: '95%'}}>
-            <InputLabel id="aggregation-multiple-checkbox-label">Aggregation</InputLabel>
-            <Select
-                labelId="aggregation-multiple-checkbox-label"
-                id="aggregation-multiple-checkbox"
-                multiple
-                value={aggregationSelected}
-                onChange={handleChange}
-                input={<OutlinedInput label="Tag" />}
-                renderValue={(selected) => selected.join(', ')}
-                MenuProps={MenuProps}
-            >
-                {list.map((name) => (
-                    <MenuItem key={name} value={name}>
-                        <Checkbox checked={aggregationSelected.indexOf(name) > -1} />
-                        <ListItemText primary={name} />
-                    </MenuItem>
-                ))}
-            </Select>
-        </FormControl>
+            <FormControl required sx={{ m: 1, width: '95%' }}>
+                <InputLabel id="aggregation-multiple-checkbox-label">Aggregation</InputLabel>
+                <Select
+                    labelId="aggregation-multiple-checkbox-label"
+                    id="aggregation-multiple-checkbox"
+                    multiple
+                    value={aggregationSelected}
+                    onChange={handleChange}
+                    input={<OutlinedInput label="Tag" />}
+                    renderValue={(selected) => {
+                        // console.log("selected",selected)
+                        return selected.join(', ')
+                    }
+                    }
+                    MenuProps={MenuProps}
+                >
+
+                    {list.map((name) => (
+
+                        <MenuItem key={name} value={name} disabled={(name !== 'value_count'&&name!=='cardinality') && field_status === 'keyword' ? true : false}>
+                            <Checkbox checked={aggregationSelected.indexOf(name) > -1} />
+                            <ListItemText primary={name} />
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
 
         )
     }
 }
 
-export default Get_Aggregation;
+export default GetAggregation;

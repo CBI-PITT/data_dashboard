@@ -5,7 +5,8 @@ import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-function Get_X_axis({list, formData}) {
+function GetField({list,  form_Data,  set_FormData}) {
+    
     // console.log(list)
     if (list !== undefined) {
         return (
@@ -38,7 +39,17 @@ function Get_X_axis({list, formData}) {
                     name="field"
                     onChange={(event) => {
                         console.log("component", event.target)
-                        formData.field = event.target.value
+                        
+                        const updatedFormData = {...form_Data}
+                        updatedFormData.field = event.target.value
+
+                        // let newFormData = form_Data
+                        
+                        
+                        // newFormData.field = event.target.value
+                        set_FormData(updatedFormData)
+
+                        // formData.field = event.target.value
                     }}
                 >
                     {
@@ -55,4 +66,4 @@ function Get_X_axis({list, formData}) {
     }
 }
 
-export default Get_X_axis;
+export default GetField;

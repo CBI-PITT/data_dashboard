@@ -1,4 +1,5 @@
-import * as React from 'react';
+
+import React, { useEffect, useState } from 'react';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -20,29 +21,46 @@ const MenuProps = {
 };
 
 
-function GetCate({ key_category, value_category, formData }) {
+function GetCate({ key_category, value_category, form_Data, setFormData }) {
     // const key = ["Treatment", "Time_Point"]
     // const value = [["eeve", "weev", "vvev"], [24, 48, 72, 96]]
-    
-    
+
+
     // const [cateSelected, setCateSelected] = React.useState(
     //    new Map()
     // )
     // console.log(cateSelected)
-    var cateSelected = new Map()
-    // console.log(formData)
+    const [cateSelected, setCateSelected] = useState(() => {
+        const initialMap = new Map();
+        key_category.forEach(item => {
+            initialMap.set(item, []);
+        });
+        return initialMap;
+    });
+    // console.log("map", cateSelected)
+
+    
+    // const updatedFormData = {...form_Data}
+    // updatedFormData.filter.categorical = Object.fromEntries(cateSelected)
+    // setFormData(updatedFormData)
+    form_Data.filter.categorical = Object.fromEntries(cateSelected)
+
+
     const handleChange = (event) => {
-        // console.log(event.target.value)
-        // console.log(event.target.name)
-        cateSelected.set(event.target.name,event.target.value)
-        
-        formData.filter.categorical = Object.fromEntries(cateSelected)
+        console.log(event.target.name, event.target.value)
+        const newMap = new Map(cateSelected);
+        newMap.set(event.target.name, event.target.value);
+        setCateSelected(newMap);
+        // cateSelected.set(event.target.name,event.target.value)
+        // console.log("map", cateSelected)
+
+
         // setContiSelected(event.target.value)
         // formData.filter.categorical = event.target.value
     };
-    
+
     if (key_category !== undefined && value_category !== undefined) {
-        
+
         return (
 
             // current like{"treatment" : ["weev","veev"]}
