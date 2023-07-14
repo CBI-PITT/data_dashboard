@@ -11,7 +11,7 @@ class klimstra:
             'z_raw_px':'short'
         }
         self.filter = {
-            "continuous": [],
+            "continuous": ['x_raw_px','y_raw_px'],
             "categorical": [
                 # "atlas_structure_number",
                 # "metadata",

@@ -84,10 +84,7 @@ function GetAggregation({ list, form_Data, set_FormData, field_status }) {
             //                 <MenuItem value={item} key={item}>{item}</MenuItem>
             //             ))
             //         }
-
-
             //     </Select>
-
             // </FormControl>
             <FormControl required sx={{ m: 1, width: '95%' }}>
                 <InputLabel id="aggregation-multiple-checkbox-label">Aggregation</InputLabel>
@@ -105,9 +102,7 @@ function GetAggregation({ list, form_Data, set_FormData, field_status }) {
                     }
                     MenuProps={MenuProps}
                 >
-
                     {list.map((name) => (
-
                         <MenuItem key={name} value={name} disabled={(name !== 'value_count'&&name!=='cardinality') && field_status === 'keyword' ? true : false}>
                             <Checkbox checked={aggregationSelected.indexOf(name) > -1} />
                             <ListItemText primary={name} />
@@ -115,7 +110,6 @@ function GetAggregation({ list, form_Data, set_FormData, field_status }) {
                     ))}
                 </Select>
             </FormControl>
-
         )
     }
 }

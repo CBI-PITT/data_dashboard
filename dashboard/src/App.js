@@ -8,26 +8,17 @@ import Form from './form/Form';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 function App() {
-    const urlPrefix = "http://127.0.0.1:5000"
-    const url_field = "/api/field"
-    const url_filter = "/api/filters2"
-    const url_groupBy = "/api/group-by"
-    const url_aggregation = "/api/get-aggregate2"
-    const url_query = "/api/query2"
-
-    //Initialize columns section
-    // const [Field_axis_list, setField_axis_list] = useState()
-    // // const [Y_axis_list, setY_axis_list] = useState()
-
-    // //Initialize type dict for recording all types of fileds
+    // Initialize type dict for recording all types of fileds
     const [type_fields_dict, setType_field_dict] = useState({})
-    // // var type_fields_dict = {}
+
     // //Initialize filter section
     // const [key_Category, setkey_Category] = useState([])
     // const [value_Category, setvalue_Category] = useState([])
     // const [key_Continuous, setkey_Continuous] = useState([])
     // const [value_Continuous, setvalue_Continuous] = useState([])
     // const [tableData, setTableData] = useState()
+
+    // Initialize displayData, used for receive query response 
     const [displayData, setDisplayData] = useState()
 
     // //Initialize GroupBy section
@@ -39,7 +30,7 @@ function App() {
     // //Initialize plot button
     const [plotChoice, setPlotChoice] = useState("bar")
 
-    //initialize Form Data
+    //initialize Form_Data_current used for rendering plot
     const [formDataCurrent, setFormDataCurrent] = useState({
         field: '',
         // y: '',
@@ -48,16 +39,7 @@ function App() {
         aggregate: []
     })
 
-    // backdrop setting
-    // const [open, setOpen] = useState(false);
-
-    // const [formDataUpdated, setFormDataUpdated] = useState({
-    //     field: '',
-    //     filter: { "categorical": {}, "continuous": {} },
-    //     group_by: [],
-    //     aggregate: []
-    // })
-
+    
 
 
     // const handleSubmit = (event) => {
@@ -168,70 +150,6 @@ function App() {
     //     })
 
 
-    //     // console.log("X_axis_list" + X_axis_list)
-    //     // console.log("Y_axis_list" + Y_axis_list)
-    //     // console.log("key_Category" + key_Category)
-    //     // console.log("key_Continuous" + key_Continuous)
-    //     // console.log("GroupBy_list: " + GroupBy_list)
-    //     // console.log("Agrregation_list" + Agrregation_list)
-
-
-    //     // const mockData = {
-    //     //     "X_axis_list": ["cellId"],
-    //     //     "Y_axis_list": ["Time_Point"],
-    //     //     "categorical": { "Treatment": ["eeev", "veev", "weev"], "Time_point": [24, 48, 72, 96], "Route": ['subcutaneous'] },
-    //     //     "continuous": { "Age": { "min": 0.5, "max": 5 }, "Metadata": { "min": 1, "max": 29 } },
-    //     //     "GroupBy_list": ["Treatment"],
-    //     //     "Aggregation_list": ["value"]
-    //     // }
-    //     // var agent_cate_key = []
-    //     // var agent_cate_value = []
-    //     // var agent_conti_key = []
-    //     // var agent_conti_value = []
-    //     // for (var key in mockData.categorical) {
-    //     //     agent_cate_key.push(key)
-    //     //     agent_cate_value.push(mockData.categorical[key])
-    //     // }
-
-    //     // for (var key in mockData.continuous) {
-    //     //     agent_conti_key.push(key)
-    //     //     agent_conti_value.push(mockData.continuous[key])
-    //     // }
-    //     // Columns (X_axis_list, Y_axis_list) setting
-    //     // setX_axis_list(mockData.X_axis_list)
-    //     // setY_axis_list(mockData.Y_axis_list)
-    //     // console.log("X_axis_list is :" + X_axis_list)
-
-    //     // Filter setting
-    //     // setkey_Category(agent_cate_key)
-    //     // setvalue_Category(agent_cate_value)
-    //     // setkey_Continuous(agent_conti_key)
-    //     // setvalue_Continuous(agent_conti_value)
-    //     // console.log(agent_cate_key)
-
-    //     //GroupBy list setting
-    //     // setGroupBY_List(mockData.GroupBy_list)
-
-    //     // //Aggregation list setting
-    //     // setAgrregation_list(mockData.Aggregation_list)
-    //     // const fetchTableData = async () => {
-    //     //     const response = await fetch('/api/query');
-    //     //     const data = await response.json();
-    //     //     setTableData(data);
-    //     // };
-
-    //     // fetchTableData();
-    // }, [])
-
-
-    // const handleClose = () => {
-    //     setOpen(false);
-    // };
-    // const handleOpen = () => {
-    //     setOpen(true);
-    // };
-
-
     return (
         <div className="App">
             <header className="App-header">
@@ -239,36 +157,20 @@ function App() {
             </header>
             <div className='main_sec'>
                 <div className='user_selection_container'>
-
-
                     <Form setDisplayData={setDisplayData} setFormDataCurrent={setFormDataCurrent} type_fields_dict={type_fields_dict} setType_field_dict={setType_field_dict} />
-
                 </div>
-
                 <div className='display_container'>
-
                     <div className='chart'>
-                        {/* <Backdrop
-                            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                            open={open}
-                            
-                        >
-                            <CircularProgress color='success' />
-                        </Backdrop> */}
-                        <Plot displayData={displayData} field={formDataCurrent.field} groupBy={formDataCurrent.group_by} aggregation={formDataCurrent.aggregate} plotChoice={plotChoice} />
+                        <Plot displayData={displayData} field={formDataCurrent.field} groupBy={formDataCurrent.group_by} aggregation={formDataCurrent.aggregate} plotChoice={plotChoice} setPlotChoice={setPlotChoice} field_status={type_fields_dict[formDataCurrent.field]} />
                     </div>
                 </div>
-
                 <div className='drawing_selection_container'>
                     <PlotChoice setPlotChoice={setPlotChoice} field_status={type_fields_dict[formDataCurrent.field]} />
                 </div>
             </div>
-
             <header className="App-footer">
                 <h4>Any using problems and suggestions, please contact collin9527@gmail.com</h4>
             </header>
-
-
         </div>
     );
 }
