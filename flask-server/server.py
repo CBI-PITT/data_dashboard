@@ -11,10 +11,6 @@ from utils import NumpyEncoder, merge_cells_and_metadata
 from elasticsearch import Elasticsearch
 
 es = Elasticsearch("http://localhost:9200")
-# to be constructed 
-# @app.route("/index")
-# def index():
-#   GET /_cat/indices or GET /_cat/indices?h=index
 
 
 
@@ -26,23 +22,29 @@ CORS(app)
 #         "origins":"*"
 #     }
 # })
-# dataset = datasets.klimstra
+
 collection = datasets_collection.datasets_collection()
+
+dataset = klimstra.klimstra()
+INDEX = dataset.index
 
 @app.route("/")
 def index():
     return app.send_static_file("index.html")
 
+# to be constructed 
+# @app.route("/index")
+# def index():
+#   GET /_cat/indices or GET /_cat/indices?h=index
 
 
-
-dataset = klimstra.klimstra()
-INDEX = dataset.index
 @app.route("/api/datasets")
 def get_dataset():
     return list(collection.indexMap.keys())
-    # receive dataset users select
-    # to do in future
+
+# to be constructed 
+# receive dataset users select
+# to do in future
 @app.route("/api/datasets_choosen", methods = ['post'])
 def choose_dataset():
     return ''
@@ -56,13 +58,14 @@ def get_field():
     # response = jsonify(fields_dict)
     # response.headers.add("Access-Control-Allow-Origin", "*")
     # return response
+
     field = dataset.field
     response = jsonify(field)
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
 
-@app.route("/api/filters2")
+@app.route("/api/filter")
 def get_filters2():
     data = {}
     categorical = {}
@@ -73,7 +76,7 @@ def get_filters2():
     # )
     # print(fileds)
 
-    # munually setting cate and conti list
+    # manually setting cate and conti list
     # categorical_list = ["route", "time_point", "treatment"]
     continuous_list = dataset.filter['continuous']
     categorical_list = dataset.filter['categorical']
@@ -83,6 +86,7 @@ def get_filters2():
         resp = es.search(index=INDEX, body=query.filterCategorical(key))
         # print(resp.body["aggregations"][key]["buckets"])
         temp_dict = resp.body["aggregations"][key]["buckets"]
+        # print("--------------",temp_dict)
         # print (temp_dict[0])
         categorical[key] = []
         for val in temp_dict:
@@ -105,7 +109,7 @@ def get_filters2():
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response 
 
-@app.route("/api/group-by")
+@app.route("/api/groupBy")
 def get_groupBy():
     # gourp_by_list = list(es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"].keys())
     gourp_by_list = dataset.group_by
@@ -117,7 +121,7 @@ query = Query.Query()
 
 
 
-@app.route("/api/get-aggregate2")
+@app.route("/api/aggregation")
 def get_aggregate():
     """
     response format:
@@ -141,7 +145,7 @@ def get_aggregate():
     return response
 
 
-@app.route("/api/query2", methods=["POST"])
+@app.route("/api/query", methods=["POST"])
 def query_data_source2():
     
     json_data = request.json
@@ -169,9 +173,7 @@ def query_data_source2():
     )
     # print(resp.body)
     print ("after: " + time.asctime(time.localtime(time.time())))
-    
     response  = resp.body['aggregations']['categories']['buckets']
-    # print ("after: " + time.asctime(time.localtime(time.time())))
     return jsonify(response)
 
 

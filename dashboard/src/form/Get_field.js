@@ -42,10 +42,7 @@ function GetField({list,  form_Data,  set_FormData}) {
                         
                         const updatedFormData = {...form_Data}
                         updatedFormData.field = event.target.value
-
                         // let newFormData = form_Data
-                        
-                        
                         // newFormData.field = event.target.value
                         set_FormData(updatedFormData)
 

@@ -10,7 +10,7 @@ import React, { PureComponent } from 'react';
 import COLORS from './colors';
 import CoverImg from '../asset/CoverImg.png'
 
-function Chart({ displayData, field, groupBy, aggregation, plotChoice }) {
+function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotChoice, field_status }) {
   // var groupByList = ''
   // groupBy.forEach(val => {
   //   groupByList = groupByList + val + '_'
@@ -33,6 +33,11 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice }) {
         <h3 id='coverText'>Statistics and Visulization for Klimstra Project</h3>
       </div>
     )
+  }
+  if (field_status ==='keyword' && plotChoice ==='box')
+  {
+      setPlotChoice('bar')
+      return
   }
   // if (plotChoice === "bar") {
   //   console.log("check here",displayData)

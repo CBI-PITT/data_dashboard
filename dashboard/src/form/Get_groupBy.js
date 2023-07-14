@@ -21,8 +21,6 @@ const MenuProps = {
 
 
 function GetGroupBy({ list, form_Data, set_FormData }) {
-
-
     const [groupBySelected, setGroupBySelected] = React.useState([])
     const handleChange = (event) => {
         setGroupBySelected(event.target.value)
@@ -70,7 +68,6 @@ function GetGroupBy({ list, form_Data, set_FormData }) {
                         ))}
                     </Select>
                 </FormControl>
-
             </div>
 
 

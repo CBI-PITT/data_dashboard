@@ -24,12 +24,6 @@ const MenuProps = {
 function GetCate({ key_category, value_category, form_Data, setFormData }) {
     // const key = ["Treatment", "Time_Point"]
     // const value = [["eeve", "weev", "vvev"], [24, 48, 72, 96]]
-
-
-    // const [cateSelected, setCateSelected] = React.useState(
-    //    new Map()
-    // )
-    // console.log(cateSelected)
     const [cateSelected, setCateSelected] = useState(() => {
         const initialMap = new Map();
         key_category.forEach(item => {
