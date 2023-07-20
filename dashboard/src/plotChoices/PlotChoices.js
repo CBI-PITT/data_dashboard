@@ -12,7 +12,6 @@ function plotChoice({ setPlotChoice, field_status }) {
     // console.log(field_status)
 
     const buttons = [
-
         <Button key="bar" onClick={() => { setPlotChoice("bar") }} ><img src={barImg} className="plotButton"></img></Button>,
         <Button key="box" onClick={() => { setPlotChoice("box") }} disabled={field_status=='keyword'?true:false}><img src={boxImg} className="plotButton"></img></Button>,
         <Button key="dot" onClick={() => { setPlotChoice("scatter") }}><img src={dotImg} className="plotButton"></img></Button>,
@@ -21,7 +20,6 @@ function plotChoice({ setPlotChoice, field_status }) {
         <Button key="area" onClick={() => { setPlotChoice("area") }}><img src={areaImg} className="plotButton"></img></Button>
     ];
     return (
-
         <Box
             sx={{
                 display: 'flex',
@@ -30,7 +28,6 @@ function plotChoice({ setPlotChoice, field_status }) {
                 },
             }}
         >
-
             <ButtonGroup
                 orientation="vertical"
                 aria-label="vertical contained button group"
@@ -41,7 +38,6 @@ function plotChoice({ setPlotChoice, field_status }) {
             </ButtonGroup>
 
         </Box>
-
     );
 }
 

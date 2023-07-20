@@ -26,7 +26,7 @@ function GetGroupBy({ list, form_Data, set_FormData }) {
         setGroupBySelected(event.target.value)
         // let newFormData = form_Data
         // newFormData.group_by = event.target.value
-
+        
         const updatedFormData = { ...form_Data }
         updatedFormData.group_by = event.target.value
         set_FormData(updatedFormData)

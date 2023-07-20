@@ -3,27 +3,28 @@ import GetCate from "./Get_categorical";
 import GetConti from "./Get_continuous";
 import GetField from "./Get_field";
 import GetGroupBy from "./Get_groupBy";
-import React, { useEffect, useState } from 'react';
+
+import React, { useEffect, useState, useRef } from 'react';
 import axios from "axios";
-import Button from '@mui/material/Button';
+import {Button, Paper} from '@mui/material';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import SendIcon from '@mui/icons-material/Send';
 import DeleteIcon from '@mui/icons-material/Delete';
-function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_field_dict }) {
-    const [Field_axis_list, setField_axis_list] = useState()
-    // const [Y_axis_list, setY_axis_list] = useState()
 
-    //Initialize type dict for recording all types of fileds
-    // const [type_fields_dict,setType_field_dict] = useState({})
-    // var type_fields_dict = {}
+function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_field_dict, formFrame, resetSwitch }) {
+    // console.log(formFrame)
+    const [Field_axis_list, setField_axis_list] = useState()
+    // console.log(resetSwitch)
+
+
     //Initialize filter section
     const [key_Category, setkey_Category] = useState([])
     const [value_Category, setvalue_Category] = useState([])
     const [key_Continuous, setkey_Continuous] = useState([])
     const [value_Continuous, setvalue_Continuous] = useState([])
 
-
+    const [open, setOpen] = useState(false);
 
     //Initialize GroupBy section
     const [GroupBy_list, setGroupBy_List] = useState()
@@ -46,25 +47,18 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
         group_by: [],
         aggregate: []
     })
-    const [open, setOpen] = useState(false);
+
+
     useEffect(() => {
-        // Request for field list
-        axios.get(urlPrefix + url_field).then((response) => {
-            setType_field_dict(response.data)
-
-
-            let field_list_return = Object.keys(response.data)
-            // console.log(type_fields_dict)
-
+        if (formFrame === undefined) {
+            return;
+        } else {
+            setType_field_dict(formFrame.field);
+            // Other state updates...
+            let field_list_return = Object.keys(formFrame.field)
             setField_axis_list(field_list_return)
-            // setY_axis_list(xyAxis_list_return)
-            // console.log(X_axis_list)
-        })
-        // Request for filter(key,value)
-        axios.get(urlPrefix + url_filter).then((response) => {
-            // console.log("filter return", response.data)
-            // let filter_return = JSON.parse(response.data.replace(/\bNaN\b/g, "null"));
-            let filter_return = response.data;
+
+            let filter_return = formFrame.filter;
             // console.log(filter_return)
             let agent_cate_key = []
             let agent_cate_value = []
@@ -78,27 +72,127 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
                 agent_conti_key.push(key)
                 agent_conti_value.push(filter_return.continuous[key])
             }
+
             // Filter setting
             setkey_Category(agent_cate_key)
             setvalue_Category(agent_cate_value)
             setkey_Continuous(agent_conti_key)
             setvalue_Continuous(agent_conti_value)
-        });
-        // Request for groupBy list
-        axios.get(urlPrefix + url_groupBy).then((response) => {
-            // console.log("groupBy return", typeof (response.data))
-            let groupBy_list_return = response.data
+
+            let groupBy_list_return = formFrame.group_by
             setGroupBy_List(groupBy_list_return)
-            //  console.log(GroupBy_list)
-        })
-        // Request for aggregation list
-        axios.get(urlPrefix + url_aggregation).then((response) => {
-            // console.log(response.data.data)
-            let aggregation_list_return = response.data.data
+
+            let aggregation_list_return = formFrame.aggregate
             setAggregation_list(aggregation_list_return)
-            //  console.log(Agrregation_list)
-        })
-    }, [])
+        }
+    }, [formFrame]);
+
+    // useEffect(() => {
+    //     const restFormDataUpdated = formDataUpdated
+    //     restFormDataUpdated.field =''
+    //     restFormDataUpdated.filter ={ "categorical": {}, "continuous": {} }
+    //     restFormDataUpdated.group_by =[]
+    //     restFormDataUpdated.aggregate=[]
+    //     setFormDataUpdated(restFormDataUpdated)
+    // },[resetSwitch])
+    // console.log(formDataUpdated)
+
+
+    // if(formFrame === undefined)
+    // {
+    //     return
+    // }
+
+
+    // else {
+    //     setType_field_dict(formFrame.field)
+    //     let field_list_return = Object.keys(formFrame.field)
+    //     setField_axis_list(field_list_return)
+
+    //     let filter_return = formFrame.filter;
+    //     // console.log(filter_return)
+    //     let agent_cate_key = []
+    //     let agent_cate_value = []
+    //     let agent_conti_key = []
+    //     let agent_conti_value = []
+    //     for (let key in filter_return.categorical) {
+    //         agent_cate_key.push(key)
+    //         agent_cate_value.push(filter_return.categorical[key])
+    //     }
+    //     for (let key in filter_return.continuous) {
+    //         agent_conti_key.push(key)
+    //         agent_conti_value.push(filter_return.continuous[key])
+    //     }
+    //     // Filter setting
+    //     setkey_Category(agent_cate_key)
+    //     setvalue_Category(agent_cate_value)
+    //     setkey_Continuous(agent_conti_key)
+    //     setvalue_Continuous(agent_conti_value)
+
+    //     let groupBy_list_return = formFrame.group_by
+    //     setGroupBy_List(groupBy_list_return)
+
+    //     let aggregation_list_return = formFrame.aggregate
+    //     setAggregation_list(aggregation_list_return)
+    // }
+
+
+
+    // useEffect(() => {
+    //     // Request for field list
+    //     axios.get(urlPrefix + url_field).then((response) => {
+    //         setType_field_dict(response.data)
+
+
+    //         let field_list_return = Object.keys(response.data)
+    //         // console.log(type_fields_dict)
+
+    //         setField_axis_list(field_list_return)
+    //         // setY_axis_list(xyAxis_list_return)
+    //         // console.log(X_axis_list)
+
+
+    //     })
+    //     // Request for filter(key,value)
+    //     axios.get(urlPrefix + url_filter).then((response) => {
+    //         // console.log("filter return", response.data)
+    //         // let filter_return = JSON.parse(response.data.replace(/\bNaN\b/g, "null"));
+    //         let filter_return = response.data;
+    //         // console.log(filter_return)
+    //         let agent_cate_key = []
+    //         let agent_cate_value = []
+    //         let agent_conti_key = []
+    //         let agent_conti_value = []
+    //         for (let key in filter_return.categorical) {
+    //             agent_cate_key.push(key)
+    //             agent_cate_value.push(filter_return.categorical[key])
+    //         }
+    //         for (let key in filter_return.continuous) {
+    //             agent_conti_key.push(key)
+    //             agent_conti_value.push(filter_return.continuous[key])
+    //         }
+    //         // Filter setting
+    //         setkey_Category(agent_cate_key)
+    //         setvalue_Category(agent_cate_value)
+    //         setkey_Continuous(agent_conti_key)
+    //         setvalue_Continuous(agent_conti_value)
+    //     });
+    //     // Request for groupBy list
+    //     axios.get(urlPrefix + url_groupBy).then((response) => {
+    //         // console.log("groupBy return", typeof (response.data))
+    //         let groupBy_list_return = response.data
+    //         setGroupBy_List(groupBy_list_return)
+    //         //  console.log(GroupBy_list)
+    //     })
+    //     // Request for aggregation list
+    //     axios.get(urlPrefix + url_aggregation).then((response) => {
+    //         // console.log(response.data.data)
+    //         let aggregation_list_return = response.data.data
+    //         setAggregation_list(aggregation_list_return)
+    //         //  console.log(Agrregation_list)
+    //     })
+    // }, [])
+
     const handleSubmit = (event) => {
         event.preventDefault();
         setOpen(true)
@@ -147,6 +241,8 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
 
     };
 
+
+
     return (
         <form className='form_data' onSubmit={handleSubmit}>
             <Backdrop
@@ -155,6 +251,11 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
             >
                 <CircularProgress color='success' />
             </Backdrop>
+            {/* <div className="dataset">
+                <br></br>
+                <Dataset/>
+                <br></br>
+            </div> */}
             <div className='field'>
                 <br></br>
                 <GetField list={Field_axis_list} form_Data={formDataUpdated} set_FormData={setFormDataUpdated} />

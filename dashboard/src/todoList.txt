@@ -1,10 +1,13 @@
 ----------------------- Frontend ------------------------
-# cant refresh aggregation selected when change field from numeric datatype to keyword datatype
+# send wrong formData when change dataset, should reset all form value (can solve reset problem when fixed)
+# animation of skeleton on formFrame section
+# hard code previously in aggregation part, <MenuItem>
 # modified the way that formDataUpdated update to field, group_by, aggregation. Except for filter section (conti and cate).
   reason: referesh infinite loop and warning message.
-# distict count added, but need modify the aggtegation part regards of verified keyword and numeric
+# scroll bar to be added
 ----------------------- Backend -------------------------
-
+# sort result beased on group_by
+# flask admin
 
 💡 seems only filter is needed for all query
 GET /metadata/_search

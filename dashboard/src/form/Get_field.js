@@ -1,11 +1,11 @@
-import * as React from 'react';
+
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-
-function GetField({list,  form_Data,  set_FormData}) {
+import React, { useEffect, useState } from 'react';
+function GetField({ list, form_Data, set_FormData }) {
     
     // console.log(list)
     if (list !== undefined) {
@@ -39,8 +39,8 @@ function GetField({list,  form_Data,  set_FormData}) {
                     name="field"
                     onChange={(event) => {
                         console.log("component", event.target)
-                        
-                        const updatedFormData = {...form_Data}
+
+                        const updatedFormData = { ...form_Data }
                         updatedFormData.field = event.target.value
                         // let newFormData = form_Data
                         // newFormData.field = event.target.value

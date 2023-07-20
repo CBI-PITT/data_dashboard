@@ -21,7 +21,7 @@ const MenuProps = {
 };
 
 
-function GetCate({ key_category, value_category, form_Data, setFormData }) {
+function GetCate({ key_category, value_category, form_Data, setFormData, resetSwitch }) {
     // const key = ["Treatment", "Time_Point"]
     // const value = [["eeve", "weev", "vvev"], [24, 48, 72, 96]]
     const [cateSelected, setCateSelected] = useState(() => {
@@ -32,7 +32,13 @@ function GetCate({ key_category, value_category, form_Data, setFormData }) {
         return initialMap;
     });
     // console.log("map", cateSelected)
-
+    // useEffect(()=>{
+    //     const resetMap = new Map();
+    //     key_category.forEach(item => {
+    //         resetMap.set(item, []);
+    //     });
+    //     setCateSelected(resetMap)
+    // },[resetSwitch])
     
     // const updatedFormData = {...form_Data}
     // updatedFormData.filter.categorical = Object.fromEntries(cateSelected)

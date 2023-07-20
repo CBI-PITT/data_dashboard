@@ -12,7 +12,7 @@ class datasets_collection:
             "uuid_cell": "keyword",
         }
         klimstra_filter.filter = {
-            "continuous": [],
+            "continuous": ['x_raw_px','y_raw_px'],
             "categorical": [
                 # "atlas_structure_number",
                 # "metadata",
@@ -37,4 +37,76 @@ class datasets_collection:
             "cardinality",
         ]
 
-        self.indexMap = {klimstra_index: klimstra_filter}
+        klimstra_index2 = "klimstra3.0"
+        klimstra_filter2 = filter_template.filter_template()
+        klimstra_filter2.field = {
+            "atlas_structure_number": "long",
+            "metadata": "short",
+            "route": "keyword",
+            "time_point": "keyword",
+            "treatment": "keyword",
+            "uuid_cell": "keyword",
+        }
+        klimstra_filter2.filter = {
+            "continuous": ['x_raw','y_raw'],
+            "categorical": [
+                # "atlas_structure_number",
+                # "metadata",
+                "route",
+                "time_point",
+                "treatment",
+            ],
+        }
+        klimstra_filter2.group_by = [
+            "atlas_structure_number",
+            "metadata",
+            "route",
+            "time_point",
+            "treatment",
+        ]
+        klimstra_filter2.aggregate = [
+            "min",
+            "max",
+            "avg",
+            "sum",
+            "value_count",
+            "cardinality",
+        ]
+
+        metadata_index = "metadata"
+        metadata_filter = filter_template.filter_template()
+        metadata_filter.field = {
+            
+            "id": "long"
+        }
+        metadata_filter.filter = {
+            "continuous": ['id'],
+            "categorical": [
+                # "atlas_structure_number",
+                # "metadata",
+                "voxel_spacing",
+                "time_point",
+                "treatment",
+            ],
+        }
+        metadata_filter.group_by = [
+            "voxel_spacing",
+            
+            
+            "time_point",
+            "treatment",
+        ]
+        metadata_filter.aggregate = [
+            "min",
+            "max",
+            "avg",
+            "sum",
+            "value_count",
+            "cardinality",
+        ]
+
+
+
+        self.indexMap = {klimstra_index: klimstra_filter,
+                         klimstra_index2:klimstra_filter2,
+                         metadata_index:metadata_filter}
