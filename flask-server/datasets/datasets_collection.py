@@ -10,6 +10,7 @@ class datasets_collection:
             "time_point": "keyword",
             "treatment": "keyword",
             "uuid_cell": "keyword",
+            "z_raw_px":"long"
         }
         klimstra_filter.filter = {
             "continuous": ['x_raw_px','y_raw_px'],
@@ -48,7 +49,7 @@ class datasets_collection:
             "uuid_cell": "keyword",
         }
         klimstra_filter2.filter = {
-            "continuous": ['x_raw','y_raw'],
+            "continuous": ['z_raw','y_raw'],
             "categorical": [
                 # "atlas_structure_number",
                 # "metadata",

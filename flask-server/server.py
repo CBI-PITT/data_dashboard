@@ -77,9 +77,9 @@ def choose_dataset(dataset_name):
     for key in continuous_list:
         resp = es.search(index=INDEX, body=query.filterContinuous(key))
         # print(resp.body["aggregations"][key]["buckets"])
-        continuous[key] = {}
-        continuous[key]["min"] = resp.body["aggregations"]["min" + "_" + key]["value"]
-        continuous[key]["max"] = resp.body["aggregations"]["max" + "_" + key]["value"]
+        continuous[key] = []
+        continuous[key].append(resp.body["aggregations"]["min" + "_" + key]["value"])
+        continuous[key].append(resp.body["aggregations"]["max" + "_" + key]["value"])
 
     # print (continuous)
 

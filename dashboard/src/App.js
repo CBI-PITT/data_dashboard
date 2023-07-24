@@ -1,11 +1,11 @@
 import './App.css';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import Chart from './plot/Chart';
 import PlotChoice from './plotChoices/PlotChoices';
 import Dataset from './dataset/Dataset';
 import Form from './form/Form';
-
+import { Button, Divider, Paper } from '@mui/material';
 function App() {
     // Initialize type dict for recording all types of fileds
     const [type_fields_dict, setType_field_dict] = useState({})
@@ -30,7 +30,7 @@ function App() {
     const [plotChoice, setPlotChoice] = useState("bar")
 
     const [formFrame, setFormFrame] = useState()
-    const [resetSwitch, SetResetSwitch] = useState(false)
+    // const [resetSwitch, setResetSwitch] = useState(false)
 
     //initialize Form_Data_current used for rendering plot
     const [formDataCurrent, setFormDataCurrent] = useState({
@@ -158,25 +158,30 @@ function App() {
             </header>
             <div className='main_sec'>
                 <div className='user_selection'>
-                    <div className="dataset">
-                        <br></br>
-                        <Dataset  setFormFrame={setFormFrame} resetSwitch = {resetSwitch} setResetSwitch={SetResetSwitch} setDisplayData={setDisplayData}/>
-                        <br></br>
-                    </div>
-                    <div className='form'>
-                    <Form setDisplayData={setDisplayData} setFormDataCurrent={setFormDataCurrent} type_fields_dict={type_fields_dict} setType_field_dict={setType_field_dict} formFrame={formFrame} resetSwitch={resetSwitch}/>
-                        {/* <Form setDisplayData={setDisplayData} setFormDataCurrent={setFormDataCurrent} type_fields_dict={type_fields_dict} setType_field_dict={setType_field_dict} /> */}
-                    </div>
+                    <Dataset setFormFrame={setFormFrame} setDisplayData={setDisplayData} />
+                    <Form setDisplayData={setDisplayData} setFormDataCurrent={setFormDataCurrent} type_fields_dict={type_fields_dict} setType_field_dict={setType_field_dict} formFrame={formFrame} />
+                    {/* <Form setDisplayData={setDisplayData} setFormDataCurrent={setFormDataCurrent} type_fields_dict={type_fields_dict} setType_field_dict={setType_field_dict} /> */}
                 </div>
 
-                <div className='display_container'>
-                    <div className='chart'>
+                {/* <Paper className='display_container'>
+                    <Paper className='chart' elevation={10}>
+                        <Chart displayData={displayData} field={formDataCurrent.field} groupBy={formDataCurrent.group_by} aggregation={formDataCurrent.aggregate} plotChoice={plotChoice} setPlotChoice={setPlotChoice} field_status={type_fields_dict[formDataCurrent.field]} />
+                    </Paper>
+                </Paper> */}
+                {/* <Paper className='display_container' elevation={10} style={{ backgroundColor: 'rgb(211, 211, 202)' }}>
+                    <Paper className = 'chart'  elevation={15}>
+                        <Chart  displayData={displayData} field={formDataCurrent.field} groupBy={formDataCurrent.group_by} aggregation={formDataCurrent.aggregate} plotChoice={plotChoice} setPlotChoice={setPlotChoice} field_status={type_fields_dict[formDataCurrent.field]} />
+                    </Paper>
+                </Paper> */}
+
+                <Paper className='display_container' elevation={10} >
+                    <div className='chart'  >
                         <Chart displayData={displayData} field={formDataCurrent.field} groupBy={formDataCurrent.group_by} aggregation={formDataCurrent.aggregate} plotChoice={plotChoice} setPlotChoice={setPlotChoice} field_status={type_fields_dict[formDataCurrent.field]} />
                     </div>
-                </div>
-                <div className='drawing_selection_container'>
+                </Paper>
+                <Paper className='drawing_selection_container' elevation={10} style={{ backgroundColor: 'rgb(180, 197, 194)' }}>
                     <PlotChoice setPlotChoice={setPlotChoice} field_status={type_fields_dict[formDataCurrent.field]} />
-                </div>
+                </Paper>
             </div>
             <header className="App-footer">
                 <h4>Any using problems and suggestions, please contact collin9527@gmail.com</h4>
