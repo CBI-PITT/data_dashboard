@@ -61,7 +61,7 @@
   
   background-color: rgb(211, 211, 202);
 }
-.dataset_undefined_alert{
+.dataset_alert{
   margin: 2%;
 }
 .form{
@@ -84,7 +84,7 @@
   background-color: rgb(211, 211, 202);
   
   margin-top: 2%;
-  margin-left: 2%;
+  margin-left: 3%;
   margin-bottom: 2%;
   /* height: 80%; */
   border: #747983;
@@ -183,11 +183,11 @@
 
 .chart{
   /* background-color:rgb(246, 241, 228); */
-  /* background-color:rgb(245, 235, 235); */
+  background-color:rgb(245, 235, 235);
   margin: 2%;
-  
+  padding: 1%;
   /* border-style:groove; */
-  /* border-radius: 10px; */
+  border-radius: 10px;
   /* display: flex;
   justify-content: center; 
   align-items:center; */

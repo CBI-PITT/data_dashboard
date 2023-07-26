@@ -55,6 +55,8 @@ function Dataset({ setFormFrame, setDisplayData }) {
                     label="dataset *"
                     name="dataset"
                     onChange={(event) => {
+                        setFormFrame('dataset retrieving')
+                        setDisplayData()
                         let dataset_name = event.target.value
                         axios.get(urlPrefix + url_dataset_choosen + dataset_name).then((response) => {
                             // console.log("groupBy return", typeof (response.data))
@@ -67,7 +69,7 @@ function Dataset({ setFormFrame, setDisplayData }) {
                             // else{
                             //     setResetSwitch(true)
                             // }
-                            setDisplayData()
+                            
                             // const updatedFormData = {...formDataCurrent}
                             // updatedFormData.field = ''
                             // updatedFormData.filter = { "categorical": {}, "continuous": {} }

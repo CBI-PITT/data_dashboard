@@ -30,7 +30,6 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
     // return <p>Loading....</p>
     return (
       <div>
-        <br></br>
         <img src={CoverImg} className="coverImg"></img>
         <h3 id='coverText'>Statistics and Visulization</h3>
       </div>

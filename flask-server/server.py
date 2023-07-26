@@ -10,6 +10,7 @@ from flask_cors import CORS
 from utils import NumpyEncoder, merge_cells_and_metadata
 from elasticsearch import Elasticsearch
 
+
 es = Elasticsearch("http://localhost:9200")
 
 
@@ -47,6 +48,7 @@ def get_dataset():
 # to do in future
 @app.route("/api/dataset_choosen/<dataset_name>")
 def choose_dataset(dataset_name):
+    time.sleep(3)
     formFrame = collection.indexMap.get(dataset_name).__dict__
     
     

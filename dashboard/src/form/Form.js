@@ -62,7 +62,7 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
 
 
     useEffect(() => {
-        if (formFrame === undefined) {
+        if (formFrame === undefined || formFrame === 'dataset retrieving') {
             return
         } else {
             setType_field_dict(formFrame.field);
@@ -311,7 +311,7 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
     };
 
 
-    if (formFrame !== undefined) {
+    if (formFrame !== undefined && formFrame != 'dataset retrieving') {
         return (
             <div className='form'>
                 <Paper component={'form'} variant='elevation' elevation={10} className='form_data' style={{ backgroundColor: "#feeeed" }} onSubmit={handleSubmit}>
@@ -319,7 +319,7 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
                         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                         open={open}
                     >
-                        <CircularProgress color='success' />
+                        <CircularProgress color='inherit' />
                     </Backdrop>
 
                     <br></br>
@@ -363,15 +363,22 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
             <div className='form'>
                 <Paper component={'form'} variant='elevation' elevation={10} className='form_data' style={{ backgroundColor: "#feeeed" }}>
                     <br></br>
-                    <Alert className="dataset_undefined_alert"severity="info">
-                        Dataset is waiting to be selected — <strong>Please choose one!</strong>
-                    </Alert>
+                    {
+                        formFrame === 'dataset retrieving' ? (
+                            <Alert className="dataset_alert" severity='success'>
+                                Dataset is retrieving — <strong>Please wait</strong>
+                            </Alert>
+                        ) : (
+                            <Alert className="dataset_alert" severity='info'>
+                                Dataset is waiting to be selected — <strong>Please choose one!</strong>
+                            </Alert>
+                        )
+                    }
+                    
 
                     <Box className='field'>
                         <Skeleton animation="wave" variant='rounded' height={60} />
-                        {/* <Skeleton />
-                    <Skeleton animation="wave" /> */}
-
+                        
                     </Box>
                     <br></br>
                     <Box className='filter'>
