@@ -6,7 +6,7 @@ import GetGroupBy from "./Get_groupBy";
 import Box from '@mui/material/Box';
 import React, { useEffect, useState } from 'react';
 import Skeleton from '@mui/material/Skeleton';
-import { Button, Paper, Alert, AlertTitle } from '@mui/material';
+import { Button, Paper, Alert } from '@mui/material';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import SendIcon from '@mui/icons-material/Send';
@@ -48,23 +48,21 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
         aggregate: []
     })
 
-    var agent_cate_key = []
-    var agent_cate_value = []
-    var agent_conti_key = []
-    var agent_conti_value = []
-    function blank() {
-        return (<Box sx={{ width: 300 }}>
-            <Skeleton />
-            <Skeleton animation="wave" />
-            <Skeleton animation={false} />
-        </Box>)
-    }
+    // var agent_cate_key = []
+    // var agent_cate_value = []
+    // var agent_conti_key = []
+    // var agent_conti_value = []
+
 
 
     useEffect(() => {
         if (formFrame === undefined || formFrame === 'dataset retrieving') {
             return
         } else {
+            let agent_cate_key = []
+            let agent_cate_value = []
+            let agent_conti_key = []
+            let agent_conti_value = []
             setType_field_dict(formFrame.field);
             // Other state updates...
             let field_list_return = Object.keys(formFrame.field)
@@ -311,7 +309,7 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
     };
 
 
-    if (formFrame !== undefined && formFrame != 'dataset retrieving') {
+    if (formFrame !== undefined && formFrame !== 'dataset retrieving') {
         return (
             <div className='form'>
                 <Paper component={'form'} variant='elevation' elevation={10} className='form_data' style={{ backgroundColor: "#feeeed" }} onSubmit={handleSubmit}>
@@ -365,20 +363,58 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
                     <br></br>
                     {
                         formFrame === 'dataset retrieving' ? (
-                            <Alert className="dataset_alert" severity='success'>
-                                Dataset is retrieving — <strong>Please wait</strong>
-                            </Alert>
+                            <div>
+                                <Alert className="dataset_alert" severity='success'>
+                                    Dataset is retrieving — <strong>Please wait</strong>
+                                </Alert>
+                                <Box className='field'>
+                                    <Skeleton animation="wave" variant='rounded' height={60} />
+
+                                </Box>
+                                <br></br>
+                                <Box className='filter'>
+                                    <div className="continuous">
+
+                                        <Skeleton animation="wave" height={30} width='70%' />
+                                        <Skeleton animation="wave" height={20} width='50%' />
+
+                                    </div>
+                                    <br></br>
+                                    <div className="continuous">
+                                        <Skeleton animation="wave" height={30} width='70%' />
+                                        <Skeleton animation="wave" height={20} width='50%' />
+
+                                    </div>
+
+                                    <Skeleton animation="wave" variant='rounded' height={60} />
+                                    <br></br>
+                                    <Skeleton animation="wave" variant='rounded' height={60} />
+                                    <br></br>
+                                    <Skeleton animation="wave" variant='rounded' height={60} />
+
+                                </Box>
+                                <br></br>
+                                <Box className="groupBy">
+                                    <Skeleton animation="wave" variant='rounded' height={60} />
+                                </Box>
+                                <br></br>
+                                <Box className="aggregation">
+                                    <Skeleton animation="wave" variant='rounded' height={60} />
+                                </Box>
+
+                                <br></br>
+                            </div>
                         ) : (
                             <Alert className="dataset_alert" severity='info'>
                                 Dataset is waiting to be selected — <strong>Please choose one!</strong>
                             </Alert>
                         )
                     }
-                    
 
-                    <Box className='field'>
+
+                    {/* <Box className='field'>
                         <Skeleton animation="wave" variant='rounded' height={60} />
-                        
+
                     </Box>
                     <br></br>
                     <Box className='filter'>
@@ -409,7 +445,7 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
                     <br></br>
                     <Box className="aggregation">
                         <Skeleton animation="wave" variant='rounded' height={60} />
-                    </Box>
+                    </Box> */}
                     <br></br>
                 </Paper>
             </div>

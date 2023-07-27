@@ -35,7 +35,7 @@ def index():
 
 # to be constructed 
 # @app.route("/index")
-# def index():
+# def es_index():
 #   GET /_cat/indices or GET /_cat/indices?h=index
 
 
@@ -43,12 +43,10 @@ def index():
 def get_dataset():
     return list(collection.indexMap.keys())
 
-# to be constructed 
-# receive dataset users select
-# to do in future
+
 @app.route("/api/dataset_choosen/<dataset_name>")
 def choose_dataset(dataset_name):
-    time.sleep(3)
+    time.sleep(1)
     formFrame = collection.indexMap.get(dataset_name).__dict__
     
     
@@ -63,7 +61,7 @@ def choose_dataset(dataset_name):
     
     continuous_list = formFrame['filter']['continuous']
     categorical_list = formFrame['filter']['categorical']
-    print('----------------',categorical_list)
+    # print('----------------',categorical_list)
 
     for key in categorical_list:
         resp = es.search(index=INDEX, body=query.filterCategorical(key))

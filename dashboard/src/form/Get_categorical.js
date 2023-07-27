@@ -6,7 +6,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import ListItemText from '@mui/material/ListItemText';
 import Select from '@mui/material/Select';
-
+import Checkbox from '@mui/material/Checkbox';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -116,31 +116,31 @@ const MenuProps = {
 // }
 // export default GetCate;
 
-function GetCate({ key_category, value_category,formData, set_FormData }) {
+function GetCate({ key_category, value_category, formData, set_FormData }) {
     // const key = ["Treatment", "Time_Point"]
     // const value = [["eeve", "weev", "vvev"], [24, 48, 72, 96]]
     // const [cateSelected, setCateSelected] = useState({})
-    
+
 
 
     const handleChange = (event) => {
         const { name, value } = event.target;
-        console.log(event.target)
+        // console.log(event.target)
         set_FormData((prevState) => ({
             ...prevState,
             filter: {
-              ...prevState.filter,
-              categorical: {
-                ...prevState.filter.categorical,
-                [name]: value,
-              },
+                ...prevState.filter,
+                categorical: {
+                    ...prevState.filter.categorical,
+                    [name]: value,
+                },
             },
         }))
         // setCateSelected((prev) => ({
         //     ...prev,
         //     [name]: value,
         // }))
-        
+
     }
 
     // useEffect(() => {
@@ -157,28 +157,33 @@ function GetCate({ key_category, value_category,formData, set_FormData }) {
         return (
             <div>
                 {
-                    key_category.map((k, ind) => (
-                        <div key={k}>
-
+                    key_category.map((key, ind) => {
+                        value_category[ind].sort((a, b) => a.localeCompare(b))
+                        return(
+                        <div key={key}>
+                            {/* {console.log(formData.filter.categorical[k])} */}
+                            {/* {console.log(formData.filter.categorical.k)} */}
+                            {/* {console.log(key)} */}
                             <br></br>
                             <FormControl required sx={{ m: 1, width: '95%' }}>
-                                <InputLabel id="demo-multiple-checkbox-label">{k}</InputLabel>
+                                <InputLabel id="demo-multiple-checkbox-label">{key}</InputLabel>
                                 <Select
                                     labelId="demo-multiple-checkbox-label"
                                     id="demo-multiple-checkbox"
                                     multiple
-                                    value={formData.filter.categorical[k]}
+                                    value={formData.filter.categorical[key]}
 
                                     onChange={handleChange}
                                     input={<OutlinedInput label="Tag" />}
                                     renderValue={(selected) => selected.join(', ')}
                                     MenuProps={MenuProps}
-                                    name={k}
+                                    name={key}
                                 >
-                                    {value_category[ind].map((name) => (
-                                        <MenuItem key={name} value={name} >
+                                    {value_category[ind].map((val) => (
+                                        <MenuItem key={val} value={val} >
 
-                                            <ListItemText primary={name} />
+                                            <Checkbox checked={formData.filter.categorical[key].indexOf(val) > -1} />
+                                            <ListItemText primary={val} />
                                         </MenuItem>
                                     ))}
                                 </Select>
@@ -186,7 +191,8 @@ function GetCate({ key_category, value_category,formData, set_FormData }) {
 
 
                         </div>
-                    ))
+                        )
+                    })
                 }
 
 

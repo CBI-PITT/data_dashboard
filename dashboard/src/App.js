@@ -20,17 +20,12 @@ function App() {
     // Initialize displayData, used for receive query response 
     const [displayData, setDisplayData] = useState()
 
-    // //Initialize GroupBy section
-    // const [GroupBy_list, setGroupBy_List] = useState()
-
-    // //Initialize Agrregation section
-    // const [Aggregation_list, setAggregation_list] = useState()
-
     // //Initialize plot button
     const [plotChoice, setPlotChoice] = useState("bar")
 
+    // Initialize formFrame
     const [formFrame, setFormFrame] = useState()
-    // const [resetSwitch, setResetSwitch] = useState(false)
+    
 
     //initialize Form_Data_current used for rendering plot
     const [formDataCurrent, setFormDataCurrent] = useState({

@@ -159,10 +159,10 @@ function GetAggregation({ list, form_Data, set_FormData, field_status }) {
                     MenuProps={MenuProps}
                     name='aggregate'
                 >
-                    {list.map((name) => (
-                        <MenuItem key={name} value={name} disabled={(name !== 'value_count'&&name!=='cardinality') && field_status === 'keyword' ? true : false}>
-                            <Checkbox checked={form_Data.aggregate.indexOf(name) > -1} />
-                            <ListItemText primary={name} />
+                    {list.map((agg) => (
+                        <MenuItem key={agg} value={agg} disabled={( field_status === 'keyword' && agg !== 'value_count'&&agg!=='cardinality')  ? true : false}>
+                            <Checkbox checked={form_Data.aggregate.indexOf(agg) > -1} />
+                            <ListItemText primary={agg} />
                         </MenuItem>
                     ))}
                 </Select>

@@ -1,9 +1,8 @@
 ----------------------- Frontend ------------------------
 # ui improvement for filter section. (no check box)
-# animation for exchange and request dataset
 # hard code previously in aggregation part, <MenuItem>
-
 # scroll bar to be added
+# Advanced Query module
 
 form:rgb(202, 211, 209)
 column:rgb(211, 211, 202)
@@ -11,7 +10,7 @@ column:rgb(211, 211, 202)
 # sort result beased on group_by
 # flask admin
 
-💡 seems only filter is needed for all query
+
 GET /metadata/_search
 {
   "size": 0, 

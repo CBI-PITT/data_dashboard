@@ -1,15 +1,13 @@
 import {
-  ScatterChart, Scatter, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart,
+  ScatterChart, Scatter,  XAxis, YAxis, CartesianGrid, Tooltip,  ResponsiveContainer, 
   // Line, 
-  Brush, AreaChart,
+  
   // Area
 } from 'recharts';
 import { Area, Box, Pie, Column, Line } from '@ant-design/plots';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import { PieChart } from 'recharts';
-import React, { PureComponent } from 'react';
-import COLORS from './colors';
+
+import React from 'react';
+
 import CoverImg from '../asset/CoverImg.png'
 
 function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotChoice, field_status }) {
@@ -30,7 +28,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
     // return <p>Loading....</p>
     return (
       <div>
-        <img src={CoverImg} className="coverImg"></img>
+        <img src={CoverImg} className="coverImg" alt='coverImg'></img>
         <h3 id='coverText'>Statistics and Visulization</h3>
       </div>
     )
@@ -69,7 +67,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
 
     aggregation.forEach(agg => {
       let block = {
-        X_axis: groupBy.length == 1 ? element['key'].toString() : element['key_as_string']
+        X_axis: groupBy.length === 1 ? element['key'].toString() : element['key_as_string']
       }
       block['type'] = agg + '_' + field
       block['value'] = element[agg + '_' + field]['value']
@@ -212,7 +210,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
             let data = []
             displayData.forEach(element => {
               let block = {
-                type: groupBy.length == 1 ? element['key'] : element['key_as_string'],
+                type: groupBy.length === 1 ? element['key'] : element['key_as_string'],
                 value: element[agg + "_" + field]['value']
               }
               data.push(block)
@@ -463,7 +461,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
 
     displayData.forEach(element => {
       let temp = {
-        'x': groupBy.length == 1 ? element['key'] : element['key_as_string'],
+        'x': groupBy.length === 1 ? element['key'] : element['key_as_string'],
         'min': element[boxplot_name]['min'],
         'q1': element[boxplot_name]['q1'],
         'median': element[boxplot_name]['q2'],
@@ -474,10 +472,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
     });
     console.log("boxplot_data_list", boxplot_data_list)
 
-    // let boxplot_data_block = "boxplot" + '_' + field
-    // let q1 = "boxplot" + '_' +field + "['q1']"
-    // let median = "boxplot" + '_' +field + "['q2']"
-    // let q3 = "boxplot" + '_' +field + "['q3']"
+    
     console.log()
     const config = {
       width: 400,

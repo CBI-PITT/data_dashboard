@@ -88,6 +88,7 @@ function GetGroupBy({ list, form_Data, set_FormData }) {
     };
     // console.log(list)
     if (list !== undefined) {
+        list.sort((a, b) => a.localeCompare(b))
         return (
 
             <div>
