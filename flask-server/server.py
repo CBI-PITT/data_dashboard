@@ -45,9 +45,49 @@ def get_dataset():
 # to be constructed 
 # receive dataset users select
 # to do in future
-@app.route("/api/datasets_choosen", methods = ['post'])
-def choose_dataset():
-    return ''
+@app.route("/api/dataset_choosen/<dataset_name>")
+def choose_dataset(dataset_name):
+    formFrame = collection.indexMap.get(dataset_name).__dict__
+    
+    
+    categorical = {}
+    continuous = {}
+
+    # fileds = list(
+    #     es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"].keys()
+    # )
+    # print(fileds)
+
+    
+    continuous_list = formFrame['filter']['continuous']
+    categorical_list = formFrame['filter']['categorical']
+    print('----------------',categorical_list)
+
+    for key in categorical_list:
+        resp = es.search(index=INDEX, body=query.filterCategorical(key))
+        # print(resp.body["aggregations"][key]["buckets"])
+        temp_dict = resp.body["aggregations"][key]["buckets"]
+        # print("--------------",temp_dict)
+        # print (temp_dict[0])
+        categorical[key] = []
+        for val in temp_dict:
+            categorical[key].append(val["key"])
+    # print (categorical)
+
+    for key in continuous_list:
+        resp = es.search(index=INDEX, body=query.filterContinuous(key))
+        # print(resp.body["aggregations"][key]["buckets"])
+        continuous[key] = {}
+        continuous[key]["min"] = resp.body["aggregations"]["min" + "_" + key]["value"]
+        continuous[key]["max"] = resp.body["aggregations"]["max" + "_" + key]["value"]
+
+    # print (continuous)
+
+    formFrame['filter']['continuous'] = continuous
+    formFrame['filter']['categorical'] = categorical
+    response = jsonify(formFrame)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return formFrame
 
 @app.route("/api/field")
 def get_field():

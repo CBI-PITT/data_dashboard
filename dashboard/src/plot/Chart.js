@@ -1,10 +1,12 @@
 import {
   ScatterChart, Scatter, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart,
   // Line, 
-  Brush, AreaChart, 
+  Brush, AreaChart,
   // Area
 } from 'recharts';
-import { Area,Box, Pie, Column,Line } from '@ant-design/plots';
+import { Area, Box, Pie, Column, Line } from '@ant-design/plots';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
 import { PieChart } from 'recharts';
 import React, { PureComponent } from 'react';
 import COLORS from './colors';
@@ -30,14 +32,13 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
       <div>
         <br></br>
         <img src={CoverImg} className="coverImg"></img>
-        <h3 id='coverText'>Statistics and Visulization for Klimstra Project</h3>
+        <h3 id='coverText'>Statistics and Visulization</h3>
       </div>
     )
   }
-  if (field_status ==='keyword' && plotChoice ==='box')
-  {
-      setPlotChoice('bar')
-      return
+  if (field_status === 'keyword' && plotChoice === 'box') {
+    setPlotChoice('bar')
+    return
   }
   // if (plotChoice === "bar") {
   //   console.log("check here",displayData)
@@ -66,7 +67,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
   // console.log(displayData)
   let data = []
   displayData.forEach(element => {
-    
+
     aggregation.forEach(agg => {
       let block = {
         X_axis: groupBy.length == 1 ? element['key'].toString() : element['key_as_string']
@@ -75,7 +76,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
       block['value'] = element[agg + '_' + field]['value']
       data.push(block)
     });
-    
+
   });
 
   if (plotChoice === "bar") {
@@ -126,7 +127,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
         },
       },
     };
-    return  <ResponsiveContainer width="100%" aspect={2}><Column {...config} /></ResponsiveContainer>;
+    return <ResponsiveContainer width="100%" aspect={2}><Column {...config} /></ResponsiveContainer>;
     // return (
 
     //   <ResponsiveContainer width="100%" aspect={2}>
@@ -230,15 +231,15 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
             labelHeight: 28,
             content: '{name}\n{percentage}',
             layout: [
-                  // 柱形图数据标签位置自动调整
-                  // 数据标签防遮挡
-                  // {
-                  //   type: 'interval-hide-overlap',
-                  // }, // 数据标签文颜色自动调整
-                  // {
-                  //   type: 'adjust-color',
-                  // },
-                ],
+              // 柱形图数据标签位置自动调整
+              // 数据标签防遮挡
+              // {
+              //   type: 'interval-hide-overlap',
+              // }, // 数据标签文颜色自动调整
+              // {
+              //   type: 'adjust-color',
+              // },
+            ],
           },
           interactions: [
             {
@@ -251,7 +252,14 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
         }
 
         // return <h1>hello</h1>
-        return <div><h3>{agg+'_'+field}</h3><Pie {...config} /><br /></div>;
+        return(
+        <div>
+          {/* <Toolbar/> */}
+          <h3>{agg + '_' + field}</h3>
+          <Pie {...config} />
+          <br />
+        </div>
+        )
       }
 
       )
@@ -315,15 +323,15 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
           fillOpacity: 1,
         },
         shape: 'circle'
-        
+
       },
       slider: {
         start: 0,
         end: 1,
       },
-      
+
     };
-  
+
     return <ResponsiveContainer width="100%" aspect={2}><Line {...config} /></ResponsiveContainer>;
 
 
@@ -448,7 +456,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
     let boxplot_name = 'boxplot' + '_' + field
     // console.log("boxplot_name",element[boxplot_name])
     console.log(displayData)
-    
+
     displayData.forEach(element => {
       let temp = {
         'x': groupBy.length == 1 ? element['key'] : element['key_as_string'],
@@ -487,8 +495,8 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
       </ResponsiveContainer>
 
     )
-    
-    
+
+
   }
 
   else if (plotChoice === "scatter") {
