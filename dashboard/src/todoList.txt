@@ -1,15 +1,16 @@
 ----------------------- Frontend ------------------------
-# send wrong formData when change dataset, should reset all form value (can solve reset problem when fixed)
-# animation of skeleton on formFrame section
+# ui improvement for filter section. (no check box)
 # hard code previously in aggregation part, <MenuItem>
-# modified the way that formDataUpdated update to field, group_by, aggregation. Except for filter section (conti and cate).
-  reason: referesh infinite loop and warning message.
 # scroll bar to be added
+# Advanced Query module
+
+form:rgb(202, 211, 209)
+column:rgb(211, 211, 202)
 ----------------------- Backend -------------------------
 # sort result beased on group_by
 # flask admin
 
-💡 seems only filter is needed for all query
+
 GET /metadata/_search
 {
   "size": 0, 

@@ -1,15 +1,13 @@
 import {
-  ScatterChart, Scatter, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart,
+  ScatterChart, Scatter,  XAxis, YAxis, CartesianGrid, Tooltip,  ResponsiveContainer, 
   // Line, 
-  Brush, AreaChart,
+  
   // Area
 } from 'recharts';
 import { Area, Box, Pie, Column, Line } from '@ant-design/plots';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import { PieChart } from 'recharts';
-import React, { PureComponent } from 'react';
-import COLORS from './colors';
+
+import React from 'react';
+
 import CoverImg from '../asset/CoverImg.png'
 
 function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotChoice, field_status }) {
@@ -30,8 +28,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
     // return <p>Loading....</p>
     return (
       <div>
-        <br></br>
-        <img src={CoverImg} className="coverImg"></img>
+        <img src={CoverImg} className="coverImg" alt='coverImg'></img>
         <h3 id='coverText'>Statistics and Visulization</h3>
       </div>
     )
@@ -70,7 +67,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
 
     aggregation.forEach(agg => {
       let block = {
-        X_axis: groupBy.length == 1 ? element['key'].toString() : element['key_as_string']
+        X_axis: groupBy.length === 1 ? element['key'].toString() : element['key_as_string']
       }
       block['type'] = agg + '_' + field
       block['value'] = element[agg + '_' + field]['value']
@@ -78,6 +75,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
     });
 
   });
+  console.log("format",data)
 
   if (plotChoice === "bar") {
     // console.log("check here", displayData)
@@ -208,61 +206,66 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
     // };
     // return <Pie {...config} />;
     return (
-      aggregation.map(agg => {
-        let data = []
-        displayData.forEach(element => {
-          let block = {
-            type: groupBy.length == 1 ? element['key'] : element['key_as_string'],
-            value: element[agg + "_" + field]['value']
+      
+          aggregation.map(agg => {
+            let data = []
+            displayData.forEach(element => {
+              let block = {
+                type: groupBy.length === 1 ? element['key'] : element['key_as_string'],
+                value: element[agg + "_" + field]['value']
+              }
+              data.push(block)
+            })
+            // console.log("data", data)
+
+            const config = {
+              appendPadding: 10,
+              data,
+              // theme:'dark',
+              angleField: 'value',
+              colorField: 'type',
+              radius: 0.9,
+              label: {
+                type: 'spider',
+                labelHeight: 28,
+                content: '{name}\n{percentage}',
+                layout: [
+                  // 柱形图数据标签位置自动调整
+                  // 数据标签防遮挡
+                  // {
+                  //   type: 'interval-hide-overlap',
+                  // }, // 数据标签文颜色自动调整
+                  // {
+                  //   type: 'adjust-color',
+                  // },
+                ],
+              },
+              interactions: [
+                {
+                  type: 'element-selected',
+                },
+                {
+                  type: 'element-active',
+                },
+              ],
+            }
+
+            // return <h1>hello</h1>
+            return (
+              <div>
+                {/* <Toolbar/> */}
+
+                <h3>{agg + '_' + field}</h3>
+                <Pie {...config} />
+                <br />
+
+              </div>
+            )
           }
-          data.push(block)
-        })
-        console.log("data", data)
 
-        const config = {
-          appendPadding: 10,
-          data,
-          // theme:'dark',
-          angleField: 'value',
-          colorField: 'type',
-          radius: 0.9,
-          label: {
-            type: 'spider',
-            labelHeight: 28,
-            content: '{name}\n{percentage}',
-            layout: [
-              // 柱形图数据标签位置自动调整
-              // 数据标签防遮挡
-              // {
-              //   type: 'interval-hide-overlap',
-              // }, // 数据标签文颜色自动调整
-              // {
-              //   type: 'adjust-color',
-              // },
-            ],
-          },
-          interactions: [
-            {
-              type: 'element-selected',
-            },
-            {
-              type: 'element-active',
-            },
-          ],
-        }
-
-        // return <h1>hello</h1>
-        return(
-        <div>
-          {/* <Toolbar/> */}
-          <h3>{agg + '_' + field}</h3>
-          <Pie {...config} />
-          <br />
-        </div>
-        )
-      }
-
-      )
+          )
+        
+      
     )
 
     // let inner = 100
@@ -459,7 +462,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
 
     displayData.forEach(element => {
       let temp = {
-        'x': groupBy.length == 1 ? element['key'] : element['key_as_string'],
+        'x': groupBy.length === 1 ? element['key'] : element['key_as_string'],
         'min': element[boxplot_name]['min'],
         'q1': element[boxplot_name]['q1'],
         'median': element[boxplot_name]['q2'],
@@ -470,10 +473,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
     });
     console.log("boxplot_data_list", boxplot_data_list)
 
-    // let boxplot_data_block = "boxplot" + '_' + field
-    // let q1 = "boxplot" + '_' +field + "['q1']"
-    // let median = "boxplot" + '_' +field + "['q2']"
-    // let q3 = "boxplot" + '_' +field + "['q3']"
+    
     console.log()
     const config = {
       width: 400,

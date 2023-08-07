@@ -10,6 +10,7 @@ from flask_cors import CORS
 from utils import NumpyEncoder, merge_cells_and_metadata
 from elasticsearch import Elasticsearch
 
+
 es = Elasticsearch("http://localhost:9200")
 
 
@@ -34,7 +35,7 @@ def index():
 
 # to be constructed 
 # @app.route("/index")
-# def index():
+# def es_index():
 #   GET /_cat/indices or GET /_cat/indices?h=index
 
 
@@ -42,11 +43,10 @@ def index():
 def get_dataset():
     return list(collection.indexMap.keys())
 
-# to be constructed 
-# receive dataset users select
-# to do in future
+
 @app.route("/api/dataset_choosen/<dataset_name>")
 def choose_dataset(dataset_name):
+    time.sleep(1)
     formFrame = collection.indexMap.get(dataset_name).__dict__
     
     
@@ -61,7 +61,7 @@ def choose_dataset(dataset_name):
     
     continuous_list = formFrame['filter']['continuous']
     categorical_list = formFrame['filter']['categorical']
-    print('----------------',categorical_list)
+    # print('----------------',categorical_list)
 
     for key in categorical_list:
         resp = es.search(index=INDEX, body=query.filterCategorical(key))
@@ -77,9 +77,9 @@ def choose_dataset(dataset_name):
     for key in continuous_list:
         resp = es.search(index=INDEX, body=query.filterContinuous(key))
         # print(resp.body["aggregations"][key]["buckets"])
-        continuous[key] = {}
-        continuous[key]["min"] = resp.body["aggregations"]["min" + "_" + key]["value"]
-        continuous[key]["max"] = resp.body["aggregations"]["max" + "_" + key]["value"]
+        continuous[key] = []
+        continuous[key].append(resp.body["aggregations"]["min" + "_" + key]["value"])
+        continuous[key].append(resp.body["aggregations"]["max" + "_" + key]["value"])
 
     # print (continuous)
 
@@ -183,7 +183,8 @@ def get_aggregate():
     response = jsonify(data)
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
-
+def custom_sort(item):
+    return item.get('key_as_string', item.get('key',''))
 
 @app.route("/api/query", methods=["POST"])
 def query_data_source2():
@@ -214,7 +215,9 @@ def query_data_source2():
     # print(resp.body)
     print ("after: " + time.asctime(time.localtime(time.time())))
     response  = resp.body['aggregations']['categories']['buckets']
-    return jsonify(response)
+    response_sorted = sorted(response, key=custom_sort)
+    # print(type(response),response)
+    return jsonify(response_sorted)
 
 
 if __name__ == "__main__":
