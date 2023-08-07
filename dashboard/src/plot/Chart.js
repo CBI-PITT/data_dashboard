@@ -75,6 +75,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
     });
 
   });
+  console.log("format",data)
 
   if (plotChoice === "bar") {
     // console.log("check here", displayData)

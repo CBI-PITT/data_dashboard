@@ -259,7 +259,7 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
             res => res.json()
         ).then(
             data => {
-                // console.log(typeof (data), data)
+                console.log(typeof (data), data)
                 // setTableData(data)
                 // console.log("setTableData", tableData)
                 setDisplayData(data)

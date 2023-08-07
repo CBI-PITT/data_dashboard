@@ -183,7 +183,8 @@ def get_aggregate():
     response = jsonify(data)
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
-
+def custom_sort(item):
+    return item.get('key_as_string', item.get('key',''))
 
 @app.route("/api/query", methods=["POST"])
 def query_data_source2():
@@ -214,7 +215,9 @@ def query_data_source2():
     # print(resp.body)
     print ("after: " + time.asctime(time.localtime(time.time())))
     response  = resp.body['aggregations']['categories']['buckets']
-    return jsonify(response)
+    response_sorted = sorted(response, key=custom_sort)
+    # print(type(response),response)
+    return jsonify(response_sorted)
 
 
 if __name__ == "__main__":
