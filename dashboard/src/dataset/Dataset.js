@@ -19,8 +19,7 @@ function Dataset({ setFormFrame, setDisplayData }) {
             setDataset(response.data)
         })
     }, [])
-    // console.log(list)
-    // console.log(resetSwitch)
+   
     return (
         // <div>
         //     {
@@ -59,25 +58,9 @@ function Dataset({ setFormFrame, setDisplayData }) {
                         setDisplayData()
                         let dataset_name = event.target.value
                         axios.get(urlPrefix + url_dataset_choosen + dataset_name).then((response) => {
-                            // console.log("groupBy return", typeof (response.data))
+                          
                             console.log(response)
                             setFormFrame(response.data)
-                            // if (resetSwitch)
-                            // {
-                            //     setResetSwitch(false)
-                            // }
-                            // else{
-                            //     setResetSwitch(true)
-                            // }
-                            
-                            // const updatedFormData = {...formDataCurrent}
-                            // updatedFormData.field = ''
-                            // updatedFormData.filter = { "categorical": {}, "continuous": {} }
-                            // updatedFormData.group_by = []
-                            // updatedFormData.aggregate = []
-
-                            // setFormDataCurrent(updatedFormData)
-                            //  console.log(GroupBy_list)
                         })
 
                     }}
