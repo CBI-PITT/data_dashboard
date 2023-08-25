@@ -168,45 +168,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
     // );
   }
   else if (plotChoice === "pie") {
-    // let data = [
-
-    //   { type: '10|96|eeev', value: 4440312 }
-    //   ,
-    //   { type: '22|96|weev', value: 424018 }
-    //   ,
-    //   { type: '26|72|weev', value: 422979 }
-    //   ,
-    //   { type: '11|96|weev', value: 414549 }
-    //   ,
-    //   { type: '2|96|eeev', value: 333575 }
-    //   ,
-    //   { type: '18|96|weev', value: 277428 }
-    //   ,
-    //   { type: '14|72|weev', value: 98642 }
-
-    // ];
-    // console.log("test data", data)
-    // const config = {
-    //   appendPadding: 10,
-    //   data,
-    //   angleField: 'value',
-    //   colorField: 'type',
-    //   radius: 0.75,
-    //   label: {
-    //     type: 'spider',
-    //     labelHeight: 28,
-    //     content: '{name}\n{percentage}',
-    //   },
-    //   interactions: [
-    //     {
-    //       type: 'element-selected',
-    //     },
-    //     {
-    //       type: 'element-active',
-    //     },
-    //   ],
-    // };
-    // return <Pie {...config} />;
+  
     return (
       
           aggregation.map(agg => {
@@ -218,7 +180,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
               }
               data.push(block)
             })
-            // console.log("data", data)
+          
           console.log('format for pie', data)
             const config = {
               appendPadding: 10,

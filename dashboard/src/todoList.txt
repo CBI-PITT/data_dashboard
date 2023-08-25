@@ -1,5 +1,5 @@
 ----------------------- Frontend ------------------------
-# ui improvement for filter section. (no check box)
+# ui improvement for filter section. (no check box) %
 # hard code previously in aggregation part, <MenuItem>
 # scroll bar to be added
 # Advanced Query module
@@ -7,9 +7,9 @@
 form:rgb(202, 211, 209)
 column:rgb(211, 211, 202)
 ----------------------- Backend -------------------------
-# sort result beased on group_by
+# sort result beased on group_by %
 # flask admin
-
+# not accurate for cardinality with too many catogories
 
 GET /metadata/_search
 {
@@ -108,3 +108,8 @@ GET /metadata/_search
                             <Button type='submit' variant='outlined' size='small' id="submit">Submit</Button>
                         </div>
                         <br></br> */}
+                        check speed 
+                        speed is good than expected!
+                       
+                        
+                      
