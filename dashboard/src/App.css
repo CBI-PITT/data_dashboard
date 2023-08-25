@@ -37,8 +37,8 @@
   width: 100%;
   background-color: antiquewhite;
   display: flex;
-  flex-direction: row;
-  align-content: center;
+  flex-direction:row;
+  /* align-content: center; */
 }
 .user_selection{
   display: flex;
@@ -48,6 +48,8 @@
   margin-left: 5%;
   margin-bottom: 2%;
   /* background-color: #282c34; */
+ 
+
 }
 .dataset
 {
@@ -68,30 +70,37 @@
   /* background-color: rgb(202, 211, 209); */
   margin-top: 2%;
   text-align: center;
-  margin-bottom: 2%;
-  
+  /* margin-bottom: 2%; */
+ 
   /* height: 80%; */
   /* border: #282c34; */
   border-radius: 10px;
   /* border-style:  inset; */
   /* width: 20%; */
   /* border-style:groove;
-  
+
   border-radius: 10px; */
+}
+.form_main{
+  max-height: 850px;
+  overflow-y:auto;
 }
 
 .display_container{
   background-color: rgb(211, 211, 202);
-  
+ 
   margin-top: 2%;
   margin-left: 3%;
   margin-bottom: 2%;
+  /* height: 1000px; */
+  /* padding: 1%; */
   /* height: 80%; */
   border: #747983;
   border-radius: 10px;
   /* border-style:inset; */
   /* border: 3px; */
-  width: 60%;
+  width: 65%;
+  
    /* display: flex; */
   
   /* align-items: center; */
@@ -103,12 +112,12 @@
 }
 
 .drawing_selection_container{
-  background-color: rgb(180, 197, 194);;
+  background-color: rgb(195, 219, 215);;
   margin-top: 2%;
-  
+ 
   margin-bottom: 2%;
   /* height: 80%; */
-  border: #e8e9ec;
+ 
   border-radius: 10px;
   /* border-style:inset; */
   /* border: 3px; */
@@ -184,10 +193,14 @@
 .chart{
   /* background-color:rgb(246, 241, 228); */
   background-color:rgb(245, 235, 235);
-  margin: 2%;
+  margin: 1%;
   padding: 1%;
-  /* border-style:groove; */
-  border-radius: 10px;
+  overflow-y: auto;
+  max-height:980px;
+  /* min-height:900px; */
+  /* height: 100%; */
+  /* border-style:groove;
+  border-radius: 10px; */
   /* display: flex;
   justify-content: center; 
   align-items:center; */

@@ -170,17 +170,17 @@ function App() {
                 </Paper> */}
 
                 <Paper className='display_container' elevation={10} style={{backgroundColor:'rgb(246, 241, 228)'}}>
-                    <div className='chart'  elevation={5} >
+                    <Paper className='chart'  elevation={5} variant='elevation' >
                         <Chart displayData={displayData} field={formDataCurrent.field} groupBy={formDataCurrent.group_by} aggregation={formDataCurrent.aggregate} plotChoice={plotChoice} setPlotChoice={setPlotChoice} field_status={type_fields_dict[formDataCurrent.field]} />
-                    </div>
+                    </Paper>
                 </Paper>
-                <Paper className='drawing_selection_container' elevation={10} style={{ backgroundColor: 'rgb(180, 197, 194)' }}>
+                <Paper className='drawing_selection_container' elevation={10} style={{ backgroundColor: ' rgb(195, 219, 215)' }}>
                     <PlotChoice setPlotChoice={setPlotChoice} field_status={type_fields_dict[formDataCurrent.field]} />
                 </Paper>
             </div>
-            <header className="App-footer" >
+            <footer className="App-footer" >
                 <h4>Any using problems and suggestions, please contact collin9527@gmail.com</h4>
-            </header>
+            </footer>
         </div>
     );
 }
