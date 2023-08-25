@@ -62,6 +62,8 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
   //   );
   // }
   // console.log(displayData)
+
+  // reformat result return by ES
   let data = []
   displayData.forEach(element => {
 
@@ -75,7 +77,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
     });
 
   });
-  console.log("format",data)
+  console.log("format for other plots",data)
 
   if (plotChoice === "bar") {
     // console.log("check here", displayData)
@@ -125,7 +127,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
         },
       },
     };
-    return <ResponsiveContainer width="100%" aspect={2}><Column {...config} /></ResponsiveContainer>;
+    return <ResponsiveContainer width="100%" aspect={1.5}><Column {...config} /></ResponsiveContainer>;
     // return (
 
     //   <ResponsiveContainer width="100%" aspect={2}>
@@ -217,7 +219,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
               data.push(block)
             })
             // console.log("data", data)
-
+          console.log('format for pie', data)
             const config = {
               appendPadding: 10,
               data,
@@ -335,7 +337,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
 
     };
 
-    return <ResponsiveContainer width="100%" aspect={2}><Line {...config} /></ResponsiveContainer>;
+    return <ResponsiveContainer width="100%" aspect={1.5}><Line {...config} /></ResponsiveContainer>;
 
 
 
@@ -387,7 +389,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
       },
       smooth: true
     };
-    return <ResponsiveContainer width="100%" aspect={2}><Area {...config} /></ResponsiveContainer>;
+    return <ResponsiveContainer width="100%" aspect={1.5}><Area {...config} /></ResponsiveContainer>;
 
     // console.log("area")
     // return (
@@ -489,7 +491,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
       animation: true,
     };
     return (
-      <ResponsiveContainer width="100%" aspect={2}>
+      <ResponsiveContainer width="100%" aspect={1.5}>
         <Box{...config} />
 
       </ResponsiveContainer>

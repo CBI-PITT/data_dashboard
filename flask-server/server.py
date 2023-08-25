@@ -184,7 +184,9 @@ def get_aggregate():
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 def custom_sort(item):
-    return item.get('key_as_string', item.get('key',''))
+    print(item.get('key_as_string'))
+    print(type(item.get('key_as_string')))
+    return item.get('key_as_string', item.get('key'))
 
 @app.route("/api/query", methods=["POST"])
 def query_data_source2():

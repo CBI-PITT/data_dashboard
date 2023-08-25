@@ -225,7 +225,7 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        console.log(event)
+        // console.log(event)
         setOpen(true)
         // Boxplot testing (no choice in aggregation)
         let formData_boxplot_add = {
@@ -247,8 +247,8 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
 
         // var formData_send = JSON.stringify(formData)
         // console.log(formDataUpdated)
-        console.log(formData_send)
-        console.log("request send")
+        
+        console.log("client request send",formData_send)
         // console.log("formdata_send", typeof (formData_send))
 
         fetch(urlPrefix + url_query, {
@@ -259,13 +259,13 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
             res => res.json()
         ).then(
             data => {
-                console.log(typeof (data), data)
+                console.log('server data received', data)
                 // setTableData(data)
                 // console.log("setTableData", tableData)
                 setDisplayData(data)
                 setFormDataCurrent(formDataUpdated)
                 setOpen(false)
-                console.log("response received")
+                
                 // console.log("setDisplayData", displayData)
             }
         )
@@ -311,15 +311,15 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
 
     if (formFrame !== undefined && formFrame !== 'dataset retrieving') {
         return (
-            <div className='form'>
-                <Paper component={'form'} variant='elevation' elevation={10} className='form_data' style={{ backgroundColor: "#feeeed" }} onSubmit={handleSubmit}>
+           
+                <Paper component={'form'} variant='elevation' elevation={10} className='form' style={{ backgroundColor: "#feeeed" }} onSubmit={handleSubmit}>
                     <Backdrop
                         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                         open={open}
                     >
                         <CircularProgress color='inherit' />
                     </Backdrop>
-
+                    <div className="form_main">
                     <br></br>
                     <div className='field'>
                         <br></br>
@@ -346,6 +346,7 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
                         <GetAggregation list={Aggregation_list} form_Data={formDataUpdated} set_FormData={setFormDataUpdated} field_status={type_fields_dict[formDataUpdated.field]} />
                         <br></br>
                     </div>
+                    </div>
                     <br></br>
                     <div>
                         <Button type='reset' variant='contained' color='inherit' size='small' id="reset" endIcon={<DeleteIcon />} onClick={handleReset}>Reset</Button>
@@ -353,7 +354,7 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
                     </div>
                     <br></br>
                 </Paper>
-            </div>
+          
         )
     }
     else {
