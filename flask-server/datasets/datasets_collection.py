@@ -16,7 +16,7 @@ class datasets_collection:
             "continuous": ['x_raw_px','y_raw_px'],
             "categorical": [
                 # "atlas_structure_number",
-                # "metadata",
+                "metadata",
                 "route",
                 "time_point",
                 "treatment",

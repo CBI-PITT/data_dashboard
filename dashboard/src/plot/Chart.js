@@ -1,7 +1,7 @@
 import {
-  ScatterChart, Scatter,  XAxis, YAxis, CartesianGrid, Tooltip,  ResponsiveContainer, 
+  ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   // Line, 
-  
+
   // Area
 } from 'recharts';
 import { Area, Box, Pie, Column, Line } from '@ant-design/plots';
@@ -77,7 +77,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
     });
 
   });
-  console.log("format for other plots",data)
+  console.log("format for other plots", data)
 
   if (plotChoice === "bar") {
     // console.log("check here", displayData)
@@ -168,9 +168,10 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
     // );
   }
   else if (plotChoice === "pie") {
-  
+
     return (
-      
+      <div>
+        {
           aggregation.map(agg => {
             let data = []
             displayData.forEach(element => {
@@ -180,8 +181,8 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
               }
               data.push(block)
             })
-          
-          console.log('format for pie', data)
+
+            console.log('format for pie', data)
             const config = {
               appendPadding: 10,
               data,
@@ -216,20 +217,21 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
 
             // return <h1>hello</h1>
             return (
-              <div>
-                {/* <Toolbar/> */}
-
-                <h3>{agg + '_' + field}</h3>
+              <div key={agg}>
+              <h3>{agg + '_' + field}</h3>
+        
                 <Pie {...config} />
-                <br />
-
-              </div>
+         
+              <br />
+            </div>
             )
           }
 
           )
-        
-      
+        }
+      </div>
+
+
     )
 
     // let inner = 100
@@ -437,7 +439,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
     });
     console.log("boxplot_data_list", boxplot_data_list)
 
-    
+
     console.log()
     const config = {
       width: 400,
