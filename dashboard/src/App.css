@@ -196,14 +196,15 @@
   margin: 1%;
   padding: 1%;
   overflow-y: auto;
+  /* min-height: 900px; */
   max-height:980px;
   /* min-height:900px; */
   /* height: 100%; */
   /* border-style:groove;
   border-radius: 10px; */
-  /* display: flex;
-  justify-content: center; 
-  align-items:center; */
+  /* display: flex; 
+   justify-content: center; 
+   align-items:center;  */
 }
 
 .plotButton{

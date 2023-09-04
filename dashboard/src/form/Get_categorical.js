@@ -152,13 +152,22 @@ function GetCate({ key_category, value_category, formData, set_FormData }) {
     //     console.log(typeof (cateSelected))
     // }, [key_category.length, value_category.length])
 
+    function customSort(a, b) {
+        if (typeof a === "number" && typeof b === "number") {
+          return a - b; // Compare numbers
+        } else if (typeof a === "string" && typeof b === "string") {
+          return a.localeCompare(b); // Compare strings lexicographically
+        }
+    }
+
     if (Object.keys(formData.filter.categorical).length !== 0) {
 
         return (
             <div>
                 {
                     key_category.map((key, ind) => {
-                        value_category[ind].sort((a, b) => a.localeCompare(b))
+                        // value_category[ind].sort((a, b) => a.localeCompare(b))
+                        value_category[ind] = value_category[ind].sort(customSort)
                         return(
                         <div key={key}>
                             {/* {console.log(formData.filter.categorical[k])} */}
