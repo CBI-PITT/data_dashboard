@@ -26,8 +26,9 @@ CORS(app)
 
 collection = datasets_collection.datasets_collection()
 
-dataset = klimstra.klimstra()
-INDEX = dataset.index
+# dataset = klimstra.klimstra()
+INDEX = ""
+
 
 @app.route("/")
 def index():
@@ -46,6 +47,9 @@ def get_dataset():
 
 @app.route("/api/dataset_choosen/<dataset_name>")
 def choose_dataset(dataset_name):
+    global INDEX
+    INDEX = dataset_name
+   
     time.sleep(1)
     formFrame = collection.indexMap.get(dataset_name).__dict__
     
@@ -204,7 +208,14 @@ def query_data_source2():
     # return response
     print ("before: "+ time.asctime(time.localtime(time.time())))
     
-    
+    # resp = query.formQuery(
+    #      json_data["field"],
+    #         json_data["filter"],
+    #         json_data["group_by"],
+    #         json_data["aggregate"],
+    # )
+    # return resp
+   
     resp = es.search(
         index=INDEX,
         body=query.formQuery(
@@ -214,7 +225,7 @@ def query_data_source2():
             json_data["aggregate"],
         ),
     )
-    # print(resp.body)
+    print(resp.body)
     print ("after: " + time.asctime(time.localtime(time.time())))
     response  = resp.body['aggregations']['categories']['buckets']
     response_sorted = sorted(response, key=custom_sort)

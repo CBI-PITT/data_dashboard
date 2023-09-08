@@ -74,25 +74,26 @@ class datasets_collection:
             "cardinality",
         ]
 
-        metadata_index = "metadata"
+        metadata_index = "metadata_cell_count"
         metadata_filter = filter_template.filter_template()
         metadata_filter.field = {
             
-            "id": "long"
+            "id": "long",
+            "cell_count":"short"
         }
         metadata_filter.filter = {
             "continuous": ['id'],
             "categorical": [
                 # "atlas_structure_number",
                 # "metadata",
-                "voxel_spacing",
+                # "voxel_spacing",
                 "time_point",
                 "treatment",
             ],
         }
         metadata_filter.group_by = [
-            "voxel_spacing",
-            
+            # "voxel_spacing",
+            "route",
             
             "time_point",
             "treatment",

@@ -321,12 +321,12 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
                     </Backdrop>
                     <div className="form_main">
                     <br></br>
-                    <div className='field'>
+                    {/* <div className='field'>
                         <br></br>
 
                         <GetField list={Field_axis_list} form_Data={formDataUpdated} set_FormData={setFormDataUpdated} />
                         <br></br>
-                    </div>
+                    </div> */}
                     <div className='filter'>
                         <div className='continuous'>
                             <GetConti key_Continuous={key_Continuous} value_Continuous={value_Continuous} form_Data={formDataUpdated} set_FormData={setFormDataUpdated} />
@@ -339,6 +339,12 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
                     <div className='groupBy'>
                         <br></br>
                         <GetGroupBy list={GroupBy_list} form_Data={formDataUpdated} set_FormData={setFormDataUpdated} />
+                        <br></br>
+                    </div>
+                    <div className='field'>
+                        <br></br>
+
+                        <GetField list={Field_axis_list} form_Data={formDataUpdated} set_FormData={setFormDataUpdated} />
                         <br></br>
                     </div>
                     <div className='aggregation'>
