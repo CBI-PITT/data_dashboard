@@ -6,7 +6,8 @@ import FormControl from '@mui/material/FormControl';
 import ListItemText from '@mui/material/ListItemText';
 import Select from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
-
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -101,7 +102,11 @@ function GetGroupBy({ list, form_Data, set_FormData }) {
                         value={form_Data.group_by}
                         onChange={handleChange}
                         input={<OutlinedInput label="Tag" />}
-                        renderValue={(selected) => selected.join(', ')}
+                        renderValue={(selected) => (
+                            selected.map((value) => (
+                              <Chip key={value} label={value} />
+                            ))
+                        )}
                         MenuProps={MenuProps}
                         name='group_by'
                     >

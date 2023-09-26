@@ -8,6 +8,8 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import { useEffect } from 'react';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -151,11 +153,11 @@ function GetAggregation({ list, form_Data, set_FormData, field_status }) {
                     value={form_Data.aggregate}
                     onChange={handleChange}
                     input={<OutlinedInput label="Tag" />}
-                    renderValue={(selected) => {
-                        // console.log("selected",selected)
-                        return selected.join(', ')
-                    }
-                    }
+                    renderValue={(selected) => (
+                        selected.map((value) => (
+                          <Chip key={value} label={value} />
+                        ))
+                    )}
                     MenuProps={MenuProps}
                     name='aggregate'
                 >
