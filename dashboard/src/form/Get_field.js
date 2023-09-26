@@ -5,6 +5,8 @@ import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import React, { useEffect, useState } from 'react';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
 // function GetField({ list, form_Data, set_FormData }) {
 
 //     // console.log(list)
@@ -68,7 +70,7 @@ import React, { useEffect, useState } from 'react';
 
 
 function GetField({ list, form_Data, set_FormData }) {
-    
+
     // console.log(list)
     if (list !== undefined) {
         return (
@@ -88,6 +90,9 @@ function GetField({ list, form_Data, set_FormData }) {
                             [name]: value,
                         }));
                     }}
+                    renderValue={(selected) => (
+                        <Chip label={selected} />
+                    )}
                 >
                     {
                         list.map((item) => (

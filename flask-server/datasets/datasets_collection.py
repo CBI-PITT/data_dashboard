@@ -1,9 +1,9 @@
 import datasets.filter_template as filter_template
 class datasets_collection:
     def __init__(self):
-        klimstra_index = "klimstra4.0"
-        klimstra_filter = filter_template.filter_template()
-        klimstra_filter.field = {
+        klimstra_index_4 = "klimstra4.0"
+        klimstra_filter_4 = filter_template.filter_template()
+        klimstra_filter_4.field = {
             "atlas_structure_number": "long",
             "metadata": "short",
             "route": "keyword",
@@ -12,8 +12,8 @@ class datasets_collection:
             "uuid_cell": "keyword",
             "z_raw_px":"long"
         }
-        klimstra_filter.filter = {
-            "continuous": ['x_raw_px','y_raw_px'],
+        klimstra_filter_4.filter = {
+            "continuous": ['x_raw_px','y_raw_px', 'z_raw_px'],
             "categorical": [
                 # "atlas_structure_number",
                 "metadata",
@@ -22,14 +22,14 @@ class datasets_collection:
                 "treatment",
             ],
         }
-        klimstra_filter.group_by = [
+        klimstra_filter_4.group_by = [
             "atlas_structure_number",
             "metadata",
             "route",
             "time_point",
             "treatment",
         ]
-        klimstra_filter.aggregate = [
+        klimstra_filter_4.aggregate = [
             "min",
             "max",
             "avg",
@@ -38,9 +38,9 @@ class datasets_collection:
             "cardinality",
         ]
 
-        klimstra_index2 = "klimstra3.0"
-        klimstra_filter2 = filter_template.filter_template()
-        klimstra_filter2.field = {
+        klimstra_index_3 = "klimstra3.0"
+        klimstra_filter_3 = filter_template.filter_template()
+        klimstra_filter_3.field = {
             "atlas_structure_number": "long",
             "metadata": "short",
             "route": "keyword",
@@ -48,7 +48,7 @@ class datasets_collection:
             "treatment": "keyword",
             "uuid_cell": "keyword",
         }
-        klimstra_filter2.filter = {
+        klimstra_filter_3.filter = {
             "continuous": ['z_raw','y_raw'],
             "categorical": [
                 # "atlas_structure_number",
@@ -58,14 +58,14 @@ class datasets_collection:
                 "treatment",
             ],
         }
-        klimstra_filter2.group_by = [
+        klimstra_filter_3.group_by = [
             "atlas_structure_number",
             "metadata",
             "route",
             "time_point",
             "treatment",
         ]
-        klimstra_filter2.aggregate = [
+        klimstra_filter_3.aggregate = [
             "min",
             "max",
             "avg",
@@ -109,6 +109,6 @@ class datasets_collection:
 
 
 
-        self.indexMap = {klimstra_index: klimstra_filter,
-                         klimstra_index2:klimstra_filter2,
+        self.indexMap = {klimstra_index_4: klimstra_filter_4,
+                         klimstra_index_3:klimstra_filter_3,
                          metadata_index:metadata_filter}

@@ -93,73 +93,73 @@ def choose_dataset(dataset_name):
     response.headers.add("Access-Control-Allow-Origin", "*")
     return formFrame
 
-@app.route("/api/field")
-def get_field():
-    # fields = es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"]
-    # fields_dict = {}
-    # for field in fields:
-    #     fields_dict[field] = fields[field].get('type')
-    # response = jsonify(fields_dict)
-    # response.headers.add("Access-Control-Allow-Origin", "*")
-    # return response
+# @app.route("/api/field")
+# def get_field():
+#     # fields = es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"]
+#     # fields_dict = {}
+#     # for field in fields:
+#     #     fields_dict[field] = fields[field].get('type')
+#     # response = jsonify(fields_dict)
+#     # response.headers.add("Access-Control-Allow-Origin", "*")
+#     # return response
 
-    field = dataset.field
-    response = jsonify(field)
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
+#     field = dataset.field
+#     response = jsonify(field)
+#     response.headers.add("Access-Control-Allow-Origin", "*")
+#     return response
 
 
-@app.route("/api/filter")
-def get_filters2():
-    data = {}
-    categorical = {}
-    continuous = {}
+# @app.route("/api/filter")
+# def get_filters2():
+#     data = {}
+#     categorical = {}
+#     continuous = {}
 
-    # fileds = list(
-    #     es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"].keys()
-    # )
-    # print(fileds)
+#     # fileds = list(
+#     #     es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"].keys()
+#     # )
+#     # print(fileds)
 
-    # manually setting cate and conti list
-    # categorical_list = ["route", "time_point", "treatment"]
-    continuous_list = dataset.filter['continuous']
-    categorical_list = dataset.filter['categorical']
+#     # manually setting cate and conti list
+#     # categorical_list = ["route", "time_point", "treatment"]
+#     continuous_list = dataset.filter['continuous']
+#     categorical_list = dataset.filter['categorical']
     
 
-    for key in categorical_list:
-        resp = es.search(index=INDEX, body=query.filterCategorical(key))
-        # print(resp.body["aggregations"][key]["buckets"])
-        temp_dict = resp.body["aggregations"][key]["buckets"]
-        # print("--------------",temp_dict)
-        # print (temp_dict[0])
-        categorical[key] = []
-        for val in temp_dict:
-            categorical[key].append(val["key"])
-    # print (categorical)
+#     for key in categorical_list:
+#         resp = es.search(index=INDEX, body=query.filterCategorical(key))
+#         # print(resp.body["aggregations"][key]["buckets"])
+#         temp_dict = resp.body["aggregations"][key]["buckets"]
+#         # print("--------------",temp_dict)
+#         # print (temp_dict[0])
+#         categorical[key] = []
+#         for val in temp_dict:
+#             categorical[key].append(val["key"])
+#     # print (categorical)
 
-    for key in continuous_list:
-        resp = es.search(index=INDEX, body=query.filterContinuous(key))
-        # print(resp.body["aggregations"][key]["buckets"])
-        continuous[key] = {}
-        continuous[key]["min"] = resp.body["aggregations"]["min" + "_" + key]["value"]
-        continuous[key]["max"] = resp.body["aggregations"]["max" + "_" + key]["value"]
+#     for key in continuous_list:
+#         resp = es.search(index=INDEX, body=query.filterContinuous(key))
+#         # print(resp.body["aggregations"][key]["buckets"])
+#         continuous[key] = {}
+#         continuous[key]["min"] = resp.body["aggregations"]["min" + "_" + key]["value"]
+#         continuous[key]["max"] = resp.body["aggregations"]["max" + "_" + key]["value"]
 
-    # print (continuous)
+#     # print (continuous)
 
-    data["continuous"] = continuous
-    data["categorical"] = categorical
-    # print("data",data)
-    response = jsonify(data)
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response 
+#     data["continuous"] = continuous
+#     data["categorical"] = categorical
+#     # print("data",data)
+#     response = jsonify(data)
+#     response.headers.add("Access-Control-Allow-Origin", "*")
+#     return response 
 
-@app.route("/api/groupBy")
-def get_groupBy():
-    # gourp_by_list = list(es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"].keys())
-    gourp_by_list = dataset.group_by
-    response = jsonify(gourp_by_list)
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
+# @app.route("/api/groupBy")
+# def get_groupBy():
+#     # gourp_by_list = list(es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"].keys())
+#     gourp_by_list = dataset.group_by
+#     response = jsonify(gourp_by_list)
+#     response.headers.add("Access-Control-Allow-Origin", "*")
+#     return response
 
 query = Query.Query()
 
@@ -188,8 +188,8 @@ def get_aggregate():
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 def custom_sort(item):
-    print(item.get('key_as_string'))
-    print(type(item.get('key_as_string')))
+    # print(item.get('key_as_string'))
+    # print(type(item.get('key_as_string')))
     return item.get('key_as_string', item.get('key'))
 
 @app.route("/api/query", methods=["POST"])
@@ -225,7 +225,7 @@ def query_data_source2():
             json_data["aggregate"],
         ),
     )
-    print(resp.body)
+    # print(resp.body)
     print ("after: " + time.asctime(time.localtime(time.time())))
     response  = resp.body['aggregations']['categories']['buckets']
     response_sorted = sorted(response, key=custom_sort)

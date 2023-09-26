@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -7,6 +7,8 @@ import FormControl from '@mui/material/FormControl';
 import ListItemText from '@mui/material/ListItemText';
 import Select from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
+import StarsIcon from '@mui/icons-material/Stars';
+import Chip from '@mui/material/Chip';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -117,31 +119,51 @@ const MenuProps = {
 // export default GetCate;
 
 function GetCate({ key_category, value_category, formData, set_FormData }) {
+    // console.log(formData)
     // const key = ["Treatment", "Time_Point"]
     // const value = [["eeve", "weev", "vvev"], [24, 48, 72, 96]]
     // const [cateSelected, setCateSelected] = useState({})
-
-
-
+    const [selectAll, setSelectAll] = useState(false)
+    const select_all_option = 'select_all'
+    // console.log(key_category, value_category)
+    // console.log(formData)
     const handleChange = (event) => {
         const { name, value } = event.target;
-        // console.log(event.target)
-        set_FormData((prevState) => ({
-            ...prevState,
-            filter: {
-                ...prevState.filter,
-                categorical: {
-                    ...prevState.filter.categorical,
-                    [name]: value,
+        console.log(formData)
+        if (value.includes(select_all_option)) {
+            const index_select_all = value.indexOf(select_all_option);
+            value.splice(index_select_all, 1)
+            set_FormData((prevState) => ({
+                ...prevState,
+                filter: {
+                    ...prevState.filter,
+                    categorical: {
+                        ...prevState.filter.categorical,
+                        [name]: value_category[key_category.indexOf(name)],
+                    },
                 },
-            },
-        }))
+            }))
+        }
+        // console.log(event.target)
+        else {
+            set_FormData((prevState) => ({
+                ...prevState,
+                filter: {
+                    ...prevState.filter,
+                    categorical: {
+                        ...prevState.filter.categorical,
+                        [name]: value,
+                    },
+                },
+            }))
+        }
         // setCateSelected((prev) => ({
         //     ...prev,
         //     [name]: value,
         // }))
 
     }
+
 
     // useEffect(() => {
     //     const initial = { ...cateSelected };
@@ -154,9 +176,9 @@ function GetCate({ key_category, value_category, formData, set_FormData }) {
 
     function customSort(a, b) {
         if (typeof a === "number" && typeof b === "number") {
-          return a - b; // Compare numbers
+            return a - b; // Compare numbers
         } else if (typeof a === "string" && typeof b === "string") {
-          return a.localeCompare(b); // Compare strings lexicographically
+            return a.localeCompare(b); // Compare strings lexicographically
         }
     }
 
@@ -168,38 +190,47 @@ function GetCate({ key_category, value_category, formData, set_FormData }) {
                     key_category.map((key, ind) => {
                         // value_category[ind].sort((a, b) => a.localeCompare(b))
                         value_category[ind] = value_category[ind].sort(customSort)
-                        return(
-                        <div key={key}>
-                            {/* {console.log(formData.filter.categorical[k])} */}
-                            {/* {console.log(formData.filter.categorical.k)} */}
-                            {/* {console.log(key)} */}
-                            <br></br>
-                            <FormControl required sx={{ m: 1, width: '95%' }}>
-                                <InputLabel id="demo-multiple-checkbox-label">{key}</InputLabel>
-                                <Select
-                                    labelId="demo-multiple-checkbox-label"
-                                    id="demo-multiple-checkbox"
-                                    multiple
-                                    value={formData.filter.categorical[key]}
+                        return (
+                            <div key={key}>
+                                {/* {console.log(formData.filter.categorical[k])} */}
+                                {/* {console.log(formData.filter.categorical.k)} */}
+                                {/* {console.log(key)} */}
+                                <br></br>
 
-                                    onChange={handleChange}
-                                    input={<OutlinedInput label="Tag" />}
-                                    renderValue={(selected) => selected.join(', ')}
-                                    MenuProps={MenuProps}
-                                    name={key}
-                                >
-                                    {value_category[ind].map((val) => (
-                                        <MenuItem key={val} value={val} >
+                                <FormControl required sx={{ m: 1, width: '95%' }}>
+                                    <InputLabel id="demo-multiple-checkbox-label">{key}</InputLabel>
 
-                                            <Checkbox checked={formData.filter.categorical[key].indexOf(val) > -1} />
-                                            <ListItemText primary={val} />
+                                    <Select
+                                        labelId="demo-multiple-checkbox-label"
+                                        id="demo-multiple-checkbox"
+                                        multiple
+                                        value={formData.filter.categorical[key]}
+                                        onChange={handleChange}
+                                        input={<OutlinedInput label="Tag" />}
+                                        renderValue={(selected) => (
+                                            selected.map((value) => (
+                                                <Chip key={value} label={value} />
+                                            ))
+                                        )}
+                                        MenuProps={MenuProps}
+                                        name={key}
+                                    >
+                                        {/* to do*/}
+                                        <MenuItem key={select_all_option} value={select_all_option} >
+                                            <StarsIcon color="primary"></StarsIcon>
+                                            <ListItemText primary={select_all_option} />
                                         </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
+                                        {value_category[ind].map((val) => (
+                                            <MenuItem key={val} value={val} >
+                                                <Checkbox checked={formData.filter.categorical[key].indexOf(val) > -1} />
+                                                <ListItemText primary={val} />
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
 
 
-                        </div>
+                            </div>
                         )
                     })
                 }
