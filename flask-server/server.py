@@ -14,8 +14,6 @@ from elasticsearch import Elasticsearch
 es = Elasticsearch("http://localhost:9200")
 
 
-
-
 app = Flask(__name__)
 CORS(app)
 # cors = CORS(app, resource={
@@ -34,10 +32,67 @@ INDEX = ""
 def index():
     return app.send_static_file("index.html")
 
-# to be constructed 
-# @app.route("/index")
-# def es_index():
-#   GET /_cat/indices or GET /_cat/indices?h=index
+
+# to be constructed
+@app.route("/api/indices")
+def get_index():
+    indices = es.cat.indices(format="json")
+    # print(indices)
+    index_names = [entry["index"] for entry in indices]
+    # print(index_names)
+
+    return jsonify(index_names)
+
+
+@app.route("/api/index_choosen/<index_name>")
+def choosen_index(index_name):
+    global INDEX
+    INDEX = index_name
+
+    time.sleep(1)
+    # fileds = list(
+    #     es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"].keys()
+    # )
+    mappings = es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"]
+    for key, value in mappings.items():
+        mappings[key] = value["type"]
+    categorical = {}
+    continuous = {}
+    for key, value in mappings.items():
+        if mappings[key] == "keyword":
+            categorical[key] = []
+        else:
+            continuous[key] = []
+
+    for key in categorical:
+        # print(key)
+        resp = es.search(index=INDEX, body=query.filterCategorical(key))
+        # print(resp.body["aggregations"][key]["buckets"])
+        temp_dict = resp.body["aggregations"][key]["buckets"]
+        # print("--------------",temp_dict)
+        # print (temp_dict)
+
+        for val in temp_dict:
+            categorical[key].append(val["key"])
+    # print (categorical)
+
+    for key in continuous:
+        resp = es.search(index=INDEX, body=query.filterContinuous(key))
+        # print(resp.body["aggregations"][key]["buckets"])
+
+        continuous[key].append(resp.body["aggregations"]["min" + "_" + key]["value"])
+        continuous[key].append(resp.body["aggregations"]["max" + "_" + key]["value"])
+
+    filters = {"categorical": categorical, "continuous": continuous}
+
+    formFrame = {
+        "field": mappings,
+        "filter": filters,
+        "group_by": list(mappings.keys()),
+        "aggregate": ["min", "max", "avg",'value_count'],
+    }
+
+    return formFrame
 
 
 @app.route("/api/datasets")
@@ -49,11 +104,10 @@ def get_dataset():
 def choose_dataset(dataset_name):
     global INDEX
     INDEX = dataset_name
-   
+
     time.sleep(1)
     formFrame = collection.indexMap.get(dataset_name).__dict__
-    
-    
+
     categorical = {}
     continuous = {}
 
@@ -62,12 +116,12 @@ def choose_dataset(dataset_name):
     # )
     # print(fileds)
 
-    
-    continuous_list = formFrame['filter']['continuous']
-    categorical_list = formFrame['filter']['categorical']
+    continuous_list = formFrame["filter"]["continuous"]
+    categorical_list = formFrame["filter"]["categorical"]
     # print('----------------',categorical_list)
 
     for key in categorical_list:
+        print(key)
         resp = es.search(index=INDEX, body=query.filterCategorical(key))
         # print(resp.body["aggregations"][key]["buckets"])
         temp_dict = resp.body["aggregations"][key]["buckets"]
@@ -87,11 +141,12 @@ def choose_dataset(dataset_name):
 
     # print (continuous)
 
-    formFrame['filter']['continuous'] = continuous
-    formFrame['filter']['categorical'] = categorical
+    formFrame["filter"]["continuous"] = continuous
+    formFrame["filter"]["categorical"] = categorical
     response = jsonify(formFrame)
     response.headers.add("Access-Control-Allow-Origin", "*")
     return formFrame
+
 
 # @app.route("/api/field")
 # def get_field():
@@ -124,7 +179,7 @@ def choose_dataset(dataset_name):
 #     # categorical_list = ["route", "time_point", "treatment"]
 #     continuous_list = dataset.filter['continuous']
 #     categorical_list = dataset.filter['categorical']
-    
+
 
 #     for key in categorical_list:
 #         resp = es.search(index=INDEX, body=query.filterCategorical(key))
@@ -151,7 +206,7 @@ def choose_dataset(dataset_name):
 #     # print("data",data)
 #     response = jsonify(data)
 #     response.headers.add("Access-Control-Allow-Origin", "*")
-#     return response 
+#     return response
 
 # @app.route("/api/groupBy")
 # def get_groupBy():
@@ -162,7 +217,6 @@ def choose_dataset(dataset_name):
 #     return response
 
 query = Query.Query()
-
 
 
 @app.route("/api/aggregation")
@@ -183,18 +237,20 @@ def get_aggregate():
     #         # "percentiles"
     #     ]
     # }
-    data = {"data":dataset.aggregate}
+    data = {"data": dataset.aggregate}
     response = jsonify(data)
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
+
+
 def custom_sort(item):
     # print(item.get('key_as_string'))
     # print(type(item.get('key_as_string')))
-    return item.get('key_as_string', item.get('key'))
+    return item.get("key_as_string", item.get("key"))
+
 
 @app.route("/api/query", methods=["POST"])
 def query_data_source2():
-    
     json_data = request.json
     # data = query.formQuery(
     #     json_data["field"],
@@ -206,8 +262,8 @@ def query_data_source2():
     # response = jsonify(data)
     # response.headers.add("Access-Control-Allow-Origin", "*")
     # return response
-    print ("before: "+ time.asctime(time.localtime(time.time())))
-    
+    print("before: " + time.asctime(time.localtime(time.time())))
+
     # resp = query.formQuery(
     #      json_data["field"],
     #         json_data["filter"],
@@ -215,7 +271,7 @@ def query_data_source2():
     #         json_data["aggregate"],
     # )
     # return resp
-   
+
     resp = es.search(
         index=INDEX,
         body=query.formQuery(
@@ -226,8 +282,8 @@ def query_data_source2():
         ),
     )
     # print(resp.body)
-    print ("after: " + time.asctime(time.localtime(time.time())))
-    response  = resp.body['aggregations']['categories']['buckets']
+    print("after: " + time.asctime(time.localtime(time.time())))
+    response = resp.body["aggregations"]["categories"]["buckets"]
     response_sorted = sorted(response, key=custom_sort)
     # print(type(response),response)
     return jsonify(response_sorted)

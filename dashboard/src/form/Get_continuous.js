@@ -1,9 +1,10 @@
+import { colors } from '@mui/material';
 import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
 
 import Typography from '@mui/material/Typography';
 import * as React from 'react';
-
+import { styled, useTheme } from '@mui/material/styles';
 
 
 
@@ -118,11 +119,10 @@ import * as React from 'react';
 
 
 function GetConti({ key_Continuous, value_Continuous, form_Data, set_FormData }) {
-
-
+    const theme = useTheme();
     const handleChange = (event) => {
         const { name, value } = event.target;
-        
+
 
         set_FormData((prevState) => ({
             ...prevState,
@@ -146,21 +146,37 @@ function GetConti({ key_Continuous, value_Continuous, form_Data, set_FormData })
 
                     {key_Continuous.map((k, ind) => (
 
-                        <div key={k}>
+                        <div key={k} className='eachContinuousVar'>
 
                             <br></br>
 
-                            <Typography gutterBottom>
+                            <Typography >
                                 {k}
                             </Typography>
-                            <div className='eachContinuousVar'>
+                            <div >
                                 {/* <div className='min'>{value[ind].min}</div> */}
 
                                 <Box className='slider'>
 
 
-                                    <Slider id={k} min={value_Continuous[ind][0]} max={value_Continuous[ind][1]} name={k} value={[form_Data.filter.continuous[k][0], form_Data.filter.continuous[k][1]]} onChange={handleChange} key={k}
-                                        valueLabelDisplay="auto" size='small' marks={[{ value: value_Continuous[ind][0], label: value_Continuous[ind][0] }, { value: value_Continuous[ind][1], label: value_Continuous[ind][1] }]}></Slider>
+                                    <Slider sx={{
+                                        color: theme.palette.mode === 'dark' ? '#fff' : 'rgb(0,0,100)',
+                                        '& .MuiSlider-track': {
+                                            border: 'none',
+                                        },
+                                        '& .MuiSlider-thumb': {
+                                            width: 18,
+                                            height: 18,
+                                            backgroundColor: '#fff',
+                                            '&:before': {
+                                                boxShadow: '0 4px 8px rgba(0,0,0,0.4)',
+                                            },
+                                            '&:hover, &.Mui-focusVisible, &.Mui-active': {
+                                                boxShadow: 'none',
+                                            },
+                                        },
+                                    }} id={k} min={value_Continuous[ind][0]} max={value_Continuous[ind][1]} name={k} value={[form_Data.filter.continuous[k][0], form_Data.filter.continuous[k][1]]} onChange={handleChange} key={k}
+                                        valueLabelDisplay="auto" size='medium' marks={[{ value: value_Continuous[ind][0], label: value_Continuous[ind][0] }, { value: value_Continuous[ind][1], label: value_Continuous[ind][1] }]}></Slider>
 
                                 </Box>
 

@@ -8,8 +8,8 @@ import { Paper } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
 const urlPrefix = "http://127.0.0.1:5000"
-const url_dataset = "/api/datasets"
-const url_dataset_choosen = "/api/dataset_choosen/"
+const url_dataset = "/api/indices"
+const url_dataset_choosen = "/api/index_choosen/"
 
 function Dataset({ setFormFrame, setDisplayData }) {
     const [dataset, setDataset] = useState([])
@@ -58,11 +58,9 @@ function Dataset({ setFormFrame, setDisplayData }) {
                         setDisplayData()
                         let dataset_name = event.target.value
                         axios.get(urlPrefix + url_dataset_choosen + dataset_name).then((response) => {
-                          
-                            console.log(response)
+                            console.log("Dataset selected or changed successfully")
                             setFormFrame(response.data)
                         })
-
                     }}
                 >
                     {

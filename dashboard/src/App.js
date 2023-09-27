@@ -174,7 +174,7 @@ function App() {
                         <Chart displayData={displayData} field={formDataCurrent.field} groupBy={formDataCurrent.group_by} aggregation={formDataCurrent.aggregate} plotChoice={plotChoice} setPlotChoice={setPlotChoice} field_status={type_fields_dict[formDataCurrent.field]} />
                     </Paper>
                 </Paper>
-                <Paper className='drawing_selection_container' elevation={10} style={{ backgroundColor: ' rgb(195, 219, 215)' }}>
+                <Paper className='drawing_selection_container' elevation={10} style={{ backgroundColor: 'rgb(189, 227, 209)' }}>
                     <PlotChoice setPlotChoice={setPlotChoice} field_status={type_fields_dict[formDataCurrent.field]} />
                 </Paper>
             </div>

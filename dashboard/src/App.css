@@ -154,7 +154,9 @@
 .categorical{
   display: flex;
   flex-direction: column;
-  
+  background-color:mintcream;
+  border-radius: 5px;
+  margin: 3px;
 }
 
 .groupBy{
@@ -178,9 +180,15 @@
   margin: 2%;
   background-color: #e7d5d5;
 }
+
+.eachContinuousVar{
+  /* background-color:azure; */
+  background-color:mintcream;
+  margin: 3px;
+  border-radius:5px;
+}
 .slider{
-  width: 40%;
-  display: inline-block;
+  width: 50%;
 }
 
 .min{
