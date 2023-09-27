@@ -12,9 +12,6 @@
 # 🚩cell density in addition to absolute number of cells in certain structure
 # the way to select specific atlas structure and compare e.g. between time points
 # split_by in addition to of group_by
-
-form:rgb(202, 211, 209)
-column:rgb(211, 211, 202)
 ----------------------- Backend -------------------------
 # sort result beased on group_by and doc number
 
