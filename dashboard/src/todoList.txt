@@ -1,6 +1,17 @@
 ----------------------- Frontend ------------------------
 # hard code previously in aggregation part, <MenuItem>
-# Advanced Query module
+
+# ✅🚩get rid of hardcoded filter class
+# ✅🚩get rid of hardcoded index names (could use Elasticsearch API instead)
+# include standard deviation in the aggregations, and display it as error bars around the mean (?)
+# present n=something above the graph
+# 🚩add sorting control (e.g. sort time points 1h -> 4h)
+# naming of the columns (uuid_cell doesn't say anything to the user)
+# statistical tests (?)
+# 🚩bar chart of cell # vs atlas structure acronyms
+# 🚩cell density in addition to absolute number of cells in certain structure
+# the way to select specific atlas structure and compare e.g. between time points
+# split_by in addition to of group_by
 
 form:rgb(202, 211, 209)
 column:rgb(211, 211, 202)

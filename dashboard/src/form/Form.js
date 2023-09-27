@@ -65,6 +65,7 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
             let agent_conti_value = []
             setType_field_dict(formFrame.field);
             // Other state updates...
+            // console.log(formFrame.field)
             let field_list_return = Object.keys(formFrame.field)
             setField_axis_list(field_list_return)
 
@@ -320,7 +321,6 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
                         <CircularProgress color='inherit' />
                     </Backdrop>
                     <div className="form_main">
-                    <br></br>
                     {/* <div className='field'>
                         <br></br>
 
@@ -334,7 +334,7 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
                         <div className='categorical'>
                             <GetCate key_category={key_Category} value_category={value_Category} formData={formDataUpdated} set_FormData={setFormDataUpdated} />
                         </div>
-                        <br></br>
+                        
                     </div>
                     <div className='groupBy'>
                         <br></br>
@@ -374,14 +374,8 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
                                 <Alert className="dataset_alert" severity='success'>
                                     Dataset is retrieving — <strong>Please wait</strong>
                                 </Alert>
-                                <Box className='field'>
-                                    <Skeleton animation="wave" variant='rounded' height={60} />
-
-                                </Box>
-                                <br></br>
                                 <Box className='filter'>
                                     <div className="continuous">
-
                                         <Skeleton animation="wave" height={30} width='70%' />
                                         <Skeleton animation="wave" height={20} width='50%' />
 
@@ -402,6 +396,10 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
                                 </Box>
                                 <br></br>
                                 <Box className="groupBy">
+                                    <Skeleton animation="wave" variant='rounded' height={60} />
+                                </Box>
+                                <br></br>
+                                <Box className='field'>
                                     <Skeleton animation="wave" variant='rounded' height={60} />
                                 </Box>
                                 <br></br>
@@ -453,7 +451,7 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
                     <Box className="aggregation">
                         <Skeleton animation="wave" variant='rounded' height={60} />
                     </Box> */}
-                    <br></br>
+                    
                 </Paper>
             </div>
         );
