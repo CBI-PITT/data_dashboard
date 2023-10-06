@@ -11,7 +11,7 @@ from utils import NumpyEncoder, merge_cells_and_metadata
 from elasticsearch import Elasticsearch
 
 
-es = Elasticsearch("http://localhost:9200")
+es = Elasticsearch("http://localhost:9200", timeout=180)
 
 
 app = Flask(__name__)
@@ -24,7 +24,7 @@ CORS(app)
 
 collection = datasets_collection.datasets_collection()
 
-# dataset = klimstra.klimstra()
+
 INDEX = ""
 
 
@@ -32,7 +32,14 @@ INDEX = ""
 def index():
     return app.send_static_file("index.html")
 
+@app.route("/api/details")
+def get_details():
+    indices = es.cat.indices(format="json")
+    print(indices)
+    
+    # print(index_names)
 
+    return []
 # to be constructed
 @app.route("/api/indices")
 def get_index():
@@ -48,7 +55,6 @@ def get_index():
 def choosen_index(index_name):
     global INDEX
     INDEX = index_name
-
     time.sleep(1)
     # fileds = list(
     #     es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"].keys()
@@ -86,14 +92,30 @@ def choosen_index(index_name):
     filters = {"categorical": categorical, "continuous": continuous}
 
     formFrame = {
+        "filter_list":list(mappings.keys()),
         "field": mappings,
         "filter": filters,
         "group_by": list(mappings.keys()),
-        "aggregate": ["min", "max", "avg",'value_count'],
+        "aggregate": ["min", "max", "avg",'value_count','cardinality'],
     }
 
     return formFrame
-
+@app.route("/api/index_choosen/current_status/<index_name>")
+def choosen_index_current_status(index_name):
+    time.sleep(1)
+    indices = es.cat.indices(format="json")
+    current_status = {}
+    # print(indices)
+    for index_data in indices:
+        
+        if index_data['index'] == index_name:
+            
+            current_status['health'] = index_data['health']
+            current_status['status'] = index_data['status']
+            current_status['storage_size'] = index_data['store.size']
+            current_status['docs_count'] = index_data['docs.count']
+            break
+    return jsonify(current_status)
 
 @app.route("/api/datasets")
 def get_dataset():
@@ -216,33 +238,33 @@ def choose_dataset(dataset_name):
 #     response.headers.add("Access-Control-Allow-Origin", "*")
 #     return response
 
+
+
+
+# @app.route("/api/aggregation")
+# def get_aggregate():
+#     """
+#     response format:
+#     {"data": ["count of distinct", "count of all", "total sum", "average", "min", "max"]}
+#     """
+#     # data = {
+#     #     "data": [
+#     #         "avg",
+#     #         "min",
+#     #         "max",
+#     #         "sum",
+#     #         "value_count",
+#     #         "cardinality"
+#     #         # "boxplot",
+#     #         # "percentiles"
+#     #     ]
+#     # }
+#     data = {"data": dataset.aggregate}
+#     response = jsonify(data)
+#     response.headers.add("Access-Control-Allow-Origin", "*")
+#     return response
+
 query = Query.Query()
-
-
-@app.route("/api/aggregation")
-def get_aggregate():
-    """
-    response format:
-    {"data": ["count of distinct", "count of all", "total sum", "average", "min", "max"]}
-    """
-    # data = {
-    #     "data": [
-    #         "avg",
-    #         "min",
-    #         "max",
-    #         "sum",
-    #         "value_count",
-    #         "cardinality"
-    #         # "boxplot",
-    #         # "percentiles"
-    #     ]
-    # }
-    data = {"data": dataset.aggregate}
-    response = jsonify(data)
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
-
-
 def custom_sort(item):
     # print(item.get('key_as_string'))
     # print(type(item.get('key_as_string')))
@@ -285,8 +307,9 @@ def query_data_source2():
     print("after: " + time.asctime(time.localtime(time.time())))
     response = resp.body["aggregations"]["categories"]["buckets"]
     response_sorted = sorted(response, key=custom_sort)
-    # print(type(response),response)
     return jsonify(response_sorted)
+
+    # return jsonify(response)
 
 
 if __name__ == "__main__":

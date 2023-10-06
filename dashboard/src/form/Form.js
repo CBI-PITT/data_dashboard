@@ -3,6 +3,7 @@ import GetCate from "./Get_categorical";
 import GetConti from "./Get_continuous";
 import GetField from "./Get_field";
 import GetGroupBy from "./Get_groupBy";
+import GetFilterList from "./Get_filterList";
 import Box from '@mui/material/Box';
 import React, { useEffect, useState } from 'react';
 import Skeleton from '@mui/material/Skeleton';
@@ -29,10 +30,11 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
     //Initialize GroupBy section
     const [GroupBy_list, setGroupBy_List] = useState()
 
-    //Initialize Agrregation section
+    //Initialize Aggregation section
     const [Aggregation_list, setAggregation_list] = useState()
 
-    //Initialize plot button
+    //Initialize filter list
+    const [filter_list, setFilter_list] = useState()
 
     const urlPrefix = "http://127.0.0.1:5000"
     // const url_field = "/api/field"
@@ -42,6 +44,7 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
     const url_query = "/api/query"
     // Initialize formaDataUpdated for responsing to user selection in form 
     const [formDataUpdated, setFormDataUpdated] = useState({
+        filter_list: [],
         field: '',
         filter: { "categorical": {}, "continuous": {} },
         group_by: [],
@@ -59,13 +62,9 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
         if (formFrame === undefined || formFrame === 'dataset retrieving') {
             return
         } else {
-            let agent_cate_key = []
-            let agent_cate_value = []
-            let agent_conti_key = []
-            let agent_conti_value = []
+
             setType_field_dict(formFrame.field);
-            // Other state updates...
-            // console.log(formFrame.field)
+
             let field_list_return = Object.keys(formFrame.field)
             setField_axis_list(field_list_return)
 
@@ -75,9 +74,15 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
             let aggregation_list_return = formFrame.aggregate
             setAggregation_list(aggregation_list_return)
 
-            let filter_return = formFrame.filter;
-            // console.log(filter_return)
+            let filter_list = formFrame.filter_list
+            setFilter_list(filter_list)
 
+
+            let agent_cate_key = []
+            let agent_cate_value = []
+            let agent_conti_key = []
+            let agent_conti_value = []
+            let filter_return = formFrame.filter;
             for (let key in filter_return.categorical) {
                 agent_cate_key.push(key)
                 agent_cate_value.push(filter_return.categorical[key])
@@ -88,35 +93,41 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
             }
 
 
-            // console.log("effect",agent_cate_key)
-            // Filter setting
-            setkey_Category(agent_cate_key)
-            setvalue_Category(agent_cate_value)
-            setkey_Continuous(agent_conti_key)
-            setvalue_Continuous(agent_conti_value)
+
+            // setkey_Category(agent_cate_key)
+            // setvalue_Category(agent_cate_value)
+            // setkey_Continuous(agent_conti_key)
+            // setvalue_Continuous(agent_conti_value)
 
             const initial_cate = {};
             agent_cate_key.forEach(item => {
                 initial_cate[item] = [];
             });
-            // const initial_conti = {}
-            // agent_conti_key.forEach(key => {
-            //     initial_conti[key] = {};
-            //     agent_conti_value.forEach(value => {
-            //         initial_conti[key]['min'] = [agent_conti_key];
-            //     })
 
-            // });
             let update_upon_formFrame = { ...formDataUpdated }
             update_upon_formFrame.filter.categorical = initial_cate
             update_upon_formFrame.filter.continuous = formFrame.filter.continuous
             update_upon_formFrame.field = ''
             update_upon_formFrame.aggregate = []
             update_upon_formFrame.group_by = []
+            update_upon_formFrame.filter_list = []
             setFormDataUpdated(update_upon_formFrame)
-
+            setkey_Category([])
+            setvalue_Category([])
+            setkey_Continuous([])
+            setvalue_Continuous([])
         }
     }, [formFrame]);
+
+    // useEffect(() => {
+    //     for(let key in key_Category)
+    //     {
+    //         if(!filter_list.includes(key))
+    //         {
+
+    //         }
+    //     }
+    // },[filter_list])
 
     // useEffect(() => {
     //     const initial_cate = {};
@@ -248,8 +259,8 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
 
         // var formData_send = JSON.stringify(formData)
         // console.log(formDataUpdated)
-        
-        console.log("client request send",formData_send)
+
+        console.log("client request send", formData_send)
         // console.log("formdata_send", typeof (formData_send))
 
         fetch(urlPrefix + url_query, {
@@ -266,7 +277,7 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
                 setDisplayData(data)
                 setFormDataCurrent(formDataUpdated)
                 setOpen(false)
-                
+
                 // console.log("setDisplayData", displayData)
             }
         )
@@ -306,35 +317,44 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
         console.log(key_Category)
         rest_formData.group_by = []
         rest_formData.aggregate = []
+        // rest_formData.filter_list = []
         setFormDataUpdated(rest_formData)
     };
 
 
     if (formFrame !== undefined && formFrame !== 'dataset retrieving') {
         return (
-           
-                <Paper component={'form'} variant='elevation' elevation={10} className='form' style={{ backgroundColor: "#feeeed" }} onSubmit={handleSubmit}>
-                    <Backdrop
-                        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                        open={open}
-                    >
-                        <CircularProgress color='inherit' />
-                    </Backdrop>
-                    <div className="form_main">
-                    {/* <div className='field'>
-                        <br></br>
 
-                        <GetField list={Field_axis_list} form_Data={formDataUpdated} set_FormData={setFormDataUpdated} />
+            <Paper component={'form'} variant='elevation' elevation={10} className='form' style={{ backgroundColor: "#feeeed" }} onSubmit={handleSubmit}>
+                <Backdrop
+                    sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                    open={open}
+                >
+                    <CircularProgress color='inherit' />
+                </Backdrop>
+                <div className="form_main">
+                
+                    <div className="filter_list">
                         <br></br>
-                    </div> */}
+                        <GetFilterList list={filter_list} form_Data={formDataUpdated} set_FormData={setFormDataUpdated} formFrame={formFrame} setkey_Category={setkey_Category} setvalue_Category={setvalue_Category} setkey_Continuous={setkey_Continuous} setvalue_Continuous={setvalue_Continuous} key_Category={key_Category} value_Category={value_Category} key_Continuous={key_Continuous} value_Continuous={value_Continuous}/>  
+                        <br></br>
+                    </div>
                     <div className='filter'>
+                        <div >
+                            {/* <br></br>
+                            <GetFilterList list={filter_list} form_Data={formDataUpdated} set_FormData={setFormDataUpdated} formFrame={formFrame} setkey_Category={setkey_Category} setvalue_Category={setvalue_Category} setkey_Continuous={setkey_Continuous} setvalue_Continuous={setvalue_Continuous} key_Category={key_Category} value_Category={value_Category} key_Continuous={key_Continuous} value_Continuous={value_Continuous} />
+                            <br></br> */}
+                        </div>
                         <div className='continuous'>
                             <GetConti key_Continuous={key_Continuous} value_Continuous={value_Continuous} form_Data={formDataUpdated} set_FormData={setFormDataUpdated} />
                         </div>
+                        
                         <div className='categorical'>
                             <GetCate key_category={key_Category} value_category={value_Category} formData={formDataUpdated} set_FormData={setFormDataUpdated} />
+                        
                         </div>
                         
+
                     </div>
                     <div className='groupBy'>
                         <br></br>
@@ -343,24 +363,25 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
                     </div>
                     <div className='field'>
                         <br></br>
-
                         <GetField list={Field_axis_list} form_Data={formDataUpdated} set_FormData={setFormDataUpdated} />
+                        <br></br>
                         <br></br>
                     </div>
                     <div className='aggregation'>
                         <br></br>
                         <GetAggregation list={Aggregation_list} form_Data={formDataUpdated} set_FormData={setFormDataUpdated} field_status={type_fields_dict[formDataUpdated.field]} />
                         <br></br>
+                        <br></br>
                     </div>
-                    </div>
-                    <br></br>
-                    <div>
-                        <Button type='reset' variant='contained' color='inherit' size='small' id="reset" endIcon={<DeleteIcon />} onClick={handleReset}>Reset</Button>
-                        <Button type='submit' variant='contained' color='inherit' size='small' id="send" endIcon={<SendIcon />}>Send</Button>
-                    </div>
-                    <br></br>
-                </Paper>
-          
+                </div>
+                <br></br>
+                <div>
+                    <Button type='reset' variant='contained' color='inherit' size='small' id="reset" endIcon={<DeleteIcon />} onClick={handleReset}>Reset</Button>
+                    <Button type='submit' variant='contained' color='inherit' size='small' id="send" endIcon={<SendIcon />}>Send</Button>
+                </div>
+                <br></br>
+            </Paper>
+
         )
     }
     else {
@@ -375,22 +396,22 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
                                     Dataset is retrieving — <strong>Please wait</strong>
                                 </Alert>
                                 <Box className='filter'>
+                                    {/* <div className="continuous">
+                                        <Skeleton animation="wave" height={30} width='70%' />
+                                        <Skeleton animation="wave" height={20} width='50%' />
+
+                                    </div> */}
+                                    {/* <br></br>
                                     <div className="continuous">
                                         <Skeleton animation="wave" height={30} width='70%' />
                                         <Skeleton animation="wave" height={20} width='50%' />
 
-                                    </div>
-                                    <br></br>
-                                    <div className="continuous">
-                                        <Skeleton animation="wave" height={30} width='70%' />
-                                        <Skeleton animation="wave" height={20} width='50%' />
+                                    </div> */}
 
-                                    </div>
-
-                                    <Skeleton animation="wave" variant='rounded' height={60} />
+                                    {/* <Skeleton animation="wave" variant='rounded' height={60} />
                                     <br></br>
-                                    <Skeleton animation="wave" variant='rounded' height={60} />
-                                    <br></br>
+                                    <Skeleton animation="wave" variant='rounded' height={60} /> */}
+                                    {/* <br></br> */}
                                     <Skeleton animation="wave" variant='rounded' height={60} />
 
                                 </Box>
@@ -413,45 +434,13 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
                             <Alert className="dataset_alert" severity='info'>
                                 Dataset is waiting to be selected — <strong>Please choose one!</strong>
                             </Alert>
+
                         )
                     }
-
-
-                    {/* <Box className='field'>
-                        <Skeleton animation="wave" variant='rounded' height={60} />
-
-                    </Box>
                     <br></br>
-                    <Box className='filter'>
-                        <div className="continuous">
 
-                            <Skeleton animation="wave" height={30} width='70%' />
-                            <Skeleton animation="wave" height={20} width='50%' />
-
-                        </div>
-                        <br></br>
-                        <div className="continuous">
-                            <Skeleton animation="wave" height={30} width='70%' />
-                            <Skeleton animation="wave" height={20} width='50%' />
-
-                        </div>
-
-                        <Skeleton animation="wave" variant='rounded' height={60} />
-                        <br></br>
-                        <Skeleton animation="wave" variant='rounded' height={60} />
-                        <br></br>
-                        <Skeleton animation="wave" variant='rounded' height={60} />
-
-                    </Box>
-                    <br></br>
-                    <Box className="groupBy">
-                        <Skeleton animation="wave" variant='rounded' height={60} />
-                    </Box>
-                    <br></br>
-                    <Box className="aggregation">
-                        <Skeleton animation="wave" variant='rounded' height={60} />
-                    </Box> */}
                     
+
                 </Paper>
             </div>
         );

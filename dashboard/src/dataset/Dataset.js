@@ -1,25 +1,34 @@
 
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-
+import Chip from '@mui/material/Chip';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { Paper } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
+import Dividers from './Divider';
 const urlPrefix = "http://127.0.0.1:5000"
-const url_dataset = "/api/indices"
-const url_dataset_choosen = "/api/index_choosen/"
+const url_index = "/api/indices"
+const url_index_choosen = "/api/index_choosen/"
+const url_index_choosen_status = "/api/index_choosen/current_status/"
 
 function Dataset({ setFormFrame, setDisplayData }) {
     const [dataset, setDataset] = useState([])
+
+    const [indexStatus, setIndexStatus] = useState({
+        health: 'NaN',
+        status: 'NaN',
+        storageSize: 'NaN',
+        docCount: 'NaN'
+    })
     useEffect(() => {
         // Request for field list
-        axios.get(urlPrefix + url_dataset).then((response) => {
+        axios.get(urlPrefix + url_index).then((response) => {
             setDataset(response.data)
         })
     }, [])
-   
+
     return (
         // <div>
         //     {
@@ -41,11 +50,11 @@ function Dataset({ setFormFrame, setDisplayData }) {
         // </label>
 
 
-        <Paper elevation={10} className='dataset' style={{ backgroundColor: "#feeeed" }}>
+        <Paper elevation={10} className='dataset' >
 
             <br></br>
             <FormControl required sx={{ m: 1, minWidth: 120 }} >
-                <InputLabel id="dataset-required-label">Dataset</InputLabel>
+                <InputLabel id="dataset-required-label">Index</InputLabel>
                 <Select
                     labelId="dataset-required-label"
                     id="dataset-required"
@@ -57,11 +66,33 @@ function Dataset({ setFormFrame, setDisplayData }) {
                         setFormFrame('dataset retrieving')
                         setDisplayData()
                         let dataset_name = event.target.value
-                        axios.get(urlPrefix + url_dataset_choosen + dataset_name).then((response) => {
-                            console.log("Dataset selected or changed successfully")
+                        axios.get(urlPrefix + url_index_choosen + dataset_name).then((response) => {
+                            console.log("Index selected or changed successfully")
                             setFormFrame(response.data)
                         })
+                        setIndexStatus({
+                            health: 'Retrieving',
+                            status: 'Retrieving',
+                            storageSize: 'Retrieving',
+                            docCount: 'Retrieving' 
+                        }
+                        )
+                        axios.get(urlPrefix + url_index_choosen_status + dataset_name).then((response) => {
+                            console.log("Index status retreive successfully")
+
+                            setIndexStatus({
+                                health: response.data['health'],
+                                status: response.data['status'],
+                                storageSize: response.data['storage_size'],
+                                docCount: response.data['docs_count']
+                            }
+                            )
+
+                        })
                     }}
+                    renderValue={(selected) => (
+                        <Chip label={selected} />
+                    )}
                 >
                     {
                         dataset.map((item) => (
@@ -72,8 +103,8 @@ function Dataset({ setFormFrame, setDisplayData }) {
 
                 </Select>
             </FormControl>
-            <br></br>
 
+            <Dividers index_status={indexStatus}></Dividers>
         </Paper>
 
 
