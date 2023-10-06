@@ -148,7 +148,7 @@ function GetConti({ key_Continuous, value_Continuous, form_Data, set_FormData })
 
                         <div key={k} className='eachContinuousVar'>
 
-                            <br></br>
+                            
 
                             <Typography >
                                 {k}
@@ -160,7 +160,7 @@ function GetConti({ key_Continuous, value_Continuous, form_Data, set_FormData })
 
 
                                     <Slider sx={{
-                                        color: theme.palette.mode === 'dark' ? '#fff' : 'rgb(0,0,100)',
+                                        color: theme.palette.mode === 'dark' ? '#fff' : 'rgb(53, 144, 86)',
                                         '& .MuiSlider-track': {
                                             border: 'none',
                                         },

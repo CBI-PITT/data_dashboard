@@ -1,6 +1,6 @@
 import './App.css';
 import React, { useState } from 'react';
-
+import Switch from '@mui/material/Switch';
 import Chart from './plot/Chart';
 import PlotChoice from './plotChoices/PlotChoices';
 import Dataset from './dataset/Dataset';
@@ -25,10 +25,11 @@ function App() {
 
     // Initialize formFrame
     const [formFrame, setFormFrame] = useState()
-    
+
 
     //initialize Form_Data_current used for rendering plot
     const [formDataCurrent, setFormDataCurrent] = useState({
+        filter_list: [],
         field: '',
         filter: { "categorical": {}, "continuous": {} },
         group_by: [],
@@ -169,8 +170,8 @@ function App() {
                     </Paper>
                 </Paper> */}
 
-                <Paper className='display_container' elevation={10} style={{backgroundColor:'rgb(246, 241, 228)'}}>
-                    <Paper className='chart'  elevation={5} variant='elevation' >
+                <Paper className='display_container' elevation={10} style={{ backgroundColor: 'rgb(246, 241, 228)' }}>
+                    <Paper className='chart' elevation={5} variant='elevation' >
                         <Chart displayData={displayData} field={formDataCurrent.field} groupBy={formDataCurrent.group_by} aggregation={formDataCurrent.aggregate} plotChoice={plotChoice} setPlotChoice={setPlotChoice} field_status={type_fields_dict[formDataCurrent.field]} />
                     </Paper>
                 </Paper>
