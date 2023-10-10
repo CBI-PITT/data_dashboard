@@ -177,3 +177,5 @@ venv.bak/
 *.~lock.*
 
 node_modules/
+test.py
+atlas_density_test.py

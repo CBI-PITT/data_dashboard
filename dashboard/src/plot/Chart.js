@@ -4,7 +4,7 @@ import {
 
   // Area
 } from 'recharts';
-import { Area, Box, Pie, Column, Line } from '@ant-design/plots';
+import { Area, Box, Pie, Column, Line, CirclePacking } from '@ant-design/plots';
 import Switch from '@mui/material/Switch';
 import React from 'react';
 
@@ -212,7 +212,7 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
                 {
                   type: 'element-active',
                 },
-              ],
+              ]
             }
 
             // return <h1>hello</h1>
@@ -465,35 +465,90 @@ function Chart({ displayData, field, groupBy, aggregation, plotChoice, setPlotCh
 
   }
 
-  else if (plotChoice === "scatter") {
-    return <h1>🚧 To Be Constructed 🚧</h1>
-    if (aggregation.length !== 2) {
-      return (
-        <div>
-          <h1>Aggregation parameters selected should be equal to 2 for scatter plot</h1>
-        </div>
-      )
-    }
-    var X = aggregation[0] + '_' + field + "['value']"
-    var Y = aggregation[1] + '_' + field + "['value']"
-    return (
-      <ResponsiveContainer width="100%" aspect={2}>
-        <ScatterChart
-          margin={{
-            top: 20,
-            right: 20,
-            bottom: 20,
-            left: 20,
-          }}
-        >
-          <CartesianGrid />
+  else if (plotChoice === "circle packing") {
+    // return <h1>🚧 To Be Constructed 🚧</h1>
+    // if (aggregation.length !== 2) {
+    //   return (
+    //     <div>
+    //       <h1>Aggregation parameters selected should be equal to 2 for scatter plot</h1>
+    //     </div>
+    //   )
+    // }
+    // var X = aggregation[0] + '_' + field + "['value']"
+    // var Y = aggregation[1] + '_' + field + "['value']"
+    // return (
+    //   <ResponsiveContainer width="100%" aspect={2}>
+    //     <ScatterChart
+    //       margin={{
+    //         top: 20,
+    //         right: 20,
+    //         bottom: 20,
+    //         left: 20,
+    //       }}
+    //     >
+    //       <CartesianGrid />
 
-          <XAxis type="number" dataKey={X} name={X} />
-          <YAxis type="number" dataKey={Y} name={Y} />
-          <Tooltip cursor={{ strokeDasharray: '3 3' }} />
-          <Scatter name="A school" data={displayData} fill="#8884d8" />
-        </ScatterChart>
-      </ResponsiveContainer>
+    //       <XAxis type="number" dataKey={X} name={X} />
+    //       <YAxis type="number" dataKey={Y} name={Y} />
+    //       <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+    //       <Scatter name="A school" data={displayData} fill="#8884d8" />
+    //     </ScatterChart>
+    //   </ResponsiveContainer>
+    // )
+
+    return (
+      <div>
+        {
+          aggregation.map(agg => {
+            let data = {'children':[]}
+            displayData.forEach(element => {
+              let block = {
+                name: groupBy.length === 1 ? element['key'] : element['key_as_string'],
+                value: element[agg + "_" + field]['value']
+              }
+              data['children'].push(block)
+            })
+
+            console.log('format for pie', data)
+            const config = {
+              autoFit: true,
+              padding: 0,
+              data,
+              
+              // sizeField: 'r',
+              // color: 'rgb(252, 253, 191)-rgb(231, 82, 99)-rgb(183, 55, 121)',
+              // 自定义 label 样式
+              label: {
+                
+                // 偏移
+                offsetY: 8,
+                style: {
+                  // fontSize: 12,
+                  textAlign: 'center',
+                  fill: 'rgba(0,0,0,200)',
+                },
+              },
+              
+              
+            };
+
+            // return <h1>hello</h1>
+            return (
+              <div key={agg}>
+              <h3>{agg + '_' + field}</h3>
+        
+                <CirclePacking {...config} />
+         
+              <br />
+            </div>
+            )
+          }
+
+          )
+        }
+      </div>
+
+
     )
   }
 
