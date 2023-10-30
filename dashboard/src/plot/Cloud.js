@@ -1,0 +1,66 @@
+import { WordCloud} from '@ant-design/plots';
+import React from 'react';
+
+export default function CloudChart({ data_BLA, data_acronym_density_BLA, groupBy, field, aggregation, density_dict,displayData }){
+    return (
+        <div>
+          {aggregation.map((agg) => {
+            let data = [];
+            displayData.forEach((element) => {
+              let block = {
+                type:
+                  groupBy.length === 1
+                    ? element["key"]
+                    : element["key_as_string"],
+                value: element[agg + "_" + field]["value"],
+              };
+              data.push(block);
+            });
+  
+            console.log("format for pie and cloud", data);
+            const config = {
+              data,
+              wordField: "type",
+              weightField: "value",
+              color: "#122c6a",
+              // colorField: 'type',
+              wordStyle: {
+                fontFamily: "Verdana",
+                // fontSize: [24, 50],
+                rotation: 0,
+              },
+              // 设置交互类型
+              interactions: [
+                {
+                  type: "element-active",
+                },
+              ],
+              state: {
+                active: {
+                  // 这里可以设置 active 时的样式
+                  style: {
+                    lineWidth: 1,
+                  },
+                },
+              },
+              random: () => 0.5,
+            };
+  
+            // return <h1>hello</h1>
+            return (
+              <div key={agg}>
+                <h3>{agg + "_" + field}</h3>
+                {/* <ResponsiveContainer > */}
+                {/* <div> */}
+                {/* <h3>{agg + '_' + field}</h3>  */}
+                <WordCloud {...config} />
+                {/* </div> */}
+                {/* </ResponsiveContainer> */}
+                <br />
+              </div>
+            );
+          })}
+        </div>
+      );
+    
+}

@@ -12,8 +12,8 @@ const urlPrefix = "http://127.0.0.1:5000"
 const url_index = "/api/indices"
 const url_index_choosen = "/api/index_choosen/"
 const url_index_choosen_status = "/api/index_choosen/current_status/"
-
-function Dataset({ setFormFrame, setDisplayData }) {
+const url_index_choosen_volume = "/api/index_choosen/volume/"
+function Dataset({ setFormFrame, setDisplayData, setAcronym_volume }) {
     const [dataset, setDataset] = useState([])
 
     const [indexStatus, setIndexStatus] = useState({
@@ -65,8 +65,8 @@ function Dataset({ setFormFrame, setDisplayData }) {
                     onChange={(event) => {
                         setFormFrame('dataset retrieving')
                         setDisplayData()
-                        let dataset_name = event.target.value
-                        axios.get(urlPrefix + url_index_choosen + dataset_name).then((response) => {
+                        let index = event.target.value
+                        axios.get(urlPrefix + url_index_choosen + index).then((response) => {
                             console.log("Index selected or changed successfully")
                             setFormFrame(response.data)
                         })
@@ -77,7 +77,7 @@ function Dataset({ setFormFrame, setDisplayData }) {
                             docCount: 'Retrieving' 
                         }
                         )
-                        axios.get(urlPrefix + url_index_choosen_status + dataset_name).then((response) => {
+                        axios.get(urlPrefix + url_index_choosen_status + index).then((response) => {
                             console.log("Index status retreive successfully")
 
                             setIndexStatus({
@@ -87,6 +87,12 @@ function Dataset({ setFormFrame, setDisplayData }) {
                                 docCount: response.data['docs_count']
                             }
                             )
+
+                        })
+                        axios.get(urlPrefix + url_index_choosen_volume + index).then((response) => {
+                            console.log("Index volume retreive successfully")
+
+                            setAcronym_volume(response.data)
 
                         })
                     }}

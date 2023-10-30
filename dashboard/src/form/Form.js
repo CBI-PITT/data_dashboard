@@ -18,7 +18,6 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
     const [Field_axis_list, setField_axis_list] = useState()
     // console.log(resetSwitch)
 
-
     //Initialize filter section
     const [key_Category, setkey_Category] = useState([])
     const [value_Category, setvalue_Category] = useState([])
@@ -64,6 +63,9 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
         } else {
 
             setType_field_dict(formFrame.field);
+
+            // let acronym_volume_return = formFrame.acronym_volume
+            // setAcronym_volume(acronym_volume_return)
 
             let field_list_return = Object.keys(formFrame.field)
             setField_axis_list(field_list_return)
@@ -280,7 +282,10 @@ function Form({ setDisplayData, setFormDataCurrent, type_fields_dict, setType_fi
 
                 // console.log("setDisplayData", displayData)
             }
-        )
+        ).catch((error)=>{
+            console.log(error);
+            debugger;
+        })
 
     };
 
