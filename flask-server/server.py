@@ -22,24 +22,30 @@ CORS(app)
 #     }
 # })
 
-collection = datasets_collection.datasets_collection()
+# collection = datasets_collection.datasets_collection()
 
 
 INDEX = ""
+
+
+
 
 
 @app.route("/")
 def index():
     return app.send_static_file("index.html")
 
+
 @app.route("/api/details")
 def get_details():
     indices = es.cat.indices(format="json")
     print(indices)
-    
+
     # print(index_names)
 
     return []
+
+
 # to be constructed
 @app.route("/api/indices")
 def get_index():
@@ -92,14 +98,44 @@ def choosen_index(index_name):
     filters = {"categorical": categorical, "continuous": continuous}
 
     formFrame = {
-        "filter_list":list(mappings.keys()),
+        "filter_list": list(mappings.keys()),
         "field": mappings,
         "filter": filters,
         "group_by": list(mappings.keys()),
-        "aggregate": ["min", "max", "avg",'value_count','cardinality'],
+        "aggregate": ["min", "max", "avg", "value_count", "cardinality"],
+        # "acronym_volume": acronym_volume,
     }
 
     return formFrame
+
+def volume_reader(um):
+    # Specify the path to your CSV file
+    csv_file_path = "../atlasapi_output/atlas_mouse_acronym&volume.csv"
+
+    # Read the CSV file into a DataFrame
+    df = pd.read_csv(csv_file_path)
+
+    # Display the first few rows of the DataFrame
+    acronym_volume_dict = df.set_index("acronym")[f"volume_mm_{um}"].to_dict()
+
+    # Print the resulting dictionary
+    return acronym_volume_dict
+
+acronym_volume_10 = volume_reader(10)
+acronym_volume_25 = volume_reader(25)
+
+@app.route("/api/index_choosen/volume/<index_name>")
+def acronym_volume(index_name):
+    if index_name == "klimstra5.0":
+        response = acronym_volume_25
+        # print(acronym_volume_25)
+        return jsonify(response)
+    elif index_name == "cebra1.0":
+        return jsonify(acronym_volume_10)
+
+
+
+
 @app.route("/api/index_choosen/current_status/<index_name>")
 def choosen_index_current_status(index_name):
     time.sleep(1)
@@ -107,67 +143,66 @@ def choosen_index_current_status(index_name):
     current_status = {}
     # print(indices)
     for index_data in indices:
-        
-        if index_data['index'] == index_name:
-            
-            current_status['health'] = index_data['health']
-            current_status['status'] = index_data['status']
-            current_status['storage_size'] = index_data['store.size']
-            current_status['docs_count'] = index_data['docs.count']
+        if index_data["index"] == index_name:
+            current_status["health"] = index_data["health"]
+            current_status["status"] = index_data["status"]
+            current_status["storage_size"] = index_data["store.size"]
+            current_status["docs_count"] = index_data["docs.count"]
             break
     return jsonify(current_status)
 
-@app.route("/api/datasets")
-def get_dataset():
-    return list(collection.indexMap.keys())
+
+# @app.route("/api/datasets")
+# def get_dataset():
+#     return list(collection.indexMap.keys())
 
 
-@app.route("/api/dataset_choosen/<dataset_name>")
-def choose_dataset(dataset_name):
-    global INDEX
-    INDEX = dataset_name
+# @app.route("/api/dataset_choosen/<dataset_name>")
+# def choose_dataset(dataset_name):
+#     global INDEX
+#     INDEX = dataset_name
 
-    time.sleep(1)
-    formFrame = collection.indexMap.get(dataset_name).__dict__
+#     time.sleep(1)
+#     formFrame = collection.indexMap.get(dataset_name).__dict__
 
-    categorical = {}
-    continuous = {}
+#     categorical = {}
+#     continuous = {}
 
-    # fileds = list(
-    #     es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"].keys()
-    # )
-    # print(fileds)
+#     # fileds = list(
+#     #     es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"].keys()
+#     # )
+#     # print(fileds)
 
-    continuous_list = formFrame["filter"]["continuous"]
-    categorical_list = formFrame["filter"]["categorical"]
-    # print('----------------',categorical_list)
+#     continuous_list = formFrame["filter"]["continuous"]
+#     categorical_list = formFrame["filter"]["categorical"]
+#     # print('----------------',categorical_list)
 
-    for key in categorical_list:
-        print(key)
-        resp = es.search(index=INDEX, body=query.filterCategorical(key))
-        # print(resp.body["aggregations"][key]["buckets"])
-        temp_dict = resp.body["aggregations"][key]["buckets"]
-        # print("--------------",temp_dict)
-        # print (temp_dict[0])
-        categorical[key] = []
-        for val in temp_dict:
-            categorical[key].append(val["key"])
-    # print (categorical)
+#     for key in categorical_list:
+#         print(key)
+#         resp = es.search(index=INDEX, body=query.filterCategorical(key))
+#         # print(resp.body["aggregations"][key]["buckets"])
+#         temp_dict = resp.body["aggregations"][key]["buckets"]
+#         # print("--------------",temp_dict)
+#         # print (temp_dict[0])
+#         categorical[key] = []
+#         for val in temp_dict:
+#             categorical[key].append(val["key"])
+#     # print (categorical)
 
-    for key in continuous_list:
-        resp = es.search(index=INDEX, body=query.filterContinuous(key))
-        # print(resp.body["aggregations"][key]["buckets"])
-        continuous[key] = []
-        continuous[key].append(resp.body["aggregations"]["min" + "_" + key]["value"])
-        continuous[key].append(resp.body["aggregations"]["max" + "_" + key]["value"])
+#     for key in continuous_list:
+#         resp = es.search(index=INDEX, body=query.filterContinuous(key))
+#         # print(resp.body["aggregations"][key]["buckets"])
+#         continuous[key] = []
+#         continuous[key].append(resp.body["aggregations"]["min" + "_" + key]["value"])
+#         continuous[key].append(resp.body["aggregations"]["max" + "_" + key]["value"])
 
-    # print (continuous)
+#     # print (continuous)
 
-    formFrame["filter"]["continuous"] = continuous
-    formFrame["filter"]["categorical"] = categorical
-    response = jsonify(formFrame)
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return formFrame
+#     formFrame["filter"]["continuous"] = continuous
+#     formFrame["filter"]["categorical"] = categorical
+#     response = jsonify(formFrame)
+#     response.headers.add("Access-Control-Allow-Origin", "*")
+#     return formFrame
 
 
 # @app.route("/api/field")
@@ -239,8 +274,6 @@ def choose_dataset(dataset_name):
 #     return response
 
 
-
-
 # @app.route("/api/aggregation")
 # def get_aggregate():
 #     """
@@ -264,7 +297,10 @@ def choose_dataset(dataset_name):
 #     response.headers.add("Access-Control-Allow-Origin", "*")
 #     return response
 
+
 query = Query.Query()
+
+
 def custom_sort(item):
     # print(item.get('key_as_string'))
     # print(type(item.get('key_as_string')))
@@ -303,13 +339,15 @@ def query_data_source2():
             json_data["aggregate"],
         ),
     )
-    # print(resp.body)
+
     print("after: " + time.asctime(time.localtime(time.time())))
     response = resp.body["aggregations"]["categories"]["buckets"]
+
     response_sorted = sorted(response, key=custom_sort)
     return jsonify(response_sorted)
-
     # return jsonify(response)
+
+
 
 
 if __name__ == "__main__":

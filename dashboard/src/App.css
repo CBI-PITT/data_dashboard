@@ -64,6 +64,8 @@
   background-color: rgb(211, 211, 202);
 }
 
+
+
 .divider{
   display: flex;
   flex-direction: row;
@@ -79,7 +81,7 @@
 }
 .form{
   /* background-color: rgb(202, 211, 209); */
-  margin-top: 2%;
+  margin-top: 5%;
   text-align: center;
   /* margin-bottom: 2%; */
  
@@ -92,8 +94,8 @@
 
   border-radius: 10px; */
 }
+
 .form_main{
-  
   max-height: 550px;
   overflow-y:auto;
 }
@@ -115,10 +117,11 @@
   
    /* display: flex; */
   
-  /* align-items: center; */
+  /* align-items: center;
   display: flex;
   flex-direction: column;
-  justify-content: center; 
+  justify-content: center;  */
+
   /* height: 900px; */
   
   /* align-items:center; */
@@ -232,18 +235,45 @@
   /* height: 100%; */
   /* border-style:groove;
   border-radius: 10px; */
-  /* display: flex; 
-   justify-content: center; 
-   align-items:center;  */
-   max-height:960px;
+  /* display: flex; */
+   /* justify-content: center; 
+   align-items:center; */
+   height:960px;
+   
+   overflow-x: auto;
 }
+
 
 .plotButton{
   width: 100%;
 }
 .coverImg{
+  /* display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; */
   width: 40%;
+  /* background-color: #747983; */
 }
+.chartFill{
+  height: 100%;
+}
+
+.cover{
+  /* display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;  */
+  /* background-color: aqua; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; 
+  height: 960px
+}
+
+
+
 
 #reset{
   margin-right: 15%;

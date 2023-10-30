@@ -1,11 +1,13 @@
 import './App.css';
 import React, { useState } from 'react';
-import Switch from '@mui/material/Switch';
+
 import Chart from './plot/Chart';
 import PlotChoice from './plotChoices/PlotChoices';
 import Dataset from './dataset/Dataset';
 import Form from './form/Form';
-import { Button, Divider, Paper } from '@mui/material';
+import { Paper } from '@mui/material';
+import { Area, Box, Pie, Column, Line, CirclePacking, WordCloud, Facet } from '@ant-design/plots';
+import { DataView } from '@antv/data-set';
 function App() {
     // Initialize type dict for recording all types of fileds
     const [type_fields_dict, setType_field_dict] = useState({})
@@ -25,7 +27,8 @@ function App() {
 
     // Initialize formFrame
     const [formFrame, setFormFrame] = useState()
-
+    // Initialize acronym_volume
+    const [acronym_volume, setAcronym_volume] = useState({}) 
 
     //initialize Form_Data_current used for rendering plot
     const [formDataCurrent, setFormDataCurrent] = useState({
@@ -35,7 +38,7 @@ function App() {
         group_by: [],
         aggregate: []
     })
-
+    
 
 
 
@@ -146,7 +149,7 @@ function App() {
     //         //  console.log(Agrregation_list)
     //     })
 
-
+//    console.log(acronym_volume) 
     return (
         <div className="App">
             <header className="App-header">
@@ -154,8 +157,9 @@ function App() {
             </header>
             <div className='main_sec'>
                 <div className='user_selection'>
-                    <Dataset setFormFrame={setFormFrame} setDisplayData={setDisplayData} />
+                    <Dataset setFormFrame={setFormFrame} setDisplayData={setDisplayData} setAcronym_volume={setAcronym_volume}/>
                     <Form setDisplayData={setDisplayData} setFormDataCurrent={setFormDataCurrent} type_fields_dict={type_fields_dict} setType_field_dict={setType_field_dict} formFrame={formFrame} />
+                    {/* <div>{test()}</div> */}
                     {/* <Form setDisplayData={setDisplayData} setFormDataCurrent={setFormDataCurrent} type_fields_dict={type_fields_dict} setType_field_dict={setType_field_dict} /> */}
                 </div>
 
@@ -171,8 +175,11 @@ function App() {
                 </Paper> */}
 
                 <Paper className='display_container' elevation={10} style={{ backgroundColor: 'rgb(246, 241, 228)' }}>
-                    <Paper className='chart' elevation={5} variant='elevation' >
+                    {/* <ResponsiveContainer><Paper className='chart' elevation={5} variant='elevation' >
                         <Chart displayData={displayData} field={formDataCurrent.field} groupBy={formDataCurrent.group_by} aggregation={formDataCurrent.aggregate} plotChoice={plotChoice} setPlotChoice={setPlotChoice} field_status={type_fields_dict[formDataCurrent.field]} />
+                    </Paper></ResponsiveContainer> */}
+                    <Paper className='chart' elevation={5} variant='elevation' >
+                        <Chart displayData={displayData} field={formDataCurrent.field} groupBy={formDataCurrent.group_by} aggregation={formDataCurrent.aggregate} plotChoice={plotChoice} setPlotChoice={setPlotChoice} field_status={type_fields_dict[formDataCurrent.field]} acronym_volume={acronym_volume}/>
                     </Paper>
                 </Paper>
                 <Paper className='drawing_selection_container' elevation={10} style={{ backgroundColor: 'rgb(189, 227, 209)' }}>
