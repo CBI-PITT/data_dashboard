@@ -4,7 +4,7 @@ import { Button } from '@mui/material';
 import React, { useState } from 'react';
 
 
-export default function FacetChart({ data_BLA, data_acronym_density_BLA, groupBy, field, aggregation, density_dict,displayData}){
+export default function FacetChart({ data_BLA, data_acronym_density_BLA, groupBy, field, aggregation, density_dict,displayData,N}){
     {
       return(<h2>Sorry, Its under construction</h2>)
         // const newData = [

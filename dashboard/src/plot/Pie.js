@@ -1,9 +1,10 @@
 import { Pie} from '@ant-design/plots';
 import React from 'react';
-
-export default function PieChart({ data_BLA, data_acronym_density_BLA, groupBy, field, aggregation, density_dict,displayData }){
+import N_number from './N_number';
+export default function PieChart({ data_BLA, data_acronym_density_BLA, groupBy, field, aggregation, density_dict,displayData,N }){
     return (
         <div className="pie">
+          <N_number N={N} />
           {aggregation.map((agg) => {
             let data = [];
             displayData.forEach((element) => {
@@ -53,6 +54,7 @@ export default function PieChart({ data_BLA, data_acronym_density_BLA, groupBy, 
             // return <h1>hello</h1>
             return (
               <div key={agg}>
+                
                 <h3>{agg + "_" + field}</h3>
                 <Pie {...config} />
                 <br />

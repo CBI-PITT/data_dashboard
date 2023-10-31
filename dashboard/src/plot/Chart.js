@@ -1,14 +1,3 @@
-import {
-  Area,
-  Box,
-  Pie,
-  Column,
-  // Line,
-  CirclePacking,
-  WordCloud,
-  Facet,
-} from "@ant-design/plots";
-
 import BarChart from "./Bar";
 import LineChart from "./Line";
 import AreaChart from "./Area";
@@ -28,6 +17,8 @@ function Chart({
   setPlotChoice,
   field_status,
   acronym_volume,
+  formFrame,
+  formDataCurrent,
 }) {
   // Request condition = { "field": "atlas_structure_acronym", "filter": { "categorical": { "atlas_structure_acronym": [], "file_path": [], "route": [], "time_point": [], "transformed_coord_units": [], "treatment": [], "uuid_brain": [], "uuid_cell": [], "voxel_spacing": [], "voxel_spacing_units": [] }, "continuous": { "Unnamed: 0": [0, 32153394], "atlas_structure_number": [0, 614454277], "metadata": [18, 39], "n_channels": [1, 2], "x_downsampled": [0, 887], "x_transformed": [0, 13925], "x_transformed_px": [0, 557], "y_downsampled": [0, 276], "y_transformed": [0, 8000], "y_transformed_px": [0, 320], "z_downsampled": [4, 1210], "z_transformed": [0, 16850], "z_transformed_px": [0, 674] } }, "group_by": ["time_point", "route", "treatment"], "aggregate": ["value_count", "cardinality"] }
 
@@ -109,18 +100,23 @@ function Chart({
     return;
   }
 
-  const density_dict = {
+  const config = {
     atlas_structure_acronym: "atlas_structure_acronym",
-    aggregation_choice: "value_count",
+    aggregation_choice_forDensity: "value_count",
+    N: "metadata",
   };
-
+  let N = 
+    formDataCurrent.filter.categorical[config.N].length === 0
+      ? formFrame.filter.categorical[config.N].length
+      : formDataCurrent.filter.categorical[config.N].length;
+  // let metadata_number = metadata_number.length === 0 ?
   let data_BLA = [];
   let data_acronym_density_BLA = [];
   // hardcode 'atlas_structure_acronym'
   if (
-    groupBy.includes(density_dict.atlas_structure_acronym) &&
-    field === density_dict.atlas_structure_acronym &&
-    aggregation.includes(density_dict.aggregation_choice)
+    groupBy.includes(config.atlas_structure_acronym) &&
+    field === config.atlas_structure_acronym &&
+    aggregation.includes(config.aggregation_choice_forDensity)
   ) {
     displayData.forEach((element) => {
       aggregation.forEach((agg) => {
@@ -134,16 +130,14 @@ function Chart({
         block["value"] = element[agg + "_" + field]["value"];
         data_BLA.push(block);
 
-        if (agg === density_dict.aggregation_choice) {
+        if (agg === config.aggregation_choice_forDensity) {
           let block_density = {};
           let acronym =
             groupBy.length === 1
               ? element["key"].toString()
-              : element["key"][
-                  groupBy.indexOf(density_dict.atlas_structure_acronym)
-                ];
+              : element["key"][groupBy.indexOf(config.atlas_structure_acronym)];
           block_density["X_axis"] = X_axis;
-          block_density["type"] = "acronym_density";
+          block_density["type"] = "density_acronym";
           block_density["value"] =
             element[agg + "_" + field]["value"] / acronym_volume[acronym];
           data_acronym_density_BLA.push(block_density);
@@ -176,7 +170,8 @@ function Chart({
         groupBy={groupBy}
         aggregation={aggregation}
         field={field}
-        density_dict={density_dict}
+        density_dict={config}
+        N={N}
       />
     );
   } else if (plotChoice === "pie") {
@@ -187,8 +182,9 @@ function Chart({
         groupBy={groupBy}
         aggregation={aggregation}
         field={field}
-        density_dict={density_dict}
+        density_dict={config}
         displayData={displayData}
+        N={N}
       />
     );
   } else if (plotChoice === "cloud") {
@@ -199,8 +195,9 @@ function Chart({
         groupBy={groupBy}
         aggregation={aggregation}
         field={field}
-        density_dict={density_dict}
+        density_dict={config}
         displayData={displayData}
+        N={N}
       />
     );
   } else if (plotChoice === "line") {
@@ -211,7 +208,8 @@ function Chart({
         groupBy={groupBy}
         aggregation={aggregation}
         field={field}
-        density_dict={density_dict}
+        density_dict={config}
+        N={N}
       />
     );
   } else if (plotChoice === "area") {
@@ -222,7 +220,8 @@ function Chart({
         groupBy={groupBy}
         aggregation={aggregation}
         field={field}
-        density_dict={density_dict}
+        density_dict={config}
+        N={N}
       />
     );
   } else if (plotChoice === "box") {
@@ -233,8 +232,9 @@ function Chart({
         groupBy={groupBy}
         aggregation={aggregation}
         field={field}
-        density_dict={density_dict}
+        density_dict={config}
         displayData={displayData}
+        N={N}
       />
     );
   } else if (plotChoice === "circle packing") {
@@ -245,8 +245,9 @@ function Chart({
         groupBy={groupBy}
         aggregation={aggregation}
         field={field}
-        density_dict={density_dict}
+        density_dict={config}
         displayData={displayData}
+        N={N}
       />
     );
   } else if (plotChoice === "facet") {
@@ -257,9 +258,10 @@ function Chart({
         groupBy={groupBy}
         aggregation={aggregation}
         field={field}
-        density_dict={density_dict}
+        density_dict={config}
         displayData={displayData}
         plotChoice={plotChoice}
+        N={N}
       />
     );
   }

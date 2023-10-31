@@ -1,8 +1,8 @@
 import { Box} from '@ant-design/plots';
-
+import N_number from './N_number';
 // import React from 'react';
 
-export default function BoxChart({ data_BLA, data_acronym_density_BLA, groupBy, field, aggregation, density_dict,displayData }){
+export default function BoxChart({ data_BLA, data_acronym_density_BLA, groupBy, field, aggregation, density_dict,displayData,N }){
     let boxplot_data_list = [];
     let boxplot_name = "boxplot" + "_" + field;
     // console.log("boxplot_name",element[boxplot_name])
@@ -34,5 +34,5 @@ export default function BoxChart({ data_BLA, data_acronym_density_BLA, groupBy, 
       },
       animation: true,
     };
-    return <Box {...config} />;
+    return <div className='chartFill'><N_number N={N} /><Box {...config} /></div>;
 }
