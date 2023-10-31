@@ -1,7 +1,7 @@
 import { Area} from '@ant-design/plots';
 import React from 'react';
-
-export default function AreaChart ({ data_BLA, data_acronym_density_BLA, groupBy, field, aggregation, density_dict }){
+import N_number from './N_number';
+export default function AreaChart ({ data_BLA, data_acronym_density_BLA, groupBy, field, aggregation, density_dict, N }){
     const config = {
         data: data_BLA,
         xField: "X_axis",
@@ -29,7 +29,7 @@ export default function AreaChart ({ data_BLA, data_acronym_density_BLA, groupBy
         config_density.data = data_acronym_density_BLA;
         return (
           <div className="chartFill">
-            {" "}
+            <N_number N={N} />
             <Area {...config} />
             <Area {...config_density} />
           </div>
@@ -37,7 +37,7 @@ export default function AreaChart ({ data_BLA, data_acronym_density_BLA, groupBy
       } else {
         return (
           <div className="chartFill">
-            {" "}
+            <N_number N={N} />
             <Area {...config} />
           </div>
         );

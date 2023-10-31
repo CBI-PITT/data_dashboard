@@ -1,14 +1,14 @@
 import { Column } from '@ant-design/plots';
 import React from 'react';
-
-export default function BarChart({ data_BLA, data_acronym_density_BLA, groupBy, field, aggregation, density_dict }) {
+import N_number from './N_number';
+export default function BarChart({ data_BLA, data_acronym_density_BLA, groupBy, field, aggregation, density_dict, N }) {
     const config = {
         data: data_BLA,
         isStack: true,
         xField: 'X_axis',
         yField: 'value',
         seriesField: 'type',
-
+        
         // label: {
         //   // 可手动配置 label 数据标签位置
         //   position: 'middle',
@@ -52,9 +52,9 @@ export default function BarChart({ data_BLA, data_acronym_density_BLA, groupBy, 
     if (groupBy.includes(density_dict.atlas_structure_acronym) && field === density_dict.atlas_structure_acronym && aggregation.includes(density_dict.aggregation_choice)) {
         let config_density = { ...config }
         config_density.data = data_acronym_density_BLA
-        return <div className='chartFill'> <Column {...config} /><Column {...config_density} /></div>
+        return <div className='chartFill'><N_number N={N} /><Column {...config} /><Column {...config_density} /></div>
     }
     else {
-        return <div className='chartFill'> <Column {...config} /></div>
+        return <div className='chartFill'><N_number N={N} /><Column {...config} /> </div>
     }
 }
