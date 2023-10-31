@@ -1,9 +1,12 @@
 import { Facet} from '@ant-design/plots';
 import { DataView } from "@antv/data-set";
-import React from 'react';
+import { Button } from '@mui/material';
+import React, { useState } from 'react';
 
-export default function FacetChart({ data_BLA, data_acronym_density_BLA, groupBy, field, aggregation, density_dict,displayData }){
+
+export default function FacetChart({ data_BLA, data_acronym_density_BLA, groupBy, field, aggregation, density_dict,displayData}){
     {
+      return(<h2>Sorry, Its under construction</h2>)
         // const newData = [
         //   {
         //     value_count_atlas_structure_acronym: 42008,
@@ -140,7 +143,7 @@ export default function FacetChart({ data_BLA, data_acronym_density_BLA, groupBy
         //   },
         // };
         // return <Facet {...config} />;
-    
+        
         return (
           <div>
             {aggregation.map((agg) => {
@@ -162,7 +165,7 @@ export default function FacetChart({ data_BLA, data_acronym_density_BLA, groupBy
                 // appendPadding: [0, 16, 16, 16],
                 data,
                 type: "tree",
-                fields: ["time_point", "treatment"],
+                fields: ['treatment'],
                 line: {
                   style: {
                     stroke: "#dedede",
@@ -177,7 +180,7 @@ export default function FacetChart({ data_BLA, data_acronym_density_BLA, groupBy
                   dv.source(facet.data).transform({
                     type: "percent",
                     field: agg + "_" + field,
-                    dimension: "route",
+                    dimension: 'route',
                     // as: 'percent',
                   });
                   return {
@@ -185,7 +188,7 @@ export default function FacetChart({ data_BLA, data_acronym_density_BLA, groupBy
                     options: {
                       data: dv.rows,
                       angleField: agg + "_" + field,
-                      colorField: "route",
+                      colorField: 'route',
                       pieStyle: {
                         opacity: 0.85,
                       },
@@ -205,7 +208,13 @@ export default function FacetChart({ data_BLA, data_acronym_density_BLA, groupBy
               return (
                 <div>
                   <h3>{agg + "_" + field}</h3>
+                  {/* {facetComp(config)} */}
                   <Facet {...config} key={agg + "_" + field} />
+                  {/* <Button onClick={()=>{
+                    setDimention('route')
+                  }}>dimension</Button>
+                  <Button onClick={()=>{setFields(['treatment','time_point'])}}>fields</Button> */}
+                  
                   <br />
                 </div>
               );

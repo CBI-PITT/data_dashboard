@@ -259,6 +259,7 @@ function Chart({
         field={field}
         density_dict={density_dict}
         displayData={displayData}
+        plotChoice={plotChoice}
       />
     );
   }

@@ -23,7 +23,7 @@ export default function LineChart({ data_BLA, data_acronym_density_BLA, groupBy,
         xAxis: {
           label: {
             autoHide: true,
-            autoRotate: true,
+            autoRotate: false,
           },
         },
       };

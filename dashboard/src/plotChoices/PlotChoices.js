@@ -15,7 +15,7 @@ function plotChoice({ setPlotChoice, field_status }) {
 
     const buttons = [
         <Button key="bar" onClick={() => { setPlotChoice("bar") }} ><img src={barImg} className="plotButton"></img></Button>,
-        <Button key="box" onClick={() => { setPlotChoice("box") }} disabled={field_status=='keyword'?true:false}><img src={boxImg} className="plotButton"></img></Button>,
+        <Button key="box" onClick={() => { setPlotChoice("box") }} disabled={field_status==='keyword'?true:false}><img src={boxImg} className="plotButton"></img></Button>,
         <Button key="pie" onClick={() => { setPlotChoice("pie") }} ><img src={pieImg} className="plotButton"></img></Button>,
         <Button key="dot" onClick={() => { setPlotChoice("circle packing") }}><img src={dotImg} className="plotButton"></img></Button>,
         <Button key="cloud" onClick={() => { setPlotChoice("cloud") }} ><img src={cloudImg} className="plotButton"></img></Button>,
