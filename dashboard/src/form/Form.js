@@ -270,7 +270,7 @@ function Form({
       })
       .catch((error) => {
         console.log(error);
-        debugger;
+        // debugger;
       });
   };
 
