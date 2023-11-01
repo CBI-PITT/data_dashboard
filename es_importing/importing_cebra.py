@@ -9,7 +9,7 @@ import pandas as pd
 server = "http://localhost:9200"
 es = Elasticsearch(request_timeout=600, hosts=server)
 
-INDEX = "cebra1.0"
+INDEX = "cebra2.0"
 SHARDS = 12
 # REPLICAS = 2
 # Create Index
@@ -29,7 +29,7 @@ mappings = {
         # "is_cell": {
         #   "type": "short"
         # },
-        "metadata": {"type": "short"},
+        "metadata": {"type": "keyword"},
         # "n_channels": {
         #   "type": "short"
         # },
@@ -178,7 +178,7 @@ def join_with_metadata(cells, metadata, metadata_shift=0):
     ).drop(["id"], axis=1)
     joint_file = cells.replace(".csv", "_with_metadata.csv")
     df_merged["metadata"] += metadata_shift
-    df_merged.to_csv(joint_file, sep="\t")
+    df_merged.to_csv(joint_file, sep="\t", index=False)
     return joint_file
 
 
