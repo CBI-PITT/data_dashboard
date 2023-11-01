@@ -28,9 +28,6 @@ CORS(app)
 INDEX = ""
 
 
-
-
-
 @app.route("/")
 def index():
     return app.send_static_file("index.html")
@@ -108,32 +105,26 @@ def choosen_index(index_name):
 
     return formFrame
 
+
 def volume_reader(um):
-    # Specify the path to your CSV file
     csv_file_path = "../atlasapi_output/atlas_mouse_acronym&volume.csv"
-
-    # Read the CSV file into a DataFrame
     df = pd.read_csv(csv_file_path)
-
-    # Display the first few rows of the DataFrame
     acronym_volume_dict = df.set_index("acronym")[f"volume_mm_{um}"].to_dict()
-
-    # Print the resulting dictionary
     return acronym_volume_dict
+
 
 acronym_volume_10 = volume_reader(10)
 acronym_volume_25 = volume_reader(25)
 
+
 @app.route("/api/index_choosen/volume/<index_name>")
 def acronym_volume(index_name):
-    if index_name == "klimstra5.0":
+    if index_name == "klimstra6.0":
         response = acronym_volume_25
         # print(acronym_volume_25)
         return jsonify(response)
-    elif index_name == "cebra1.0":
+    elif index_name == "cebra2.0":
         return jsonify(acronym_volume_10)
-
-
 
 
 @app.route("/api/index_choosen/current_status/<index_name>")
@@ -346,8 +337,6 @@ def query_data_source2():
     response_sorted = sorted(response, key=custom_sort)
     return jsonify(response_sorted)
     # return jsonify(response)
-
-
 
 
 if __name__ == "__main__":
