@@ -109,7 +109,7 @@ function Chart({
     formDataCurrent.filter.categorical[config.N].length === 0
       ? formFrame.filter.categorical[config.N].length
       : formDataCurrent.filter.categorical[config.N].length;
-  // let metadata_number = metadata_number.length === 0 ?
+  
   let data_BLA = [];
   let data_acronym_density_BLA = [];
   // hardcode 'atlas_structure_acronym'
