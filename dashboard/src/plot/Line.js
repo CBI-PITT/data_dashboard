@@ -39,7 +39,7 @@ export default function LineChart({
   if (
     groupBy.includes(density_dict.atlas_structure_acronym) &&
     field === density_dict.atlas_structure_acronym &&
-    aggregation.includes(density_dict.aggregation_choice)
+    aggregation.includes(density_dict.aggregation_choice_forDensity)
   ) {
     let config_density = { ...config };
     config_density.data = data_acronym_density_BLA;

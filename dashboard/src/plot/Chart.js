@@ -105,10 +105,10 @@ function Chart({
     aggregation_choice_forDensity: "value_count",
     N: "metadata",
   };
-  let N = 
-    formDataCurrent.filter.categorical[config.N].length === 0
-      ? formFrame.filter.categorical[config.N].length
-      : formDataCurrent.filter.categorical[config.N].length;
+  let N = "not available"
+    // formDataCurrent.filter.categorical[config.N].length === 0
+    //   ? formFrame.filter.categorical[config.N].length
+    //   : formDataCurrent.filter.categorical[config.N].length;
   
   let data_BLA = [];
   let data_acronym_density_BLA = [];
@@ -118,6 +118,7 @@ function Chart({
     field === config.atlas_structure_acronym &&
     aggregation.includes(config.aggregation_choice_forDensity)
   ) {
+    
     displayData.forEach((element) => {
       aggregation.forEach((agg) => {
         let block = {};
@@ -185,6 +186,7 @@ function Chart({
         density_dict={config}
         displayData={displayData}
         N={N}
+        acronym_volumn={acronym_volume}
       />
     );
   } else if (plotChoice === "cloud") {
