@@ -138,7 +138,7 @@ function Chart({
               ? element["key"].toString()
               : element["key"][groupBy.indexOf(config.atlas_structure_acronym)];
           block_density["X_axis"] = X_axis;
-          block_density["type"] = "density_acronym";
+          block_density["type"] = "density" + "_" + field;
           block_density["value"] =
             element[agg + "_" + field]["value"] / acronym_volume[acronym];
           data_acronym_density_BLA.push(block_density);
@@ -200,6 +200,7 @@ function Chart({
         density_dict={config}
         displayData={displayData}
         N={N}
+        acronym_volumn={acronym_volume}
       />
     );
   } else if (plotChoice === "line") {
@@ -250,6 +251,7 @@ function Chart({
         density_dict={config}
         displayData={displayData}
         N={N}
+        acronym_volumn={acronym_volume}
       />
     );
   } else if (plotChoice === "facet") {

@@ -41,7 +41,7 @@ export default function PieChart({
             data_density.push(block_density)
           });
 
-
+          console.log('format for pie: data', data)
           console.log('format for pie: data_density', data_density)
           const config = {
             appendPadding: 10,
@@ -79,7 +79,7 @@ export default function PieChart({
 
           // return <h1>hello</h1>
           return (
-            <div key={agg}>
+            <div key={agg + '&' + "density" + "_" + field}>
               <h3>{agg + "_" + field}</h3>
               <Pie {...config} />
               <br />
