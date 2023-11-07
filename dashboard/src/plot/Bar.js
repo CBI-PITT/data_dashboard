@@ -49,12 +49,15 @@ export default function BarChart({ data_BLA, data_acronym_density_BLA, groupBy, 
             },
         ],
     };
-    if (groupBy.includes(density_dict.atlas_structure_acronym) && field === density_dict.atlas_structure_acronym && aggregation.includes(density_dict.aggregation_choice)) {
+    
+    if (groupBy.includes(density_dict.atlas_structure_acronym) && field === density_dict.atlas_structure_acronym && aggregation.includes(density_dict.aggregation_choice_forDensity)) {
         let config_density = { ...config }
         config_density.data = data_acronym_density_BLA
+        
         return <div className='chartFill'><N_number N={N} /><Column {...config} /><Column {...config_density} /></div>
     }
     else {
+        
         return <div className='chartFill'><N_number N={N} /><Column {...config} /> </div>
     }
 }

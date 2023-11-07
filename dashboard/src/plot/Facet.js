@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 
 export default function FacetChart({ data_BLA, data_acronym_density_BLA, groupBy, field, aggregation, density_dict,displayData,N}){
     {
-      return(<h2>Sorry, Its under construction</h2>)
+      // return(<h2>Sorry, Its under construction</h2>)
         // const newData = [
         //   {
         //     value_count_atlas_structure_acronym: 42008,
@@ -165,7 +165,7 @@ export default function FacetChart({ data_BLA, data_acronym_density_BLA, groupBy
                 // appendPadding: [0, 16, 16, 16],
                 data,
                 type: "tree",
-                fields: ['treatment'],
+                fields: ['treatment','time_point'],
                 line: {
                   style: {
                     stroke: "#dedede",
@@ -180,7 +180,7 @@ export default function FacetChart({ data_BLA, data_acronym_density_BLA, groupBy
                   dv.source(facet.data).transform({
                     type: "percent",
                     field: agg + "_" + field,
-                    dimension: 'route',
+                    dimension: 'atlas_structure_acronym',
                     // as: 'percent',
                   });
                   return {
@@ -188,7 +188,7 @@ export default function FacetChart({ data_BLA, data_acronym_density_BLA, groupBy
                     options: {
                       data: dv.rows,
                       angleField: agg + "_" + field,
-                      colorField: 'route',
+                      colorField: 'atlas_structure_acronym',
                       pieStyle: {
                         opacity: 0.85,
                       },
