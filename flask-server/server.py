@@ -3,8 +3,9 @@ import json
 import pandas as pd
 import DSL_Query.DSL_Query as Query
 import time
-import datasets.klimstra as klimstra
-import datasets.datasets_collection as datasets_collection
+# import datasets.klimstra as klimstra
+# import datasets.datasets_collection as datasets_collection
+import config.index_density_registration as index_density_registration
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from utils import NumpyEncoder, merge_cells_and_metadata
@@ -33,14 +34,14 @@ def index():
     return app.send_static_file("index.html")
 
 
-@app.route("/api/details")
-def get_details():
-    indices = es.cat.indices(format="json")
-    print(indices)
+# @app.route("/api/details")
+# def get_details():
+#     indices = es.cat.indices(format="json")
+#     print(indices)
 
-    # print(index_names)
+#     # print(index_names)
 
-    return []
+#     return []
 
 
 # to be constructed
@@ -99,7 +100,7 @@ def choosen_index(index_name):
         "field": mappings,
         "filter": filters,
         "group_by": list(mappings.keys()),
-        "aggregate": ["min", "max", "avg", "value_count", "cardinality"],
+        "aggregate": ["min", "max", "avg", "sum","value_count", "cardinality"],
         # "acronym_volume": acronym_volume,
     }
 
@@ -115,16 +116,32 @@ def volume_reader(um):
 
 acronym_volume_10 = volume_reader(10)
 acronym_volume_25 = volume_reader(25)
+indexDensityRegistrationMap = (
+    index_density_registration.Registration().index_density_registration_map
+)
 
 
 @app.route("/api/index_choosen/volume/<index_name>")
 def acronym_volume(index_name):
-    if index_name == "klimstra6.0":
-        response = acronym_volume_25
-        # print(acronym_volume_25)
-        return jsonify(response)
-    elif index_name == "cebra2.0":
-        return jsonify(acronym_volume_10)
+    if indexDensityRegistrationMap.get(index_name):
+        obj = indexDensityRegistrationMap.get(index_name)
+        response = {'meta':{'aggregation_condition':obj.aggregation_condition,
+                            'atlas_structure_acronym_column_name':obj.atlas_structure_acronym_column_name},
+                    'acronym_volumn': {}}
+        if obj.atlas_resolution == "25um":
+            response["acronym_volumn"] = acronym_volume_25
+            return jsonify(response)
+        elif obj.atlas_resolution =="10um":
+            response["acronym_volumn"] = acronym_volume_10
+            return jsonify(response)
+    else:
+        return {}
+    # if index_name == "klimstra6.0":
+    #     response = acronym_volume_25
+    #     # print(acronym_volume_25)
+    #     return jsonify(response)
+    # elif index_name == "cebra2.0":
+    #     return jsonify(acronym_volume_10)
 
 
 @app.route("/api/index_choosen/current_status/<index_name>")
