@@ -28,7 +28,7 @@ function App() {
   const [formFrame, setFormFrame] = useState();
   // Initialize acronym_volume
   const [acronym_volume, setAcronym_volume] = useState({});
-
+  const [meta, setMeta] = useState({})
   //initialize Form_Data_current used for rendering plot
   const [formDataCurrent, setFormDataCurrent] = useState({
     filter_list: [],
@@ -143,7 +143,8 @@ function App() {
   //         //  console.log(Agrregation_list)
   //     })
 
-  //    console.log(acronym_volume)
+    //  console.log(acronym_volume)
+    // console.log(meta)
   return (
     <div className="App">
       <header className="App-header">
@@ -155,6 +156,7 @@ function App() {
             setFormFrame={setFormFrame}
             setDisplayData={setDisplayData}
             setAcronym_volume={setAcronym_volume}
+            setMeta={setMeta}
           />
           <Form
             setDisplayData={setDisplayData}
@@ -198,6 +200,7 @@ function App() {
               acronym_volume={acronym_volume}
               formDataCurrent={formDataCurrent}
               formFrame={formFrame}
+              meta={meta}
             />
           </Paper>
         </Paper>
