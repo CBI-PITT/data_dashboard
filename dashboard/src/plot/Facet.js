@@ -165,7 +165,7 @@ export default function FacetChart({ data_BLA, data_acronym_density_BLA, groupBy
                 // appendPadding: [0, 16, 16, 16],
                 data,
                 type: "tree",
-                fields: ['treatment','time_point'],
+                fields: ['treatment','time_point','metadata'],
                 line: {
                   style: {
                     stroke: "#dedede",

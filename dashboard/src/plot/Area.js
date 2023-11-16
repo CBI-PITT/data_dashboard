@@ -7,7 +7,7 @@ export default function AreaChart({
   groupBy,
   field,
   aggregation,
-  density_dict,
+  meta,
   N,
 }) {
   const config = {
@@ -30,9 +30,9 @@ export default function AreaChart({
   };
 
   if (
-    groupBy.includes(density_dict.atlas_structure_acronym) &&
-    field === density_dict.atlas_structure_acronym &&
-    aggregation.includes(density_dict.aggregation_choice_forDensity)
+    groupBy.includes(meta.atlas_structure_acronym) &&
+    field === meta.atlas_structure_acronym &&
+    aggregation.includes(meta.aggregation_condition)
   ) {
     let config_density = { ...config };
     config_density.data = data_acronym_density_BLA;
