@@ -13,7 +13,7 @@ const url_index = "/api/indices"
 const url_index_choosen = "/api/index_choosen/"
 const url_index_choosen_status = "/api/index_choosen/current_status/"
 const url_index_choosen_volume = "/api/index_choosen/volume/"
-function Dataset({ setFormFrame, setDisplayData, setAcronym_volume }) {
+function Dataset({ setFormFrame, setDisplayData, setAcronym_volume, setMeta }) {
     const [dataset, setDataset] = useState([])
 
     const [indexStatus, setIndexStatus] = useState({
@@ -90,9 +90,11 @@ function Dataset({ setFormFrame, setDisplayData, setAcronym_volume }) {
 
                         })
                         axios.get(urlPrefix + url_index_choosen_volume + index).then((response) => {
-                            console.log("Index volume retreive successfully")
-
-                            setAcronym_volume(response.data)
+                            console.log("Index meta retreive successfully")
+                            
+                            
+                            setMeta(response.data['meta'])
+                            setAcronym_volume(response.data['acronym_volumn'])
 
                         })
                     }}
