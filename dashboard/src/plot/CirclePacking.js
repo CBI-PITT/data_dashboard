@@ -7,7 +7,7 @@ export default function CirclePackingChart({
   groupBy,
   field,
   aggregation,
-  density_dict,
+  meta,
   displayData,
   N,
   acronym_volumn,
@@ -17,9 +17,9 @@ export default function CirclePackingChart({
       <N_number N={N} />
       {aggregation.map((agg) => {
         if (
-          groupBy.includes(density_dict.atlas_structure_acronym) &&
-          field === density_dict.atlas_structure_acronym &&
-          agg === density_dict.aggregation_choice_forDensity
+          groupBy.includes(meta.atlas_structure_acronym) &&
+          field === meta.atlas_structure_acronym &&
+          agg === meta.aggregation_condition
         ) {
           let data = { children: [] };
           let data_density = { children: [] };
@@ -37,7 +37,7 @@ export default function CirclePackingChart({
               groupBy.length === 1
                 ? element["key"].toString()
                 : element["key"][
-                    groupBy.indexOf(density_dict.atlas_structure_acronym)
+                    groupBy.indexOf(meta.atlas_structure_acronym)
                   ];
             block_density.value = block.value / acronym_volumn[acronym];
             data_density.children.push(block_density);

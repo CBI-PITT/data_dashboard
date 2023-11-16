@@ -250,7 +250,7 @@ function Form({
     // console.log(formDataUpdated)
 
     console.log("client request send", formData_send);
-    // console.log("formdata_send", typeof (formData_send))
+   
 
     fetch(urlPrefix + url_query, {
       headers: { "Content-Type": "application/json" },
@@ -259,7 +259,7 @@ function Form({
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("server data received", data);
+        // console.log("server data received", data);
         // setTableData(data)
         // console.log("setTableData", tableData)
         setDisplayData(data);

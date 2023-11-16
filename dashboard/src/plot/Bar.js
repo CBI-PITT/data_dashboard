@@ -1,7 +1,7 @@
 import { Column } from '@ant-design/plots';
 import React from 'react';
 import N_number from './N_number';
-export default function BarChart({ data_BLA, data_acronym_density_BLA, groupBy, field, aggregation, density_dict, N }) {
+export default function BarChart({ data_BLA, data_acronym_density_BLA, groupBy, field, aggregation, meta, N }) {
     const config = {
         data: data_BLA,
         isStack: true,
@@ -50,7 +50,7 @@ export default function BarChart({ data_BLA, data_acronym_density_BLA, groupBy, 
         ],
     };
     
-    if (groupBy.includes(density_dict.atlas_structure_acronym) && field === density_dict.atlas_structure_acronym && aggregation.includes(density_dict.aggregation_choice_forDensity)) {
+    if (groupBy.includes(meta.atlas_structure_acronym) && field === meta.atlas_structure_acronym && aggregation.includes(meta.aggregation_condition)) {
         let config_density = { ...config }
         config_density.data = data_acronym_density_BLA
         
