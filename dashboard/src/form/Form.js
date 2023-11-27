@@ -19,12 +19,11 @@ function Form({
   type_fields_dict,
   setType_field_dict,
   formFrame,
+  meta,
+  setN_value,
 }) {
-  // console.log(formFrame)
   const [Field_axis_list, setField_axis_list] = useState();
-  // console.log(resetSwitch)
 
-  //Initialize filter section
   const [key_Category, setkey_Category] = useState([]);
   const [value_Category, setvalue_Category] = useState([]);
   const [key_Continuous, setkey_Continuous] = useState([]);
@@ -34,12 +33,9 @@ function Form({
   const [Aggregation_list, setAggregation_list] = useState();
   const [filter_list, setFilter_list] = useState();
   const urlPrefix = "http://127.0.0.1:5000";
-  // const url_field = "/api/field"
-  // const url_filter = "/api/filter"
-  // const url_groupBy = "/api/groupBy"
-  // const url_aggregation = "/api/aggregation"
+
   const url_query = "/api/query";
-  // Initialize formaDataUpdated for responsing to user selection in form
+
   const [formDataUpdated, setFormDataUpdated] = useState({
     filter_list: [],
     field: "",
@@ -47,11 +43,6 @@ function Form({
     group_by: [],
     aggregate: [],
   });
-
-  // var agent_cate_key = []
-  // var agent_cate_value = []
-  // var agent_conti_key = []
-  // var agent_conti_value = []
 
   useEffect(() => {
     if (formFrame === undefined || formFrame === "dataset retrieving") {
@@ -223,24 +214,43 @@ function Form({
   //         //  console.log(Agrregation_list)
   //     })
   // }, [])
+  function calculateUniqueValues_key_array(array, position) {
+    const uniqueValues = new Set();
+
+    // Iterate through the array of objects
+    array.forEach((obj) => {
+      // Get the value at position 0 in the key array
+      const valueAtIndex0 = obj.key[position];
+
+      // Add the value to the set to maintain uniqueness
+      uniqueValues.add(valueAtIndex0);
+    });
+    console.log("key_array", uniqueValues.size);
+    return uniqueValues.size; // Return the count of unique values
+  }
+  function calculateUniqueValues_key_string(array) {
+    const uniqueValues = new Set();
+
+    // Iterate through the array of objects
+    array.forEach((obj) => {
+      // Get the value at position 0 in the key array
+      const valueAtIndex0 = obj.key;
+
+      // Add the value to the set to maintain uniqueness
+      uniqueValues.add(valueAtIndex0);
+    });
+    console.log("key_string", uniqueValues.size);
+    return uniqueValues.size; // Return the count of unique values
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault();
     // console.log(event)
     setOpen(true);
-    // Boxplot testing (no choice in aggregation)
-    let formData_boxplot_add = {
-      field: formDataUpdated.field,
-      filter: formDataUpdated.filter,
-      group_by: formDataUpdated.group_by,
-      aggregate: [],
-    };
-    formDataUpdated["aggregate"].forEach((element) => {
-      formData_boxplot_add["aggregate"].push(element);
-    });
-    // console.log(type_fields_dict)
-    // console.log(formData_boxplot_add['field'])
-    // console.log(typeof(type_fields_dict[formData_boxplot_add['field']]))
+    setN_value("Calculating...");
+
+    let formData_boxplot_add = JSON.parse(JSON.stringify(formDataUpdated));
+
     if (type_fields_dict[formData_boxplot_add["field"]] !== "keyword") {
       formData_boxplot_add["aggregate"].push("boxplot");
     }
@@ -250,7 +260,6 @@ function Form({
     // console.log(formDataUpdated)
 
     console.log("client request send", formData_send);
-   
 
     fetch(urlPrefix + url_query, {
       headers: { "Content-Type": "application/json" },
@@ -259,9 +268,22 @@ function Form({
     })
       .then((res) => res.json())
       .then((data) => {
-        // console.log("server data received", data);
-        // setTableData(data)
-        // console.log("setTableData", tableData)
+        console.log("server data received", data);
+
+        if (
+          formData_boxplot_add.group_by.includes(meta.metadata_calculation_name)
+        ) {
+          if (formData_boxplot_add.group_by.length === 1) {
+            setN_value(calculateUniqueValues_key_string(data));
+          } else {
+            setN_value(
+              calculateUniqueValues_key_array(
+                data,
+                formDataUpdated.group_by.indexOf(meta.metadata_calculation_name)
+              )
+            );
+          }
+        }
         setDisplayData(data);
         setFormDataCurrent(formDataUpdated);
         setOpen(false);
@@ -272,30 +294,40 @@ function Form({
         console.log(error);
         // debugger;
       });
+    let formData_n_value = JSON.parse(JSON.stringify(formDataUpdated));
+    if (!formData_n_value.group_by.includes(meta.metadata_calculation_name)) {
+      if (meta.metadata_calculation_name == null) {
+        setN_value("Not Available");
+        return;
+      }
+
+      // push metadata_calculation_name to the array
+      formData_n_value.group_by.push(meta.metadata_calculation_name);
+      formData_send = JSON.stringify(formData_n_value);
+      console.log("client request send with metadata", formData_send);
+      fetch(urlPrefix + url_query, {
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+        body: formData_send,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("server data received for N", data);
+          setN_value(
+            calculateUniqueValues_key_array(
+              data,
+              formData_n_value.group_by.indexOf(meta.metadata_calculation_name)
+            )
+          );
+        })
+        .catch((error) => {
+          console.log(error);
+          // debugger;
+        });
+    }
   };
 
-  // useEffect(()=>{
-  //     const back = { ...formDataUpdated }
-  //     back.field = ''
-  //     let initial_cate = {};
-  //     key_Category.forEach(item => {
-  //         initial_cate[item] = [];
-  //     });
-
-  //     back.filter.categorical = initial_cate
-  //     console.log(key_Category)
-  //     back.group_by = []
-  //     back.aggregate = []
-  //     setFormDataUpdated(back)
-  // },[resetSwitch])
-
   const handleReset = () => {
-    // setFormData({
-    //     field: '',
-    //     filter: { "categorical": {}, "continuous": {} },
-    //     group_by: [],
-    //     aggregate: []
-    // });
     const rest_formData = { ...formDataUpdated };
     rest_formData.field = "";
     let initial_cate = {};
@@ -307,7 +339,7 @@ function Form({
     console.log(key_Category);
     rest_formData.group_by = [];
     rest_formData.aggregate = [];
-    // rest_formData.filter_list = []
+
     setFormDataUpdated(rest_formData);
   };
 
@@ -347,11 +379,7 @@ function Form({
             <br></br>
           </div>
           <div className="filter">
-            <div>
-              {/* <br></br>
-                            <GetFilterList list={filter_list} form_Data={formDataUpdated} set_FormData={setFormDataUpdated} formFrame={formFrame} setkey_Category={setkey_Category} setvalue_Category={setvalue_Category} setkey_Continuous={setkey_Continuous} setvalue_Continuous={setvalue_Continuous} key_Category={key_Category} value_Category={value_Category} key_Continuous={key_Continuous} value_Continuous={value_Continuous} />
-                            <br></br> */}
-            </div>
+            <div></div>
             <div className="continuous">
               <GetConti
                 key_Continuous={key_Continuous}
@@ -445,22 +473,6 @@ function Form({
                 Dataset is retrieving — <strong>Please wait</strong>
               </Alert>
               <Box className="filter">
-                {/* <div className="continuous">
-                                        <Skeleton animation="wave" height={30} width='70%' />
-                                        <Skeleton animation="wave" height={20} width='50%' />
-
-                                    </div> */}
-                {/* <br></br>
-                                    <div className="continuous">
-                                        <Skeleton animation="wave" height={30} width='70%' />
-                                        <Skeleton animation="wave" height={20} width='50%' />
-
-                                    </div> */}
-
-                {/* <Skeleton animation="wave" variant='rounded' height={60} />
-                                    <br></br>
-                                    <Skeleton animation="wave" variant='rounded' height={60} /> */}
-                {/* <br></br> */}
                 <Skeleton animation="wave" variant="rounded" height={60} />
               </Box>
               <br></br>

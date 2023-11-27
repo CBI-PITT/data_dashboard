@@ -24,7 +24,7 @@ export default function AreaChart({
     xAxis: {
       label: {
         autoHide: true,
-        autoRotate: false,
+        autoRotate: true,
       },
     },
   };
