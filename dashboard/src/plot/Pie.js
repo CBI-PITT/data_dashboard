@@ -1,6 +1,7 @@
 import { Pie } from "@ant-design/plots";
 import React from "react";
 import N_number from "./N_number";
+import Typography from '@mui/material/Typography';
 export default function PieChart({
   data_BLA,
   data_acronym_density_BLA,

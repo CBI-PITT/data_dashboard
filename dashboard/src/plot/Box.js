@@ -28,7 +28,7 @@ export default function BoxChart({
     };
     boxplot_data_list.push(temp);
   });
-  console.log("boxplot_data_list", boxplot_data_list);
+  // console.log("boxplot_data_list", boxplot_data_list);
 
   const config = {
     width: 400,
@@ -37,10 +37,11 @@ export default function BoxChart({
     xField: "x",
     yField: ["min", "q1", "median", "q3", "max"],
     boxStyle: {
-      stroke: "#545454",
+      stroke: "#4C3D3D",
       fill: "#292929",
       fillOpacity: 0.6,
     },
+    
     animation: true,
   };
   return (

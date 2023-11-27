@@ -31,7 +31,7 @@ export default function LineChart({
     xAxis: {
       label: {
         autoHide: true,
-        autoRotate: false,
+        autoRotate: true,
       },
     },
   };
