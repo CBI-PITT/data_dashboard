@@ -3,7 +3,7 @@ from flask import url_for
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import AdminIndexView, expose, BaseView
 from flask_admin.menu import MenuLink
-from config.es_config import es_server, file_path_prefix
+from config.es_config import es_server
 from elasticsearch import Elasticsearch
 
 es = Elasticsearch(es_server, request_timeout=180)
