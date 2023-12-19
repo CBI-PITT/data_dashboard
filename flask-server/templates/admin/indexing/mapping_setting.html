@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Mapping Settings</title>
+    <style>
+        /* CSS styles for improved appearance */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .submit-button {
+            display: inline-block;
+            width: 120px;
+            margin: 0 10px;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4caf50;
+            color: #fff;
+            text-align: center;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .submit-button:hover {
+            background-color: #45a049;
+        }
+
+        .form-section {
+            margin-bottom: 20px;
+            width: 90%;
+            margin: 0 auto;
+            border-radius: 6px;
+        }
+
+        .form-section label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+            color: #555;
+        }
+
+        .form-section input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .form-section::after {
+            content: '';
+            display: block;
+            margin-bottom: 20px;
+            margin-top: 5px;
+        }
+
+        table {
+            width: 90%;
+            margin: 0 auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        /* CSS for the backdrop */
+        .dropdowns-section {
+            text-align: center;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            margin-left: 5%;
+            /* Adjust the margin as needed */
+        }
+
+        .dropdowns-section label {
+            font-weight: bold;
+            /* margin-bottom: 5px; */
+            display: block;
+            color: #555;
+        }
+
+        .dropdowns-section input {
+            width: 10%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .banner {
+            background-color: #ffd700;
+            color: #333;
+            text-align: center;
+            padding: 10px 0;
+            margin-left: 5%;
+            margin-right: 5%;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .processing-banner {
+            background-color: #ffc107;
+            color: #333;
+            text-align: center;
+            padding: 10px 0;
+            margin: 10px 0;
+            border-radius: 6px;
+            display: none;
+            /* Initially hidden */
+        }
+
+        .submit-button:disabled {
+            background-color: #ccc;
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        .calculation-folder {
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            width: 90%;
+            margin: 0 auto;
+            box-sizing: border-box;
+            background-color: #f9f9f9;
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .calculation-folder h2 {
+            margin: 0;
+            padding: 10px 20px;
+            /* cursor: pointer; */
+            background-color: #f0f0f0;
+            border-bottom: 2px solid #ddd;
+            font-size: 18px;
+            color: #333;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .calculation-folder-content {
+            /* display:; */
+            padding: 10px 20px;
+        }
+
+        .calculation-folder-content.active {
+            display: block;
+        }
+
+        .calculation-folder:hover {
+            box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* .calculation-folder h2:hover {
+            background-color: #e0e0e0;
+        } */
+
+        .calculation-section {
+            margin-bottom: 20px;
+        }
+
+        .calculation-section h3 {
+            margin-top: 0;
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f0f0f0;
+            border-bottom: 2px solid #ddd;
+            font-size: 16px;
+            color: #333;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .calculation-section h3:hover {
+            background-color: #e0e0e0;
+        }
+        .calculation-section-content {
+            display: none;
+            padding: 10px 20px;
+        }
+
+        .calculation-section-content.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Mapping Settings</h1>
+
+    <form id="mappingForm" method="POST" action="/indexing/start" onsubmit="startIndexing()">
+        <div class="form-section">
+            <label for="file_name">File Name:</label>
+            <input type="text" id="file_name_excluded" name="file_name_excluded" value="{{ file_name }}" disabled>
+            <input type="hidden" name="file_name_excluded" value="{{ file_name }}">
+        </div>
+        <div class="dropdowns-section">
+            <label for="separator">Separate by:</label>
+            <input type="text" id="separator_excluded" name="separator_excluded" value="{{ separator }}" disabled>
+            <input type="hidden" name="separator_excluded" value="{{ separator }}">
+            <label for="delimiter">String delimiter:</label>
+            <input type="text" id="delimiter_excluded" name="delimiter_excluded" value="{{ delimiter }}" disabled>
+            <input type="hidden" name="delimiter_excluded" value="{{ delimiter }}">
+        </div>
+        <div class="form-section">
+            <label for="index_name_excluded">Index Name:</label>
+            <!-- Create a text input field with a datalist -->
+            <input type="text" id="index_name_excluded" name="index_name_excluded" list="indexNames" autocomplete="off"
+                placeholder="Choose from existed index or creat new one" value="{{ index_name }}" disabled>
+            <input type="hidden" name="index_name_excluded" value="{{ index_name }}">
+            <!-- Define the datalist with various options -->
+            <!-- <datalist id="indexNames">
+                {% for index_name in indexNamesArray %}
+                <option value="{{ index_name }}"></option>
+                {% endfor %}
+            </datalist> -->
+        </div>
+        <div class="form-section">
+            <label for="shard_number_excluded">Shard Number:</label>
+            <input type="number" id="shard_number_excluded" name="shard_number_excluded" autocomplete="off" required>
+        </div>
+        <div class="calculation-folder">
+            <h2 >Calculation Parameters Setting</h2>
+            <div class="calculation-folder-content">
+                <div class="calculation-section">
+                    <h3 onclick="toggleDensityParams()">Density Calculation Parameters</h3>
+                    <div class="calculation-section-content density-params">
+
+                        <div class="form-section">
+                            <label for="density_atlas_col_name_excluded">density_atlas_col_name:</label>
+                            <select id="density_atlas_col_name_excluded" name="density_atlas_col_name_excluded">
+
+                                <option value="none" selected>none</option>
+                                {% for name in column_name %}
+                                <option value="{{ name }}">{{ name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-section">
+                            <label for="density_agg_excluded">density_aggregation_condition:</label>
+                            <select id="density_agg_excluded" name="density_agg_excluded">
+
+                                <option value="none" selected>none</option>
+                                <option value="value_count">value_count</option>
+                            </select>
+
+                        </div>
+                        <div class="form-section">
+                            <label for="resolution_micrometer_excluded">resolution:</label>
+                            <input type="number" id="resolution_micrometer_excluded"
+                                name="resolution_micrometer_excluded" placeholder="unit micrometer" />
+                        </div>
+                    </div>
+                </div>
+                <div class="calculation-section">
+                    <h3 onclick="toggleNValueParams()">N Value Calculation Parameters</h3>
+                    <div class="calculation-section-content nvalue-params">
+
+                        <div class="form-section">
+                            <label for="n_value_col_name_excluded">n_value_col_name:</label>
+                            <select id="n_value_col_name_excluded" name="n_value_col_name_excluded">
+
+                                <option value="none">none</option>
+                                {% for name in column_name %}
+                                <option value="{{ name }}">{{ name }}</option>
+                                {% endfor %}
+                            </select>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="banner">
+            Auto detection and assignment completed.
+        </div>
+        <div class="table-section">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Column Name</th>
+                        <th>Pandas Data Type</th>
+                        <th>ES Data Type</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% if columns_data_types %}
+                    {% for column, data_type in columns_data_types.items() %}
+                    <tr>
+                        <td>{{ column }}</td>
+                        <td>{{ data_type }}</td>
+                        <td>
+                            <select name="{{ column }}" class="dropdown">
+                                <option value="keyword" {% if data_type in ['object', 'bool' , 'datetime64' ] %}
+                                    selected {% endif %}>keyword</option>
+                                <option value="integer" {% if data_type=='int64' %} selected {% endif %}>integer
+                                </option>
+                                <option value="float" {% if data_type=='float64' %} selected {% endif %}>float</option>
+                                <option value="short">short</option>
+                                <option value="long">long</option>
+                            </select>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="3">No data available</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        <div class="processing-banner" id="processingMessage">
+            Data is processing and indexing. Please do not submit the form again.
+        </div>
+        <div class="button-container">
+            <button type="button" class="submit-button" id="cancelButton"
+                onclick="window.history.back()">Cancel</button>
+            <button type="submit" class="submit-button" id="startButton">Start</button>
+        </div>
+    </form>
+    <script>
+        function startIndexing() {
+            var startButton = document.getElementById('startButton');
+            var cancelButton = document.getElementById('cancelButton')
+            startButton.innerHTML = 'Indexing...'; // Change button text
+            startButton.disabled = true; // Disable the button
+            cancelButton.innerHTML = 'Cancel Unavailable';
+            cancelButton.disabled = true;
+            // document.getElementById('mappingForm').submit();
+        }
+        function toggleOptional() {
+            var content = document.querySelector('.calculation-folder-content');
+            content.classList.toggle('active');
+        }
+
+        function toggleDensityParams() {
+            var densityParams = document.querySelector('.density-params');
+            densityParams.classList.toggle('active');
+        }
+
+        function toggleNValueParams() {
+            var nvalueParams = document.querySelector('.nvalue-params');
+            nvalueParams.classList.toggle('active');
+        }
+
+    </script>
+</body>
+
+</html>

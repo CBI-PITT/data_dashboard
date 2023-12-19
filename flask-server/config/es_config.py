@@ -1,0 +1,1 @@
+es_server = 'http://localhost:9200'

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Error</title>
+    <style>
+        /* CSS styles for error message */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+        }
+        .error-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .error-box {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        h2 {
+            color: #e74c3c; /* Error message color */
+        }
+        p {
+            margin-top: 10px;
+            color: #333;
+        }
+        .home-link {
+            margin-top: 20px;
+        }
+        .home-link a {
+            text-decoration: none;
+            color: #3498db;
+            font-weight: bold;
+        }
+        .home-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-box">
+            <h2>Oops! Something went wrong.</h2>
+            <p>{{ error_message }}</p>
+            <div class="home-link">
+                <a href="/admin">Back to Home</a> or <a href="/admin/fileuploadview">reindex</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
