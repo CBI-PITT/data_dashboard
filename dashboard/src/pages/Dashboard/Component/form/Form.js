@@ -12,7 +12,7 @@ import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import SendIcon from "@mui/icons-material/Send";
 import DeleteIcon from "@mui/icons-material/Delete";
-
+import HOST from "../../../../config/path";
 function Form({
   setDisplayData,
   setFormDataCurrent,
@@ -32,7 +32,7 @@ function Form({
   const [GroupBy_list, setGroupBy_List] = useState();
   const [Aggregation_list, setAggregation_list] = useState();
   const [filter_list, setFilter_list] = useState();
-  const urlPrefix = "http://127.0.0.1:5000";
+  
 
   const url_query = "/api/query";
 
@@ -164,7 +164,7 @@ function Form({
 
   // useEffect(() => {
   //     // Request for field list
-  //     axios.get(urlPrefix + url_field).then((response) => {
+  //     axios.get(HOST + url_field).then((response) => {
   //         setType_field_dict(response.data)
 
   //         let field_list_return = Object.keys(response.data)
@@ -176,7 +176,7 @@ function Form({
 
   //     })
   //     // Request for filter(key,value)
-  //     axios.get(urlPrefix + url_filter).then((response) => {
+  //     axios.get(HOST + url_filter).then((response) => {
   //         // console.log("filter return", response.data)
   //         // let filter_return = JSON.parse(response.data.replace(/\bNaN\b/g, "null"));
   //         let filter_return = response.data;
@@ -200,14 +200,14 @@ function Form({
   //         setvalue_Continuous(agent_conti_value)
   //     });
   //     // Request for groupBy list
-  //     axios.get(urlPrefix + url_groupBy).then((response) => {
+  //     axios.get(HOST + url_groupBy).then((response) => {
   //         // console.log("groupBy return", typeof (response.data))
   //         let groupBy_list_return = response.data
   //         setGroupBy_List(groupBy_list_return)
   //         //  console.log(GroupBy_list)
   //     })
   //     // Request for aggregation list
-  //     axios.get(urlPrefix + url_aggregation).then((response) => {
+  //     axios.get(HOST + url_aggregation).then((response) => {
   //         // console.log(response.data.data)
   //         let aggregation_list_return = response.data.data
   //         setAggregation_list(aggregation_list_return)
@@ -261,7 +261,7 @@ function Form({
 
     console.log("client request send", formData_send);
 
-    fetch(urlPrefix + url_query, {
+    fetch(HOST + url_query, {
       headers: { "Content-Type": "application/json" },
       method: "POST",
       body: formData_send,
@@ -305,7 +305,7 @@ function Form({
       formData_n_value.group_by.push(meta.metadata_calculation_name);
       formData_send = JSON.stringify(formData_n_value);
       console.log("client request send with metadata", formData_send);
-      fetch(urlPrefix + url_query, {
+      fetch(HOST + url_query, {
         headers: { "Content-Type": "application/json" },
         method: "POST",
         body: formData_send,

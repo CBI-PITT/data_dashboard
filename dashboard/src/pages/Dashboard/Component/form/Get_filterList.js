@@ -82,8 +82,8 @@ function GetFilterList({ list, form_Data, set_FormData, formFrame, setkey_Catego
     const handleChange = (event) => {
         const { name, value: value_choosen_filter_list } = event.target;
         //to do here
-        console.log(event.target)
-        console.log(form_Data.filter_list)
+        // console.log(event.target)
+        // console.log(form_Data.filter_list)
         set_FormData((prevFormData) => ({
             ...prevFormData,
             [name]: value_choosen_filter_list,
@@ -140,7 +140,7 @@ function GetFilterList({ list, form_Data, set_FormData, formFrame, setkey_Catego
             event.target.value.forEach(element => {
 
                 if (element in formFrame.filter.categorical) {
-                    console.log('cate' + element)
+                    // console.log('cate' + element)
                     agent_cate_key.push(element)
                     agent_cate_value.push(filter_return.categorical[element])
                 }

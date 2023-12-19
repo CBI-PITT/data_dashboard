@@ -130,7 +130,7 @@ function GetCate({ key_category, value_category, formData, set_FormData }) {
     // console.log(formData)
     const handleChange = (event) => {
         const { name, value } = event.target;
-        console.log(formData)
+        // console.log(formData)
         if (value.includes(select_all_option)) {
             const index_select_all = value.indexOf(select_all_option);
             value.splice(index_select_all, 1)

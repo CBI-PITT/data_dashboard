@@ -7,7 +7,8 @@ import { Paper } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Dividers from "./Divider";
-const urlPrefix = "http://127.0.0.1:5000";
+import HOST from "../../../../config/path";
+
 const url_index = "/api/indices";
 const url_index_choosen = "/api/index_choosen/";
 const url_index_choosen_status = "/api/index_choosen/current_status/";
@@ -22,7 +23,7 @@ function Dataset({ setFormFrame, setDisplayData, setAcronym_volume, setMeta }) {
     docCount: "NaN",
   });
   useEffect(() => {
-    axios.get(urlPrefix + url_index).then((response) => {
+    axios.get(HOST + url_index).then((response) => {
       setDataset(response.data);
     });
   }, []);
@@ -44,7 +45,7 @@ function Dataset({ setFormFrame, setDisplayData, setAcronym_volume, setMeta }) {
             setDisplayData();
             let index = event.target.value;
             axios
-              .get(urlPrefix + url_index_choosen + index)
+              .get(HOST + url_index_choosen + index)
               .then((response) => {
                 console.log("Index selected or changed successfully");
                 setFormFrame(response.data);
@@ -56,7 +57,7 @@ function Dataset({ setFormFrame, setDisplayData, setAcronym_volume, setMeta }) {
               docCount: "Retrieving",
             });
             axios
-              .get(urlPrefix + url_index_choosen_status + index)
+              .get(HOST + url_index_choosen_status + index)
               .then((response) => {
                 console.log("Index status retreive successfully");
 
@@ -68,10 +69,10 @@ function Dataset({ setFormFrame, setDisplayData, setAcronym_volume, setMeta }) {
                 });
               });
             axios
-              .get(urlPrefix + url_index_choosen_meta + index)
+              .get(HOST + url_index_choosen_meta + index)
               .then((response) => {
                 console.log("Index meta retreive successfully");
-
+                console.log(response.data)
                 setMeta(response.data["meta"]);
                 setAcronym_volume(response.data["acronym_volumn"]);
               });

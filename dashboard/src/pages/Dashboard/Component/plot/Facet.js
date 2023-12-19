@@ -143,7 +143,11 @@ export default function FacetChart({ data_BLA, data_acronym_density_BLA, groupBy
         //   },
         // };
         // return <Facet {...config} />;
-        
+        return (
+          <div>
+          <h1>Under Construction 🚧 </h1>
+          </div>
+        )
         return (
           <div>
             {aggregation.map((agg) => {
