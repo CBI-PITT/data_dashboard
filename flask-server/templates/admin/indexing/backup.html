@@ -1,0 +1,51 @@
+<div class="calculation-folder">
+    <h2 onclick="toggleOptional()">Calculation Parameters Setting</h2>
+    <div class="calculation-folder-content">
+        <div class="calculation-section">
+            <h3 onclick="toggleDensityParams()">Density Calculation Parameters</h3>
+            <div class="calculation-section-content density-params">
+                <!-- Density calculation parameters fields (Dropdowns and fixed input) -->
+                <div class="form-section">
+                    <label for="dropdown1">Dropdown 1:</label>
+                    <select id="dropdown1" name="dropdown1">
+                        <!-- Add options for Dropdown 1 -->
+                        <!-- Example: -->
+                        <option value="option1">Option 1</option>
+                        <option value="option2">Option 2</option>
+                    </select>
+                </div>
+
+                <div class="form-section">
+                    <label for="dropdown2">Dropdown 2:</label>
+                    <select id="dropdown2" name="dropdown2">
+                        <!-- Add options for Dropdown 2 -->
+                        <!-- Example: -->
+                        <option value="option1">Option 1</option>
+                        <option value="option2">Option 2</option>
+                    </select>
+
+                </div>
+                <div class="form-section">
+                    <label for="fixed_input">Fixed Input:</label>
+                    <input type="text" id="fixed_input" name="fixed_input" placeholder="Enter value" />
+                </div>
+            </div>
+        </div>
+        <div class="calculation-section">
+            <h3 onclick="toggleNValueParams()">N Value Calculation Parameters</h3>
+            <div class="calculation-section-content nvalue-params">
+                <!-- N value calculation parameters fields (Dropdowns) -->
+                <div class="form-section">
+                    <label for="dropdown2">Dropdown 2:</label>
+                    <select id="dropdown2" name="dropdown2">
+                        <!-- Add options for Dropdown 2 -->
+                        <!-- Example: -->
+                        <option value="option1">Option 1</option>
+                        <option value="option2">Option 2</option>
+                    </select>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
