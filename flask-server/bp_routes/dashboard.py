@@ -1,9 +1,8 @@
 from flask import Blueprint
-from admin_view.db_models.models import IndexInfo
 from flask import jsonify
 from elasticsearch import Elasticsearch
-from config.es_config import es_server, file_path_prefix
-from config import index_registration, path_config
+from config.es_config import es_server
+from config import index_registration
 from admin_view.db_models.models import  Parameters
 from flask import request
 import query_dsl.query_dsl as Query
@@ -16,9 +15,7 @@ es = Elasticsearch(es_server, request_timeout=180)
 
 INDEX = ""
 
-indexDensityRegistrationMap = (
-    index_registration.Registration().index_density_registration_map
-)
+
 @dahsboard_bp.route("/api/indices")
 def get_index():
     indices = es.cat.indices(format="json")
@@ -88,9 +85,9 @@ def volume_reader(um):
 
 acronym_volume_10 = volume_reader(10)
 acronym_volume_25 = volume_reader(25)
-indexDensityRegistrationMap = (
-    index_registration.Registration().index_density_registration_map
-)
+# indexDensityRegistrationMap = (
+#     index_registration.Registration().index_density_registration_map
+# )
 
 
 @dahsboard_bp.route("/api/index_choosen/meta/<index_name>")

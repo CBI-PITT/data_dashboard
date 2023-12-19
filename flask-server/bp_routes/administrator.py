@@ -1,12 +1,13 @@
 import imp
 from flask import Blueprint, request, current_app
 from admin_view.db_models.models import db, User, IndexInfo, Parameters
-from flask import Flask, jsonify, render_template, request, redirect, url_for
-from flask_login import LoginManager, login_user, logout_user
+from flask import  jsonify, render_template, request, redirect, url_for
+from flask_login import login_user, logout_user
 import os
 import pandas as pd
 from elasticsearch import Elasticsearch
-from config.es_config import es_server, file_path_prefix
+from config.es_config import es_server
+from config.host import UPLOAD_FOLDER_PATH
 from importing.es_importing import indexing_existed, indexing_new
 # from server import app
 es = Elasticsearch(es_server, request_timeout=180)
@@ -86,7 +87,7 @@ def upload_csv():
         if file.mimetype != "text/csv":
             return jsonify({"error": "Invalid file type. Please upload a CSV file"})
 
-        file.save(os.path.join(current_app.config["UPLOAD_FOLDER"], file_name))
+        file.save(os.path.join(UPLOAD_FOLDER_PATH, file_name))
 
         print(file_name + " " + "uploaded")
         separator_mark = {
@@ -102,12 +103,12 @@ def upload_csv():
         }.get(delimiter, '"')
         try:
             df = pd.read_csv(
-                current_app.config["UPLOAD_FOLDER"] + "/" + file_name,
+               UPLOAD_FOLDER_PATH + "/" + file_name,
                 sep=separator_mark,
                 quotechar=delimiter_mark,
             )
         except Exception as e:
-            os.remove(file_path_prefix + "/" + file_name)
+            os.remove(UPLOAD_FOLDER_PATH + "/" + file_name)
             error_message = str(e)  # Get the error message
             return render_template(
                 "admin/indexing/error_indexing.html", error_message=error_message
