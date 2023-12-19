@@ -1,5 +1,5 @@
 import config.db_config as db_config
-from config import path_config
+from config.host import UPLOAD_FOLDER_PATH
 from flask import Flask
 from flask_cors import CORS
 from elasticsearch import Elasticsearch
@@ -25,7 +25,7 @@ app = Flask(__name__)
 CORS(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://" + CONFIG_SQL_CONNECTION
 app.config["SECRET_KEY"] = CONFIG_SCREATE_KEY
-app.config["UPLOAD_FOLDER"] = path_config.UPLOAD_FOLDER
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER_PATH
 db.init_app(app)
 login_manager = LoginManager(app)
 
