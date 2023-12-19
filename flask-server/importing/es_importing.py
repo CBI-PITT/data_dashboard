@@ -4,8 +4,8 @@ import uuid
 import pandas as pd
 import os
 import requests
-from config.es_config import es_server, file_path_prefix
-from config.host import HOST
+from config.es_config import es_server
+from config.host import HOST, UPLOAD_FOLDER_PATH
 
 server = es_server
 es = Elasticsearch(request_timeout=600, hosts=server)
@@ -77,12 +77,12 @@ def bulk_records_data(records, _index):
 
 def indexing_new(file_name, separator, delimiter, index_name, shard_number, mapping):
     creat_index(index_name, shard_number, mapping)
-    records = csv_to_records(file_path_prefix + "/" + file_name, separator, delimiter)
+    records = csv_to_records(UPLOAD_FOLDER_PATH + "/" + file_name, separator, delimiter)
     print(records)
     print("Indexing")
     response = helpers.bulk(es, bulk_records_data(records, index_name))
     print("\nbulk_json_data() RESPONSE:", response)
-    os.remove(file_path_prefix + "/" + file_name)
+    os.remove(UPLOAD_FOLDER_PATH + "/" + file_name)
     url = HOST + '/indexing/para_store'
 
     # Example payload for the POST request (can be a dictionary or any other data)
@@ -99,9 +99,9 @@ def indexing_new(file_name, separator, delimiter, index_name, shard_number, mapp
         print('POST request failed')
 
 def indexing_existed(file_name, separator, delimiter, index_name):
-    records = csv_to_records(file_path_prefix + "/" + file_name, separator, delimiter)
+    records = csv_to_records(UPLOAD_FOLDER_PATH + "/" + file_name, separator, delimiter)
     print(records)
     print("Indexing")
     response = helpers.bulk(es, bulk_records_data(records, index_name))
     print("\nbulk_json_data() RESPONSE:", response)
-    os.remove(file_path_prefix + "/" + file_name)
+    os.remove(UPLOAD_FOLDER_PATH + "/" + file_name)
