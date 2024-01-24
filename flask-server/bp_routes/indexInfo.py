@@ -1,13 +1,13 @@
 
 from flask import Blueprint
-from admin_view.db_models.models import IndexInfo
+from db_models.models import field_info
 from flask import  jsonify
 indexInfo_bp = Blueprint('indexInfo', __name__)
 @indexInfo_bp.route("/indexInfo")
 def getIndexInfo():
     try:
         # Retrieve all data from the IndexInfo table
-        all_info = IndexInfo.query.all()
+        all_info = field_info.query.all()
 
         # Serialize the data into a list of dictionaries
         info_list = []

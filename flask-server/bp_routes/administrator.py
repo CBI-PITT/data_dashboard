@@ -1,10 +1,13 @@
+
 import imp
 from flask import Blueprint, request, current_app
-from admin_view.db_models.models import db, User, IndexInfo, Parameters
+from flask_login import current_user
+from db_models.models import db, admin_credentials, field_info, parameters, index_info
 from flask import  jsonify, render_template, request, redirect, url_for
 from flask_login import login_user, logout_user
 import os
 import pandas as pd
+from datetime import datetime
 from elasticsearch import Elasticsearch
 from config.es_config import es_server
 from config.host import UPLOAD_FOLDER_PATH
@@ -20,7 +23,7 @@ administrator_bp = Blueprint("administrator", __name__)
 def admin_login():
     # print(request.form['account'])
     # print(request.form['password'])
-    user = User.query.filter_by(
+    user = admin_credentials.query.filter_by(
         account=request.form["account"], password=request.form["password"]
     ).first()
     print(user)
@@ -42,7 +45,7 @@ def admin_logout():
 
 
 
-@administrator_bp.route("/indexing/para_store", methods=["POST"])
+@administrator_bp.route("/indexing/mapping_store", methods=["POST"])
 def add_index_info():
     try:
         data = request.json
@@ -51,7 +54,7 @@ def add_index_info():
 
         for key, value in mapping.items():
             print(key, value["type"])
-            new_index_info = IndexInfo(
+            new_index_info = field_info(
                 field=key, description="", type=value["type"], es_index=index
             )
             db.session.add(new_index_info)
@@ -210,14 +213,21 @@ def index_file():
         # if existing_entry:
         #     pass
         # else:
-        new_entry = Parameters(
-            index_name=index_name,
+        new_entry_para = parameters(
+            es_index=index_name,
             resolution_micrometer=resolution_micrometer,
             density_agg=density_agg,
             density_atlas_col_name=density_atlas_col_name,
             n_value_col_name=n_value_col_name,
         )
-        db.session.add(new_entry)
+        db.session.add(new_entry_para)
+        new_entry_index = index_info(
+            index_name = index_name,
+            created =  datetime.now().strftime("%Y-%m-%d"),
+            # modified = '',
+            # breif = ''
+        )
+        db.session.add(new_entry_index)
         db.session.commit()
     except Exception as e:
         error_message = str(e)  # Get the error message
