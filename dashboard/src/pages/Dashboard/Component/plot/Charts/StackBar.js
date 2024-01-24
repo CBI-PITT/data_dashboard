@@ -1,7 +1,7 @@
 import { Column } from "@ant-design/plots";
 import React from "react";
-import N_number from "./N_number";
-export default function BarChart({
+import N_number from "../Control/N_number";
+export default function StackBarChart({
   data_BLA,
   data_acronym_density_BLA,
   groupBy,
@@ -13,6 +13,7 @@ export default function BarChart({
   const config = {
     data: data_BLA,
     isStack: true,
+    // isGroup: true,
     xField: "X_axis",
     yField: "value",
     seriesField: "type",
@@ -35,18 +36,41 @@ export default function BarChart({
     //     },
     //   ],
     // },
-    legend: {
-      position: "top", // Set the legend position to "top"
+
+    columnStyle: {
+      // radius: [20, 20, 0, 0],
+      stroke: "#1890ff",
+      // opacity: 0.8,
     },
+    legend: {
+      position: "top-left",
+
+      itemName: {
+        style: {
+          fontSize: 18, // 将图例文本大小设置为16（根据需要调整）
+        },
+      },
+    },
+
     xAxis: {
       label: {
         autoHide: true,
         autoRotate: true,
-        // style: {
-        //   fontSize: 20,
-        // },
+        style: {
+          fontSize: 18,
+        },
       },
     },
+    yAxis: {
+      label: {
+        autoHide: true,
+        autoRotate: true,
+        style: {
+          fontSize: 18,
+        },
+      },
+    },
+
     // yAxis: {
     //     label: {
     //       autoHide: true,
@@ -65,6 +89,7 @@ export default function BarChart({
         // type: 'active-region',
         // type: 'element-highlight',
         type: "element-active",
+
         // enable: true,
       },
     ],
@@ -77,19 +102,20 @@ export default function BarChart({
   ) {
     let config_density = { ...config };
     config_density.data = data_acronym_density_BLA;
-
+    config_density.smooth = false;
     return (
       <div className="chartFill">
-        <N_number N={N} />
+        
         <Column {...config} />
+        <br></br>
         <Column {...config_density} />
       </div>
     );
   } else {
     return (
       <div className="chartFill">
-        <N_number N={N} />
-        <Column {...config} />{" "}
+        
+        <Column {...config} />
       </div>
     );
   }

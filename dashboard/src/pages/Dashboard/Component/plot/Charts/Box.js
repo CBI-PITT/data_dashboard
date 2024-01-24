@@ -1,5 +1,5 @@
 import { Box } from "@ant-design/plots";
-import N_number from "./N_number";
+import N_number from "../Control/N_number";
 // import React from 'react';
 
 export default function BoxChart({
@@ -46,7 +46,7 @@ export default function BoxChart({
   };
   return (
     <div className="chartFill">
-      <N_number N={N} />
+      
       <Box {...config} />
     </div>
   );

@@ -1,6 +1,6 @@
 import { Pie } from "@ant-design/plots";
 import React from "react";
-import N_number from "./N_number";
+import N_number from "../Control/N_number";
 import Typography from '@mui/material/Typography';
 export default function PieChart({
   data_BLA,
@@ -15,7 +15,7 @@ export default function PieChart({
 }) {
   return (
     <div className="pie">
-      <N_number N={N} />
+      
       {aggregation.map((agg) => {
         if (
           groupBy.includes(meta.atlas_structure_acronym) &&
@@ -55,6 +55,10 @@ export default function PieChart({
               type: "spider",
               labelHeight: 28,
               content: "{name}\n{percentage}",
+              style: {
+                fill: '#111111', // Set fill to black for labels
+                fontSize:15
+              },
               layout: [
                 // 柱形图数据标签位置自动调整
                 // 数据标签防遮挡
@@ -64,7 +68,17 @@ export default function PieChart({
                 // {
                 //   type: 'adjust-color',
                 // },
-              ],
+              ]
+            },
+            legend: {
+              layout: 'vertical',
+              position: 'right',
+              itemName: {
+                style: {
+                  // fill: '#111111', // 将图例文本颜色设置为黑色
+                  fontSize:20
+                },
+              },
             },
             interactions: [
               {
@@ -76,7 +90,10 @@ export default function PieChart({
             ],
           };
           const config_density = {...config}
-          config_density.data = data_density
+          // config_density.data = data_density
+          config_density.data = data_acronym_density_BLA
+          config_density.angleField = 'value'
+          config_density.colorField = 'X_axis'
 
           // return <h1>hello</h1>
           return (
@@ -115,6 +132,10 @@ export default function PieChart({
               type: "spider",
               labelHeight: 28,
               content: "{name}\n{percentage}",
+              style: {
+                fill: '#111111', // Set fill to black for labels
+                fontSize:15
+              },
               layout: [
                 // 柱形图数据标签位置自动调整
                 // 数据标签防遮挡
@@ -124,7 +145,7 @@ export default function PieChart({
                 // {
                 //   type: 'adjust-color',
                 // },
-              ],
+              ]
             },
             interactions: [
               {
@@ -134,6 +155,16 @@ export default function PieChart({
                 type: "element-active",
               },
             ],
+            legend: {
+              layout: 'vertical',
+              position: 'right',
+              itemName: {
+                style: {
+                  // fill: '#111111', // 将图例文本颜色设置为黑色
+                  fontSize:20
+                },
+              },
+            },
           };
 
           // return <h1>hello</h1>

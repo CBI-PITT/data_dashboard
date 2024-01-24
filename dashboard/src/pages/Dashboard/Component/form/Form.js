@@ -21,6 +21,10 @@ function Form({
   formFrame,
   meta,
   setN_value,
+  setOriginalArray,
+  
+  setSortCondition,
+  setTopN,
 }) {
   const [Field_axis_list, setField_axis_list] = useState();
 
@@ -32,7 +36,6 @@ function Form({
   const [GroupBy_list, setGroupBy_List] = useState();
   const [Aggregation_list, setAggregation_list] = useState();
   const [filter_list, setFilter_list] = useState();
-  
 
   const url_query = "/api/query";
 
@@ -285,6 +288,10 @@ function Form({
           }
         }
         setDisplayData(data);
+        setOriginalArray(data);
+        
+        setSortCondition('')
+        setTopN('')
         setFormDataCurrent(formDataUpdated);
         setOpen(false);
 

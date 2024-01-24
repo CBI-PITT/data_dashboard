@@ -1,7 +1,7 @@
-import { Line } from "@ant-design/plots";
+import { Area } from "@ant-design/plots";
 import React from "react";
-import N_number from "./N_number";
-export default function LineChart({
+import N_number from "../Control/N_number";
+export default function AreaChart({
   data_BLA,
   data_acronym_density_BLA,
   groupBy,
@@ -16,14 +16,7 @@ export default function LineChart({
     yField: "value",
     seriesField: "type",
     smooth: true,
-    point: {
-      size: 5,
-      style: {
-        lineWidth: 1,
-        fillOpacity: 1,
-      },
-      shape: "circle",
-    },
+    
     slider: {
       start: 0,
       end: 1,
@@ -32,6 +25,30 @@ export default function LineChart({
       label: {
         autoHide: true,
         autoRotate: true,
+        style: {
+          fontSize: 18,
+          
+          
+        },
+      },
+    },
+    yAxis: {
+      label: {
+        autoHide: true,
+        autoRotate: true,
+        style: {
+          fontSize: 18,
+          
+         
+        },
+      },
+    },
+    legend: {
+      
+      itemName: {
+        style: {
+          fontSize: 16, // Set legend item text size to 16 (adjust as needed)
+        },
       },
     },
   };
@@ -43,18 +60,20 @@ export default function LineChart({
   ) {
     let config_density = { ...config };
     config_density.data = data_acronym_density_BLA;
+    config_density.smooth = false;
     return (
       <div className="chartFill">
-        <N_number N={N} />
-        <Line {...config} />
-        <Line {...config_density} />
+        
+        <Area {...config} />
+        <br></br>
+        <Area {...config_density} />
       </div>
     );
   } else {
     return (
       <div className="chartFill">
-        <N_number N={N} />
-        <Line {...config} />
+        
+        <Area {...config} />
       </div>
     );
   }

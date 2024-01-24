@@ -1,6 +1,8 @@
 
 import Box from '@mui/material/Box';
-import barImg from '../asset/Bar.png'
+import Grid from '@mui/material/Grid';
+import stackBarImg from '../asset/StackBar.png'
+import groupBarImg from '../asset/GroupBar.png'
 import boxImg from '../asset/Box.png'
 import dotImg from '../asset/Scatter.png'
 import pieImg from '../asset/Pie.png'
@@ -10,28 +12,24 @@ import cloudImg from '../asset/Cloud.png'
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import multi_layer from '../asset/Multi_layer.png';
-function plotChoice({ setPlotChoice, field_status }) {
+import IconButton from '@mui/material/IconButton';
+function plotChoice({ setPlotChoice, field_status,groupBy }) {
     // console.log(field_status)
 
     const buttons = [
-        <Button key="bar" onClick={() => { setPlotChoice("bar") }} ><img src={barImg} className="plotButton"></img></Button>,
-        <Button key="box" onClick={() => { setPlotChoice("box") }} disabled={field_status==='keyword'?true:false}><img src={boxImg} className="plotButton"></img></Button>,
-        <Button key="pie" onClick={() => { setPlotChoice("pie") }} ><img src={pieImg} className="plotButton"></img></Button>,
+        <Button key="stack_bar" onClick={() => { setPlotChoice("stack_bar") }} ><img src={stackBarImg} className="plotButton"></img></Button>,
+        <Button key="bar" onClick={() => { setPlotChoice("group_bar") }}  disabled={groupBy.length!==2?true:false}><img src={groupBarImg} className="plotButton"></img></Button>,
+        <Button key="box" onClick={() => { setPlotChoice("box") }} disabled={field_status==='keyword'?true:false}><img src={boxImg} className="plotButton" ></img></Button>,
+        <Button key="pie" onClick={() => { setPlotChoice("pie") }} ><img src={pieImg} className="plotButton" ></img></Button>,
         <Button key="dot" onClick={() => { setPlotChoice("circle packing") }}><img src={dotImg} className="plotButton"></img></Button>,
         <Button key="cloud" onClick={() => { setPlotChoice("cloud") }} ><img src={cloudImg} className="plotButton"></img></Button>,
         <Button key="line" onClick={() => { setPlotChoice("line") }}><img src={lineImg} className="plotButton"></img></Button>,
         <Button key="area" onClick={() => { setPlotChoice("area") }}><img src={areaImg} className="plotButton"></img></Button>,
-        <Button key="multi-layer" onClick={() => { setPlotChoice("facet") }}><img src={multi_layer} className="plotButton"></img></Button>
+        <Button key="multi-layer" onClick={() => { setPlotChoice("facet") }}><img src={multi_layer} className="plotButton"></img></Button> 
     ];
     return (
-        <Box
-            sx={{
-                display: 'flex',
-                '& > *': {
-                    m: 1,
-                },
-            }}
-        >
+        <Grid container spacing={2} alignItems="center" justifyContent="center">
+      <Grid item xs={12} md={11}>
             <ButtonGroup
                 orientation="vertical"
                 aria-label="vertical contained button group"
@@ -41,8 +39,39 @@ function plotChoice({ setPlotChoice, field_status }) {
                 {buttons}
             </ButtonGroup>
 
-        </Box>
+            </Grid>
+    </Grid>
     );
 }
 
 export default plotChoice;
+
+// const buttons = [
+//     <IconButton key="stack_bar" onClick={() => setPlotChoice("stack_bar")} >
+//       <img src={stackBarImg} alt="stack bar" className="plotButton" />
+//     </IconButton>,
+//     <IconButton key="group_bar" onClick={() => setPlotChoice("group_bar")} disabled={groupBy.length !== 2}>
+//       <img src={groupBarImg} alt="group bar" className="plotButton" />
+//     </IconButton>,
+//     <IconButton key="box" onClick={() => setPlotChoice("box")} disabled={field_status === 'keyword'}>
+//       <img src={boxImg} alt="box" className="plotButton" />
+//     </IconButton>,
+//     <IconButton key="pie" onClick={() => setPlotChoice("pie")}>
+//       <img src={pieImg} alt="pie" className="plotButton" />
+//     </IconButton>,
+//     <IconButton key="dot" onClick={() => setPlotChoice("circle packing")}>
+//       <img src={dotImg} alt="dot" className="plotButton" />
+//     </IconButton>,
+//     <IconButton key="cloud" onClick={() => setPlotChoice("cloud")}>
+//       <img src={cloudImg} alt="cloud" className="plotButton" />
+//     </IconButton>,
+//     <IconButton key="line" onClick={() => setPlotChoice("line")}>
+//       <img src={lineImg} alt="line" className="plotButton" />
+//     </IconButton>,
+//     <IconButton key="area" onClick={() => setPlotChoice("area")}>
+//       <img src={areaImg} alt="area" className="plotButton" />
+//     </IconButton>,
+//     <IconButton key="facet" onClick={() => setPlotChoice("facet")}>
+//       <img src={multi_layer} alt="facet" className="plotButton" />
+//     </IconButton>,
+//   ];
