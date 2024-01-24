@@ -1,6 +1,6 @@
 import { WordCloud } from "@ant-design/plots";
 import React from "react";
-import N_number from "./N_number";
+import N_number from "../Control/N_number";
 export default function CloudChart({
   data_BLA,
   data_acronym_density_BLA,
@@ -14,7 +14,7 @@ export default function CloudChart({
 }) {
   return (
     <div className="cloud">
-      <N_number N={N} />
+      
       {aggregation.map((agg) => {
         if (
           groupBy.includes(meta.atlas_structure_acronym) &&

@@ -99,6 +99,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import IndexInfo from "./pages/IndexInfo/IndexInfo";
 import ManualBook from "./pages/ManualBook/ManualBook";
+import Login from "./pages/Login/Login";
+import GroupUserMain from "./pages/GroupUser/Main";
+import GroupUserAdmin from "./pages/GroupAdmin/Main";
 export default function App() {
   return (
     <BrowserRouter>
@@ -106,6 +109,9 @@ export default function App() {
         <Route exact path="/dashboard" Component={Dashboard} />
         <Route path="/indexInfo" Component={IndexInfo} />
         <Route path="/manualBook" Component={ManualBook} />
+        <Route path="/login" Component={Login}/>
+        <Route path="/group/user" Component={GroupUserMain}/>
+        <Route path="/group/admin" Component={GroupUserAdmin}/>
       </Routes>
     </BrowserRouter>
   );

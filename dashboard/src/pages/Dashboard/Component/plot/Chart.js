@@ -1,13 +1,15 @@
-import BarChart from "./Bar";
-import LineChart from "./Line";
-import AreaChart from "./Area";
+import StackBarChart from "./Charts/StackBar";
+import GroupBarChart from "./Charts/GroupBar";
+import LineChart from "./Charts/Line";
+import AreaChart from "./Charts/Area";
 import React from "react";
-import PieChart from "./Pie";
-import CloudChart from "./Cloud";
-import CirclePackingChart from "./CirclePacking";
-import FacetChart from "./Facet";
+import PieChart from "./Charts/Pie";
+import CloudChart from "./Charts/Cloud";
+import CirclePackingChart from "./Charts/CirclePacking";
+import FacetChart from "./Charts/Facet";
 import CoverImg from "../asset/CoverImg.png";
-import BoxChart from "./Box";
+import BoxChart from "./Charts/Box";
+
 function Chart({
   displayData,
   field,
@@ -17,8 +19,7 @@ function Chart({
   setPlotChoice,
   field_status,
   acronym_volume,
-  formFrame,
-  formDataCurrent,
+
   meta,
   n_value,
 }) {
@@ -98,7 +99,11 @@ function Chart({
     );
   }
   if (field_status === "keyword" && plotChoice === "box") {
-    setPlotChoice("bar");
+    setPlotChoice("stack_bar");
+    return;
+  }
+  if (groupBy.length !==2 && plotChoice === "group_bar") {
+    setPlotChoice("stack_bar");
     return;
   }
   // console.log(displayData)
@@ -164,10 +169,9 @@ function Chart({
   }
   // console.log(data_acronym_density_BLA)
   // console.log("format for BLA plots", data_BLA);
-
-  if (plotChoice === "bar") {
+  if (plotChoice === "stack_bar") {
     return (
-      <BarChart
+      <StackBarChart
         data_BLA={data_BLA}
         data_acronym_density_BLA={data_acronym_density_BLA}
         groupBy={groupBy}
@@ -177,7 +181,21 @@ function Chart({
         N={N}
       />
     );
-  } else if (plotChoice === "pie") {
+  } else if(plotChoice === "group_bar") {
+    return (
+      <GroupBarChart
+      displayData={displayData}
+        data_BLA={data_BLA}
+        data_acronym_density_BLA={data_acronym_density_BLA}
+        groupBy={groupBy}
+        aggregation={aggregation}
+        field={field}
+        meta={meta_config}
+        N={N}
+      />
+    );
+  } 
+  else if (plotChoice === "pie") {
     return (
       <PieChart
         data_BLA={data_BLA}

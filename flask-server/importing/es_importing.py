@@ -83,7 +83,7 @@ def indexing_new(file_name, separator, delimiter, index_name, shard_number, mapp
     response = helpers.bulk(es, bulk_records_data(records, index_name))
     print("\nbulk_json_data() RESPONSE:", response)
     os.remove(UPLOAD_FOLDER_PATH + "/" + file_name)
-    url = HOST + '/indexing/para_store'
+    url = HOST + '/indexing/mapping_store'
 
     # Example payload for the POST request (can be a dictionary or any other data)
     payload = {'index': index_name, 'mapping': mapping["properties"]}
