@@ -1,0 +1,473 @@
+
+import pandas as pd
+from sqlalchemy import null
+import query_dsl.query_dsl as Query
+import time
+import config.db_config as db_config
+import os
+from config import index_registration, path_config
+from flask import Flask, jsonify, render_template, request, redirect, url_for
+from flask_cors import CORS
+from elasticsearch import Elasticsearch
+from flask_admin import Admin
+from admin_view.db_models.models import db, User, IndexInfo, Parameters
+from flask_login import LoginManager, login_user, logout_user
+from admin_view.custom_views.views import (
+    MyAdminIndexView,
+    MyModelView,
+    FileUploadView,
+    LogoutMenuLink,
+)
+from importing.es_importing import indexing_existed, indexing_new
+from config.es_config import es_server, file_path_prefix
+from bp_routes.indexInfo import indexInfo_bp
+from bp_routes.dashboard import dahsboard_bp
+CONFIG_SQL_CONNECTION = db_config.DATABASE
+CONFIG_SCREATE_KEY = db_config.SCREATE_KEY
+es = Elasticsearch(es_server, request_timeout=180)
+app = Flask(__name__)
+CORS(app)
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://" + CONFIG_SQL_CONNECTION
+app.config["SECRET_KEY"] = CONFIG_SCREATE_KEY
+app.config["UPLOAD_FOLDER"] = path_config.UPLOAD_FOLDER
+db.init_app(app)
+login_manager = LoginManager(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    # load the user from the database
+    return User.query.get(int(user_id))
+
+
+admin = Admin(
+    app, name="Dashboard", template_mode="bootstrap4", index_view=MyAdminIndexView()
+)
+
+
+admin.add_link(LogoutMenuLink(name="Logout"))
+admin.add_view(FileUploadView(name="UploadFile"))
+admin.add_view(MyModelView(IndexInfo, db.session, name="IndexInfo"))
+admin.add_view(MyModelView(Parameters, db.session, name="Parameters"))
+INDEX = ""
+app.register_blueprint(indexInfo_bp)
+app.register_blueprint(dahsboard_bp)
+
+@app.route("/")
+def index():
+    return app.send_static_file("index.html")
+
+
+@app.route("/admin_user/login", methods=["POST"])
+def admin_login():
+    # print(request.form['account'])
+    # print(request.form['password'])
+    user = User.query.filter_by(
+        account=request.form["account"], password=request.form["password"]
+    ).first()
+    print(user)
+    if user:
+        login_user(user)
+        print("logged in")
+        return redirect(url_for("admin.home"))
+
+    else:
+        return render_template("admin/security/error_login.html")
+
+
+@app.route("/admin_user/logout")
+def admin_logout():
+    logout_user()
+    return render_template("admin/security/logout.html")
+
+
+@app.route("/api/indices")
+def get_index():
+    indices = es.cat.indices(format="json")
+    # print(indices)
+    index_names = [entry["index"] for entry in indices]
+    # print(index_names)
+    return jsonify(index_names)
+
+
+@app.route("/api/index_choosen/<index_name>")
+def choosen_index(index_name):
+    global INDEX
+    INDEX = index_name
+    time.sleep(1)
+    # fileds = list(
+    #     es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"].keys()
+    # )
+    mappings = es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"]
+    for key, value in mappings.items():
+        mappings[key] = value["type"]
+    categorical = {}
+    continuous = {}
+    for key, value in mappings.items():
+        if mappings[key] == "keyword":
+            categorical[key] = []
+        else:
+            continuous[key] = []
+
+    for key in categorical:
+        # print(key)
+        resp = es.search(index=INDEX, body=query.filterCategorical(key))
+        # print(resp.body["aggregations"][key]["buckets"])
+        temp_dict = resp.body["aggregations"][key]["buckets"]
+        # print("--------------",temp_dict)
+        # print (temp_dict)
+
+        for val in temp_dict:
+            categorical[key].append(val["key"])
+    # print (categorical)
+
+    for key in continuous:
+        resp = es.search(index=INDEX, body=query.filterContinuous(key))
+        # print(resp.body["aggregations"][key]["buckets"])
+
+        continuous[key].append(resp.body["aggregations"]["min" + "_" + key]["value"])
+        continuous[key].append(resp.body["aggregations"]["max" + "_" + key]["value"])
+
+    filters = {"categorical": categorical, "continuous": continuous}
+
+    formFrame = {
+        "filter_list": list(mappings.keys()),
+        "field": mappings,
+        "filter": filters,
+        "group_by": list(mappings.keys()),
+        "aggregate": ["min", "max", "avg", "sum", "value_count", "cardinality"],
+    }
+
+    return formFrame
+
+
+def volume_reader(um):
+    csv_file_path = "atlasapi_output/atlas_mouse_acronym&volume.csv"
+    df = pd.read_csv(csv_file_path)
+    acronym_volume_dict = df.set_index("acronym")[f"volume_mm_{um}"].to_dict()
+    return acronym_volume_dict
+
+
+acronym_volume_10 = volume_reader(10)
+acronym_volume_25 = volume_reader(25)
+indexDensityRegistrationMap = (
+    index_registration.Registration().index_density_registration_map
+)
+
+
+@app.route("/api/index_choosen/meta/<index_name>")
+def meta(index_name):
+    # if indexDensityRegistrationMap.get(index_name):
+    # obj = indexDensityRegistrationMap.get(index_name)
+    # response = {
+    #     "meta": {
+    #         "aggregation_condition": obj.aggregation_condition,
+    #         "atlas_structure_acronym_column_name": obj.atlas_structure_acronym_column_name,
+    #         "metadata_calculation_name": obj.metadata_calculation_name,
+    #     },
+    #     "acronym_volumn": {},
+    # }
+    # if obj.atlas_resolution == "25um":
+    #     response["acronym_volumn"] = acronym_volume_25
+    #     return jsonify(response)
+    # elif obj.atlas_resolution == "10um":
+    #     response["acronym_volumn"] = acronym_volume_10
+    #     return jsonify(response)
+    # else:
+    #     return jsonify(response)
+    parameters = Parameters.query.filter_by(index_name=index_name).all()
+    serialized_parameters = {
+        "meta": {
+            "aggregation_condition": parameters[0].density_agg,
+            "atlas_structure_acronym_column_name": parameters[0].density_atlas_col_name,
+            "metadata_calculation_name": parameters[0].n_value_col_name,
+        },
+        "acronym_volumn": {},
+    }
+    if parameters[0].resolution_micrometer == 25:
+        serialized_parameters["acronym_volumn"] = acronym_volume_25
+        return serialized_parameters
+    elif parameters[0].resolution_micrometer == 10:
+        serialized_parameters["acronym_volumn"] = acronym_volume_10
+        return serialized_parameters
+    else:
+        return serialized_parameters
+
+
+@app.route("/api/index_choosen/current_status/<index_name>")
+def choosen_index_current_status(index_name):
+    time.sleep(1)
+    indices = es.cat.indices(format="json")
+    current_status = {}
+    # print(indices)
+    for index_data in indices:
+        if index_data["index"] == index_name:
+            current_status["health"] = index_data["health"]
+            current_status["status"] = index_data["status"]
+            current_status["storage_size"] = index_data["store.size"]
+            current_status["docs_count"] = index_data["docs.count"]
+            break
+    return jsonify(current_status)
+
+
+query = Query.Query()
+
+
+def custom_sort(item):
+    # print(item.get('key_as_string'))
+    # print(type(item.get('key_as_string')))
+    return item.get("key_as_string", item.get("key"))
+
+
+@app.route("/api/query", methods=["POST"])
+def query_data_source2():
+    json_data = request.json
+    
+    print("before: " + time.asctime(time.localtime(time.time())))
+
+    # resp = query.formQuery(
+    #      json_data["field"],
+    #         json_data["filter"],
+    #         json_data["group_by"],
+    #         json_data["aggregate"],
+    # )
+    # return resp
+
+    resp = es.search(
+        index=INDEX,
+        body=query.formQuery(
+            json_data["field"],
+            json_data["filter"],
+            json_data["group_by"],
+            json_data["aggregate"],
+        ),
+    )
+
+    print("after: " + time.asctime(time.localtime(time.time())))
+    response = resp.body["aggregations"]["categories"]["buckets"]
+
+    response_sorted = sorted(response, key=custom_sort)
+    return jsonify(response_sorted)
+    # return jsonify(response)
+
+
+@app.route("/indexing/para_store", methods=["POST"])
+def add_index_info():
+    try:
+        data = request.json
+        mapping = data["mapping"]
+        index = data["index"]
+
+        for key, value in mapping.items():
+            print(key, value["type"])
+            new_index_info = IndexInfo(
+                field=key, description="", type=value["type"], es_index=index
+            )
+            db.session.add(new_index_info)
+
+        db.session.commit()
+
+        return jsonify({"message": "Parameters stored successfully"}), 200
+    except Exception as e:
+        db.session.rollback()  # Rollback changes if an exception occurs
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/indexInfo")
+def getIndexInfo():
+    try:
+        # Retrieve all data from the IndexInfo table
+        all_info = IndexInfo.query.all()
+
+        # Serialize the data into a list of dictionaries
+        info_list = []
+        for info in all_info:
+            # info_list.append({
+            #     'id': info.id,
+            #     'field': info.field,
+            #     'description': info.description,
+            #     'type': info.type,
+            #     'index': info.index
+            #     # Add other columns as needed
+            # })
+
+            info_list.append(
+                {
+                    # 'id': info.id,
+                    "field": info.field,
+                    "field_description": info.description,
+                    "type": info.type,
+                    "es_index": info.es_index,
+                }
+            )
+
+        # Return the data as JSON
+        return jsonify(info_list)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/indexing/upload_file", methods=["POST"])
+def upload_csv():
+    if "file" not in request.files:
+        return jsonify({"error": "No file part"})
+
+    file = request.files["file"]
+    file_name = file.filename
+    delimiter = request.form["delimiter"]
+    separator = request.form["separator"]
+    index_name = request.form["index_name"]
+
+    # print(file)
+
+    if file_name == "":
+        return jsonify({"error": "No selected file"})
+
+    if file:
+        if file.mimetype != "text/csv":
+            return jsonify({"error": "Invalid file type. Please upload a CSV file"})
+
+        file.save(os.path.join(app.config["UPLOAD_FOLDER"], file_name))
+
+        print(file_name + " " + "uploaded")
+        separator_mark = {
+            "comma": ",",
+            "tab": "\t",
+            "semicolon": ";",
+            "space": " ",
+        }.get(separator, ",")
+
+        delimiter_mark = {
+            "double_quote": '"',
+            "single_quote": "'",
+        }.get(delimiter, '"')
+        try:
+            df = pd.read_csv(
+                app.config["UPLOAD_FOLDER"] + "/" + file_name,
+                sep=separator_mark,
+                quotechar=delimiter_mark,
+            )
+        except Exception as e:
+            os.remove(file_path_prefix + "/" + file_name)
+            error_message = str(e)  # Get the error message
+            return render_template(
+                "admin/indexing/error_indexing.html", error_message=error_message
+            )
+        indices = es.cat.indices(format="json")
+        # print(indices)
+        indexNamesArray = [entry["index"] for entry in indices]
+        if index_name in indexNamesArray:
+            mappings = es.indices.get_mapping(index=index_name)[index_name]["mappings"][
+                "properties"
+            ]
+            # Check if lengths of DataFrame columns and mappings keys are equal
+            if len(df.columns) != len(mappings.keys()):
+                return render_template(
+                    "admin/indexing/error_indexing.html",
+                    error_message="Column count inconsistency between DataFrame and mappings",
+                )
+
+            # Check if all DataFrame columns exist in mappings
+            missing_columns = [col for col in df.columns if col not in mappings.keys()]
+
+            if missing_columns:
+                return render_template(
+                    "admin/indexing/error_indexing.html",
+                    error_message=f"Columns {', '.join(missing_columns)} do not exist in mappings",
+                )
+            try:
+                indexing_existed(file_name, separator, delimiter, index_name)
+                return render_template(
+                    "admin/indexing/index_complete.html", file_name=file_name
+                )
+
+            except Exception as e:
+                error_message = str(e)  # Get the error message
+                return render_template(
+                    "admin/indexing/error_indexing.html", error_message=error_message
+                )
+        else:
+            for column in df.columns:
+                if df[column].isnull().any():
+                    # Change the data type of the column to object if it contains null values
+                    df[column] = df[column].astype("object")
+
+            column_info = df.dtypes
+            # print(column_info,'-------------------------------------')
+            columns_data_types = column_info.to_dict()
+            # print(columns_data_types)
+            indices = es.cat.indices(format="json")
+            # print(indices)
+            indexNamesArray = [entry["index"] for entry in indices]
+            return render_template(
+                "admin/indexing/mapping_setting.html",
+                columns_data_types=columns_data_types,
+                file_name=file_name,
+                index_name=index_name,
+                separator=separator,
+                delimiter=delimiter,
+                column_name=columns_data_types.keys(),
+            )
+
+
+@app.route("/indexing/start", methods=["POST"])
+def index_file():
+    data = request.form
+    print(data)
+    file_name = data["file_name_excluded"]
+    index_name = data["index_name_excluded"]
+    separator = data["separator_excluded"]
+    delimiter = data["delimiter_excluded"]
+    shard = data["shard_number_excluded"]
+    resolution_micrometer = (
+        None
+        if data["resolution_micrometer_excluded"] == ""
+        else data["resolution_micrometer_excluded"]
+    )
+    density_atlas_col_name = (
+        None
+        if data["density_atlas_col_name_excluded"] == "none"
+        else data["density_atlas_col_name_excluded"]
+    )
+    density_agg = (
+        None if data["density_agg_excluded"] == "none" else data["density_agg_excluded"]
+    )
+    n_value_col_name = (
+        None
+        if data["n_value_col_name_excluded"] == "none"
+        else data["n_value_col_name_excluded"]
+    )
+    # print(file_name, index_name)
+    properties = {}
+    for key, value in data.items():
+        if not key.endswith("excluded"):
+            properties[key] = {"type": value}
+    mappings = {"properties": properties}
+    # print(mappings)
+    try:
+        indexing_new(file_name, separator, delimiter, index_name, shard, mappings)
+        # existing_entry = Parameters.query.filter_by(index_name=index_name).first()
+        # if existing_entry:
+        #     pass
+        # else:
+        new_entry = Parameters(
+            index_name=index_name,
+            resolution_micrometer=resolution_micrometer,
+            density_agg=density_agg,
+            density_atlas_col_name=density_atlas_col_name,
+            n_value_col_name=n_value_col_name,
+        )
+        db.session.add(new_entry)
+        db.session.commit()
+    except Exception as e:
+        error_message = str(e)  # Get the error message
+        return render_template(
+            "admin/indexing/error_indexing.html", error_message=error_message
+        )
+    return render_template("admin/indexing/index_complete.html", file_name=file_name)
+
+
+if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
+    app.run(debug=True)

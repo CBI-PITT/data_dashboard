@@ -1,6 +1,9 @@
+from dataclasses import field
+from re import S
 from flask import Blueprint
 from flask import jsonify
 from elasticsearch import Elasticsearch
+from sqlalchemy import true
 from config.es_config import es_server
 
 from db_models.models import parameters
@@ -15,6 +18,7 @@ dahsboard_bp = Blueprint("dashboard", __name__)
 es = Elasticsearch(es_server, request_timeout=180)
 
 INDEX = ""
+DENSITY = False
 
 
 def filter_indices(indices_list, substring):
@@ -28,7 +32,7 @@ def get_index():
     index_names = [entry["index"] for entry in indices]
     filtered_indices = filter_indices(index_names, "klimstra6.0")
     # print(index_names)
-    return jsonify(index_names)
+    return jsonify(filtered_indices)
 
 
 @dahsboard_bp.route("/api/index_choosen/<index_name>")
@@ -95,6 +99,8 @@ acronym_volume_25 = volume_reader(25)
 #     index_registration.Registration().index_density_registration_map
 # )
 
+serialized_parameters = {}
+
 
 @dahsboard_bp.route("/api/index_choosen/meta/<index_name>")
 def meta(index_name):
@@ -116,7 +122,10 @@ def meta(index_name):
     #     return jsonify(response)
     # else:
     #     return jsonify(response)
+
     parameters_info = parameters.query.filter_by(es_index=index_name).all()
+
+    global serialized_parameters
     serialized_parameters = {
         "meta": {
             "aggregation_condition": parameters_info[0].density_agg,
@@ -230,6 +239,43 @@ def query_data_source2():
     print("after: " + time.asctime(time.localtime(time.time())))
 
     response = resp.body["aggregations"]["categories"]["buckets"]
+
+    # print(
+    #     "serialized_parameters",
+    #     serialized_parameters["meta"]["atlas_structure_acronym_column_name"],
+    # )
+    if (
+        json_data["field"]
+        == serialized_parameters["meta"]["atlas_structure_acronym_column_name"]
+        and serialized_parameters["meta"]["atlas_structure_acronym_column_name"]
+        in json_data["group_by"]
+        and serialized_parameters["meta"]["aggregation_condition"]
+        in json_data["aggregate"]
+        and serialized_parameters["acronym_volumn"]
+    ):
+        print("inininin")
+        field = serialized_parameters["meta"]["atlas_structure_acronym_column_name"]
+        agg = serialized_parameters["meta"]["aggregation_condition"]
+        resolution = serialized_parameters["acronym_volumn"]
+        print("check here",agg+'_'+field)
+        
+        for item in response:
+            
+            acronym = (
+                item["key"]
+                if len(json_data["group_by"]) == 1
+                else item["key"][json_data["group_by"].index(field)]
+            )
+            item["density" + "_" + field] = {'value':''}
+            if resolution.get(acronym):
+                
+                item["density" + "_" + field]['value'] = (
+                    item[agg + "_" + field]["value"] / resolution[acronym]
+                )
+            else:
+                item["density" + "_" + field]["value"] = 0
+    else:
+        print("not equal")
 
     # return response
     response_sorted = sorted(response, key=custom_sort)
