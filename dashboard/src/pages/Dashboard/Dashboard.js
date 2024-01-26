@@ -28,6 +28,7 @@ function Dashboard() {
 
   const [sortCondition, setSortCondition] = useState("");
   const [topN, setTopN] = useState("");
+  const [aggregation_density_checked, set_aggregation_density_checked] = useState([])
   const [formDataCurrent, setFormDataCurrent] = useState({
     filter_list: [],
     field: "",
@@ -82,6 +83,7 @@ function Dashboard() {
               groupBy={formDataCurrent.group_by}
               aggregation={formDataCurrent.aggregate}
               acronym_volumn={acronym_volume}
+              aggregation_density_checked={aggregation_density_checked}
             />
 
             <Chart
@@ -95,6 +97,7 @@ function Dashboard() {
               acronym_volume={acronym_volume}
               meta={meta}
               n_value={n_value}
+              
             />
           </Paper>
         </Paper>

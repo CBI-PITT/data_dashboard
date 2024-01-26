@@ -22,7 +22,6 @@ function Form({
   meta,
   setN_value,
   setOriginalArray,
-  
   setSortCondition,
   setTopN,
 }) {
@@ -64,7 +63,7 @@ function Form({
 
       let aggregation_list_return = formFrame.aggregate;
       setAggregation_list(aggregation_list_return);
-
+      
       let filter_list = formFrame.filter_list;
       setFilter_list(filter_list);
 

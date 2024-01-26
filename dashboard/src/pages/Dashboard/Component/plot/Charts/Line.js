@@ -60,26 +60,26 @@ export default function LineChart({
     },
   };
 
-  if (
-    groupBy.includes(meta.atlas_structure_acronym) &&
-    field === meta.atlas_structure_acronym &&
-    aggregation.includes(meta.aggregation_condition)
-  ) {
-    let config_density = { ...config };
-    config_density.data = data_acronym_density_BLA;
-    return (
-      <div className="chartFill">
+  // if (
+  //   groupBy.includes(meta.atlas_structure_acronym) &&
+  //   field === meta.atlas_structure_acronym &&
+  //   aggregation.includes(meta.aggregation_condition)
+  // ) {
+  //   let config_density = { ...config };
+  //   config_density.data = data_acronym_density_BLA;
+  //   return (
+  //     <div className="chartFill">
         
-        <Line {...config} />  
-        <Line {...config_density} />
-      </div>
-    );
-  } else {
+  //       <Line {...config} />  
+  //       <Line {...config_density} />
+  //     </div>
+  //   );
+  // } else {
     return (
       <div className="chartFill">
         
         <Line {...config} />
       </div>
     );
-  }
+  // }
 }

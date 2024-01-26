@@ -19,7 +19,6 @@ function Chart({
   setPlotChoice,
   field_status,
   acronym_volume,
-
   meta,
   n_value,
 }) {
@@ -119,13 +118,21 @@ function Chart({
   // calculation for BLA or density_BLA based on condition
   let data_BLA = [];
   let data_acronym_density_BLA = [];
+  
+  const firstObjectHasDensityAttribute = Object.keys(displayData[0]).some(key => key.startsWith('density'));
+  let aggregation_density_checked = [...aggregation]
+  if(firstObjectHasDensityAttribute)
+  {
+    aggregation_density_checked.push('density')
+    // aggregation_density_checked.push('density')
+  }
   if (
     groupBy.includes(meta_config.atlas_structure_acronym) &&
     field === meta_config.atlas_structure_acronym &&
-    aggregation.includes(meta_config.aggregation_condition)
+    aggregation_density_checked.includes(meta_config.aggregation_condition)
   ) {
     displayData.forEach((element) => {
-      aggregation.forEach((agg) => {
+      aggregation_density_checked.forEach((agg) => {
         let block = {};
         let X_axis =
           groupBy.length === 1
@@ -154,7 +161,7 @@ function Chart({
     });
   } else {
     displayData.forEach((element) => {
-      aggregation.forEach((agg) => {
+      aggregation_density_checked.forEach((agg) => {
         let block = {};
         let X_axis =
           groupBy.length === 1
@@ -175,7 +182,7 @@ function Chart({
         data_BLA={data_BLA}
         data_acronym_density_BLA={data_acronym_density_BLA}
         groupBy={groupBy}
-        aggregation={aggregation}
+        aggregation={aggregation_density_checked}
         field={field}
         meta={meta_config}
         N={N}
@@ -188,10 +195,11 @@ function Chart({
         data_BLA={data_BLA}
         data_acronym_density_BLA={data_acronym_density_BLA}
         groupBy={groupBy}
-        aggregation={aggregation}
+        aggregation={aggregation_density_checked}
         field={field}
         meta={meta_config}
         N={N}
+        acronym_volumn={acronym_volume}
       />
     );
   } 
@@ -201,7 +209,7 @@ function Chart({
         data_BLA={data_BLA}
         data_acronym_density_BLA={data_acronym_density_BLA}
         groupBy={groupBy}
-        aggregation={aggregation}
+        aggregation={aggregation_density_checked}
         field={field}
         meta={meta_config}
         displayData={displayData}
@@ -215,7 +223,7 @@ function Chart({
         data_BLA={data_BLA}
         data_acronym_density_BLA={data_acronym_density_BLA}
         groupBy={groupBy}
-        aggregation={aggregation}
+        aggregation={aggregation_density_checked}
         field={field}
         meta={meta_config}
         displayData={displayData}
@@ -229,7 +237,7 @@ function Chart({
         data_BLA={data_BLA}
         data_acronym_density_BLA={data_acronym_density_BLA}
         groupBy={groupBy}
-        aggregation={aggregation}
+        aggregation={aggregation_density_checked}
         field={field}
         meta={meta_config}
         N={N}
@@ -241,7 +249,7 @@ function Chart({
         data_BLA={data_BLA}
         data_acronym_density_BLA={data_acronym_density_BLA}
         groupBy={groupBy}
-        aggregation={aggregation}
+        aggregation={aggregation_density_checked}
         field={field}
         meta={meta_config}
         N={N}
@@ -253,7 +261,7 @@ function Chart({
         data_BLA={data_BLA}
         data_acronym_density_BLA={data_acronym_density_BLA}
         groupBy={groupBy}
-        aggregation={aggregation}
+        aggregation={aggregation_density_checked}
         field={field}
         meta={meta_config}
         displayData={displayData}
@@ -266,7 +274,7 @@ function Chart({
         data_BLA={data_BLA}
         data_acronym_density_BLA={data_acronym_density_BLA}
         groupBy={groupBy}
-        aggregation={aggregation}
+        aggregation={aggregation_density_checked}
         field={field}
         meta={meta_config}
         displayData={displayData}
@@ -280,7 +288,7 @@ function Chart({
         data_BLA={data_BLA}
         data_acronym_density_BLA={data_acronym_density_BLA}
         groupBy={groupBy}
-        aggregation={aggregation}
+        aggregation={aggregation_density_checked}
         field={field}
         meta={meta_config}
         displayData={displayData}

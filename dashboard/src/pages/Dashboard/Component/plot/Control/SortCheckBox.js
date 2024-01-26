@@ -30,7 +30,7 @@ const SortCheckbox = ({
   //   atlas_structure_acronym: meta.atlas_structure_acronym_column_name,
   //   aggregation_condition: meta.aggregation_condition,
   // };
-  
+
   // let density_sort_array = [];
   // if (displayData) {
   //   density_sort_array = JSON.parse(JSON.stringify(displayData));
@@ -96,6 +96,14 @@ const SortCheckbox = ({
   };
 
   if (displayData) {
+    let aggregation_density_checked = [...agg];
+    const firstObjectHasDensityAttribute = Object.keys(displayData[0]).some(
+      (key) => key.startsWith("density")
+    );
+    if (firstObjectHasDensityAttribute) {
+      aggregation_density_checked.push("density");
+      // aggregation_density_checked.push('density')
+    }
     return (
       <Grid container spacing={2}>
         {/* <FormControlLabel
@@ -139,7 +147,7 @@ const SortCheckbox = ({
               <MenuItem value="">
                 <em>None</em>
               </MenuItem>
-              {agg.map((item) => (
+              {aggregation_density_checked.map((item) => (
                 <MenuItem value={item} key={item}>
                   {item}
                 </MenuItem>
@@ -178,30 +186,6 @@ const SortCheckbox = ({
             <N_number N={N} />
           </FormControl>
         </Grid>
-        {/* <FormControlLabel
-          control={
-            <Checkbox
-              checked={isCheckedSort}
-              onChange={handleSort}
-              color="primary"
-              disabled={disableSort}
-            />
-          }
-          label={`Sort by`}
-          style={{ float: "left" }}
-        />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={isCheckedTopN}
-              onChange={handleTopN}
-              color="primary"
-              disabled={disableTopN}
-            />
-          }
-          label={`Top 20`}
-          style={{ float: "left" }}
-        /> */}
       </Grid>
     );
   }
