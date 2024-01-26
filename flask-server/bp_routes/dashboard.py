@@ -30,9 +30,9 @@ def get_index():
     indices = es.cat.indices(format="json")
     # print(indices)
     index_names = [entry["index"] for entry in indices]
-    filtered_indices = filter_indices(index_names, "klimstra6.0")
+    # filtered_indices = filter_indices(index_names, "klimstra6.0")
     # print(index_names)
-    return jsonify(filtered_indices)
+    return jsonify(index_names)
 
 
 @dahsboard_bp.route("/api/index_choosen/<index_name>")
