@@ -234,76 +234,60 @@ export default function FacetChart  ()  {
   const data = [
     {
       value_count_atlas_structure_acronym: 42008,
-      time_point: "24.0",
-      route: "aerosol",
+      time_point: "1.0",
+      route: "saline",
       treatment: "veev",
+      sex: "f"
     },
     {
       value_count_atlas_structure_acronym: 66922,
-      time_point: "24.0",
-      route: "subcutaneous",
+      time_point: "1.0",
+      route: "saline",
       treatment: "veev",
+      sex: "m"
     },
     {
       value_count_atlas_structure_acronym: 4072799,
-      time_point: "48.0",
-      route: "aerosol",
+      time_point: "1.0",
+      route: "morphine",
       treatment: "veev",
+      sex: "f"
     },
     {
       value_count_atlas_structure_acronym: 311055,
-      time_point: "48.0",
-      route: "subcutaneous",
+      time_point: "1.0",
+      route: "morphine",
       treatment: "veev",
+      sex: "m"
     },
     {
       value_count_atlas_structure_acronym: 713686,
-      time_point: "72.0",
-      route: "aerosol",
+      time_point: "4.0",
+      route: "saline",
       treatment: "eeev",
+      sex: "f"
     },
     {
       value_count_atlas_structure_acronym: 11700626,
-      time_point: "72.0",
-      route: "aerosol",
+      time_point: "4.0",
+      route: "saline",
       treatment: "veev",
+      sex: "m"
     },
     {
       value_count_atlas_structure_acronym: 100795,
-      time_point: "72.0",
-      route: "subcutaneous",
+      time_point: "4.0",
+      route: "morphine",
       treatment: "eeev",
+      sex: "f"
     },
     {
       value_count_atlas_structure_acronym: 1952691,
-      time_point: "72.0",
-      route: "subcutaneous",
+      time_point: "4.0",
+      route: "morphine",
       treatment: "veev",
-    },
-    {
-      value_count_atlas_structure_acronym: 5875594,
-      time_point: "96.0",
-      route: "aerosol",
-      treatment: "eeev",
-    },
-    {
-      value_count_atlas_structure_acronym: 4966133,
-      time_point: "96.0",
-      route: "aerosol",
-      treatment: "veev",
-    },
-    {
-      value_count_atlas_structure_acronym: 48154321,
-      time_point: "96.0",
-      route: "subcutaneous",
-      treatment: "eeev",
-    },
-    {
-      value_count_atlas_structure_acronym: 6635356,
-      time_point: "96.0",
-      route: "subcutaneous",
-      treatment: "veev",
-    },
+      sex: "m"
+    }
   ];
 
  
@@ -316,25 +300,14 @@ export default function FacetChart  ()  {
   appendPadding: 30,
   data,
   axes: {},
-  meta: {
-    carat: {
-      sync: true,
-    },
-    price: {
-      sync: true,
-    },
-    cut: {
-      // 设置 sync 同步之后，可以按照 'cut' 进行颜色映射分类
-      sync: true,
-    },
-  },
+  
   eachView: (view, f) => {
     return {
       type: 'pie',
       options: {
         data: f.data,
         angleField: 'value_count_atlas_structure_acronym',
-        colorField: 'treatment',
+        colorField: 'sex',
         radius: 0.8,
         label: {
           type: 'inner',

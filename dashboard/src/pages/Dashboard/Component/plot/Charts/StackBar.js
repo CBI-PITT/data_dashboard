@@ -95,28 +95,28 @@ export default function StackBarChart({
     ],
   };
 
-  if (
-    groupBy.includes(meta.atlas_structure_acronym) &&
-    field === meta.atlas_structure_acronym &&
-    aggregation.includes(meta.aggregation_condition)
-  ) {
-    let config_density = { ...config };
-    config_density.data = data_acronym_density_BLA;
-    config_density.smooth = false;
+  // if (
+  //   groupBy.includes(meta.atlas_structure_acronym) &&
+  //   field === meta.atlas_structure_acronym &&
+  //   aggregation.includes(meta.aggregation_condition)
+  // ) {
+  //   let config_density = { ...config };
+  //   config_density.data = data_acronym_density_BLA;
+  //   config_density.smooth = false;
+  //   return (
+  //     <div className="chartFill">
+        
+  //       <Column {...config} />
+  //       <br></br>
+  //       <Column {...config_density} />
+  //     </div>
+  //   );
+  // } else {
     return (
       <div className="chartFill">
         
         <Column {...config} />
-        <br></br>
-        <Column {...config_density} />
       </div>
     );
-  } else {
-    return (
-      <div className="chartFill">
-        
-        <Column {...config} />
-      </div>
-    );
-  }
+  // }
 }
