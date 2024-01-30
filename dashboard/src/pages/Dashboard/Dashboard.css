@@ -237,6 +237,10 @@
   height: 100%;
 }
 
+.paracheck{
+  float: left;
+}
+
 .cover {
   /* display: flex;
   flex-direction: column;

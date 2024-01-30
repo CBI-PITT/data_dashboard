@@ -128,6 +128,7 @@ export default function GroupBarChart({
       let newArray = displayData.map((object) =>
         extractItems(object, groupBy, aggregation, field)
       );
+      console.log(newArray)
       const config = {
         data: newArray,
         isGroup: true,

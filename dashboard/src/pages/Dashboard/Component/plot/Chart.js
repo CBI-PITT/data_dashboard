@@ -9,7 +9,10 @@ import CirclePackingChart from "./Charts/CirclePacking";
 import FacetChart from "./Charts/Facet";
 import CoverImg from "../asset/CoverImg.png";
 import BoxChart from "./Charts/Box";
-
+import StackedBar from "./Charts/StackBar_Pl";
+import GroupBar from "./Charts/GroupBar_Pl";
+import Line from "./Charts/Line_Pl";
+import Area from "./Charts/Area.Pl";
 function Chart({
   displayData,
   field,
@@ -165,7 +168,7 @@ function Chart({
         let block = {};
         let X_axis =
           groupBy.length === 1
-            ? element["key"].toString()
+            ? element["key"]
             : element["key_as_string"];
         block["X_axis"] = X_axis;
         block["type"] = agg + "_" + field;
@@ -174,6 +177,23 @@ function Chart({
       });
     });
   }
+
+  let data_bla_pl = []
+  for (const agg of aggregation_density_checked) 
+  {
+    data_bla_pl.push({x:[],y:[],name:agg+"_"+field,type:''})
+  }
+  displayData.forEach(element => {
+    aggregation_density_checked.forEach((agg)=>{
+      let x_value =
+          groupBy.length === 1
+            ? element["key"].toString()
+            : element["key_as_string"];
+      data_bla_pl[aggregation_density_checked.indexOf(agg)].x.push(x_value)
+      data_bla_pl[aggregation_density_checked.indexOf(agg)].y.push(element[agg + "_" + field]["value"])
+    })
+  });
+  console.log("data_pl",data_bla_pl)
   // console.log(data_acronym_density_BLA)
   // console.log("format for BLA plots", data_BLA);
   if (plotChoice === "stack_bar") {
@@ -188,7 +208,13 @@ function Chart({
         N={N}
       />
     );
-  } else if(plotChoice === "group_bar") {
+  }else if(plotChoice == 'stack_bar_pl'){
+    return<StackedBar data={data_bla_pl} type={'bar'}/>
+  } 
+  else if(plotChoice == 'group_bar_pl'){
+    return<GroupBar data={data_bla_pl} type={'bar'}/>
+  } 
+  else if(plotChoice === "group_bar") {
     return (
       <GroupBarChart
       displayData={displayData}
@@ -243,7 +269,15 @@ function Chart({
         N={N}
       />
     );
-  } else if (plotChoice === "area") {
+  } else if (plotChoice === "line_pl") {
+    return (
+      <Line data={data_bla_pl}
+      
+        type={'markers'}
+      />
+    );
+  } 
+  else if (plotChoice === "area") {
     return (
       <AreaChart
         data_BLA={data_BLA}
@@ -255,7 +289,13 @@ function Chart({
         N={N}
       />
     );
-  } else if (plotChoice === "box") {
+  } else if (plotChoice === "area_pl") {
+    return (
+      <Area data={data_bla_pl} type={'scatter'} fill={'tozeroy'}/>
+    );
+  } 
+  
+  else if (plotChoice === "box") {
     return (
       <BoxChart
         data_BLA={data_BLA}

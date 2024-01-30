@@ -13,6 +13,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import SendIcon from "@mui/icons-material/Send";
 import DeleteIcon from "@mui/icons-material/Delete";
 import HOST from "../../../../config/path";
+import ParaCheck from "./Para_Check";
 function Form({
   setDisplayData,
   setFormDataCurrent,
@@ -24,6 +25,8 @@ function Form({
   setOriginalArray,
   setSortCondition,
   setTopN,
+  isCheckedPara,
+  setIsCheckedPara,
 }) {
   const [Field_axis_list, setField_axis_list] = useState();
 
@@ -63,7 +66,7 @@ function Form({
 
       let aggregation_list_return = formFrame.aggregate;
       setAggregation_list(aggregation_list_return);
-      
+
       let filter_list = formFrame.filter_list;
       setFilter_list(filter_list);
 
@@ -262,55 +265,8 @@ function Form({
     // console.log(formDataUpdated)
 
     console.log("client request send", formData_send);
-
-    fetch(HOST + url_query, {
-      headers: { "Content-Type": "application/json" },
-      method: "POST",
-      body: formData_send,
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("server data received", data);
-
-        if (
-          formData_boxplot_add.group_by.includes(meta.metadata_calculation_name)
-        ) {
-          if (formData_boxplot_add.group_by.length === 1) {
-            setN_value(calculateUniqueValues_key_string(data));
-          } else {
-            setN_value(
-              calculateUniqueValues_key_array(
-                data,
-                formDataUpdated.group_by.indexOf(meta.metadata_calculation_name)
-              )
-            );
-          }
-        }
-        setDisplayData(data);
-        setOriginalArray(data);
-        
-        setSortCondition('')
-        setTopN('')
-        setFormDataCurrent(formDataUpdated);
-        setOpen(false);
-
-        // console.log("setDisplayData", displayData)
-      })
-      .catch((error) => {
-        console.log(error);
-        // debugger;
-      });
-    let formData_n_value = JSON.parse(JSON.stringify(formDataUpdated));
-    if (!formData_n_value.group_by.includes(meta.metadata_calculation_name)) {
-      if (meta.metadata_calculation_name == null) {
-        setN_value("Not Available");
-        return;
-      }
-
-      // push metadata_calculation_name to the array
-      formData_n_value.group_by.push(meta.metadata_calculation_name);
-      formData_send = JSON.stringify(formData_n_value);
-      console.log("client request send with metadata", formData_send);
+    if (!isCheckedPara) {
+      setN_value("Not Available");
       fetch(HOST + url_query, {
         headers: { "Content-Type": "application/json" },
         method: "POST",
@@ -318,18 +274,94 @@ function Form({
       })
         .then((res) => res.json())
         .then((data) => {
-          console.log("server data received for N", data);
-          setN_value(
-            calculateUniqueValues_key_array(
-              data,
-              formData_n_value.group_by.indexOf(meta.metadata_calculation_name)
-            )
-          );
+          console.log("server data received", data);
+
+          // if (
+          //   formData_boxplot_add.group_by.includes(meta.metadata_calculation_name)
+          // ) {
+          //   if (formData_boxplot_add.group_by.length === 1) {
+          //     setN_value(calculateUniqueValues_key_string(data));
+          //   } else {
+          //     setN_value(
+          //       calculateUniqueValues_key_array(
+          //         data,
+          //         formDataUpdated.group_by.indexOf(meta.metadata_calculation_name)
+          //       )
+          //     );
+          //   }
+          // }
+          setDisplayData(data);
+          setOriginalArray(data);
+
+          setSortCondition("");
+          setTopN("");
+          setFormDataCurrent(formDataUpdated);
+          setOpen(false);
+
+          // console.log("setDisplayData", displayData)
         })
         .catch((error) => {
           console.log(error);
           // debugger;
         });
+    } else {
+      if (!formDataUpdated.group_by.includes(meta.metadata_calculation_name)) {
+        if (meta.metadata_calculation_name == null) {
+          setN_value("N/A");
+          return;
+        }
+        let formData_n_value = JSON.parse(JSON.stringify(formDataUpdated));
+        // push metadata_calculation_name to the array
+        formData_n_value.group_by.push(meta.metadata_calculation_name);
+        formData_send = JSON.stringify(formData_n_value);
+        console.log("client request send with metadata", formData_send);
+        fetch(HOST + url_query, {
+          headers: { "Content-Type": "application/json" },
+          method: "POST",
+          body: formData_send,
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log("server data received for N", data);
+            // setN_value(
+            //   calculateUniqueValues_key_array(
+            //     data,
+            //     formData_n_value.group_by.indexOf(
+            //       meta.metadata_calculation_name
+            //     )
+            //   )
+            // );
+            setDisplayData(data);
+            setOriginalArray(data);
+
+            setSortCondition("");
+            setTopN("");
+            setFormDataCurrent(formDataUpdated);
+            setOpen(false);
+            if (
+              formData_n_value.group_by.includes(
+                meta.metadata_calculation_name
+              )
+            ) {
+              if (formDataUpdated.group_by.length === 1) {
+                setN_value(calculateUniqueValues_key_string(data));
+              } else {
+                setN_value(
+                  calculateUniqueValues_key_array(
+                    data,
+                    formData_n_value.group_by.indexOf(
+                      meta.metadata_calculation_name
+                    )
+                  )
+                );
+              }
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+            // debugger;
+          });
+      }
     }
   };
 
@@ -433,6 +465,13 @@ function Form({
             />
             <br></br>
             <br></br>
+          </div>
+          <div>
+            <ParaCheck
+              isCheckedPara={isCheckedPara}
+              setIsCheckedPara={setIsCheckedPara}
+              className="paracheck"
+            />
           </div>
         </div>
         <br></br>

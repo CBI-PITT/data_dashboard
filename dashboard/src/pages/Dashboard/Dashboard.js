@@ -28,7 +28,10 @@ function Dashboard() {
 
   const [sortCondition, setSortCondition] = useState("");
   const [topN, setTopN] = useState("");
+  
+  
   const [aggregation_density_checked, set_aggregation_density_checked] = useState([])
+  const [isCheckedPara,setIsCheckedPara] =useState(false)
   const [formDataCurrent, setFormDataCurrent] = useState({
     filter_list: [],
     field: "",
@@ -59,6 +62,8 @@ function Dashboard() {
             setOriginalArray={setOriginalArray}
             setSortCondition={setSortCondition}
             setTopN={setTopN}
+            isCheckedPara={isCheckedPara}
+            setIsCheckedPara={setIsCheckedPara}
           />
         </div>
 
