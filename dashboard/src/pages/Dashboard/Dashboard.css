@@ -25,20 +25,14 @@
   padding-bottom: 1px;
 }
 
-.main_sec {
-  width: 100%;
-  background-color: antiquewhite;
-  display: flex;
-  flex-direction: row;
-  /* align-content: center; */
-}
+
 .user_selection {
   display: flex;
   flex-direction: column;
-  width: 20%;
-  margin-top: 2%;
+  /* width: 20%; */
+  /* margin-top: 2%;
   margin-left: 5%;
-  margin-bottom: 2%;
+  margin-bottom: 2%; */
   /* background-color: #282c34; */
 }
 .dataset {
@@ -82,15 +76,15 @@
 }
 
 .form_main {
-  max-height: 740px;
+  max-height: 50vh;
   overflow-y: auto;
 }
 
 .display_container {
   background-color: rgb(211, 211, 202);
-  margin-top: 2%;
+  /* margin-top: 2%;
   margin-left: 3%;
-  margin-bottom: 2%;
+  margin-bottom: 2%; */
   /* height: 1000px; */
   /* padding: 1%; */
   /* height: 80%; */
@@ -98,7 +92,7 @@
   border-radius: 10px;
   /* border-style:inset; */
   /* border: 3px; */
-  width: 65%;
+  /* width: 65%; */
 
   /* display: flex; */
 
@@ -114,15 +108,15 @@
 
 .drawing_selection_container {
   background-color: rgb(195, 219, 215);
-  margin-top: 2%;
+  /* margin-top: 2%;
 
-  margin-bottom: 2%;
+  margin-bottom: 2%; */
   /* height: 80%; */
 
   border-radius: 10px;
   /* border-style:inset; */
   /* border: 3px; */
-  width: 5%;
+  /* width: 5%; */
 }
 
 .field {
@@ -204,8 +198,8 @@
 
 .chart {
   /* background-color:rgb(246, 241, 228); */
-  background-color: rgb(245, 235, 235);
-  margin: 1%;
+  /* background-color: rgb(245, 235, 235); */
+  /* margin: 2%; */
   padding: 1%;
   overflow-y: auto;
   /* min-height: 980px; */
@@ -217,9 +211,10 @@
   /* display: flex; */
   /* justify-content: center; 
    align-items:center; */
-  height: 960px;
-
-  overflow-x: auto;
+  /* height: 100vh; */
+  /* height: 100%; */
+  height: 70vh;
+  
 }
 
 .plotButton {
@@ -237,10 +232,6 @@
   height: 100%;
 }
 
-.paracheck{
-  float: left;
-}
-
 .cover {
   /* display: flex;
   flex-direction: column;
@@ -251,7 +242,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 960px;
+  /* height: 960px; */
 }
 
 #reset {
@@ -269,25 +260,3 @@
 }
 
 
-/* @media (max-width: 768px) {
-  .main_sec {
-    
-    flex-direction: column;
-  }
-  .user_selection{
-    width: 100%;
-    margin-right: 5%;
-  }
-  .display_container{
-    width: 100%;
-    height: 400px;
-  }
-  .chart{
-    height: 100%;
-    
-  }
-  ButtonGroup>{
-    orientation: landscape;
-  }
-  
-} */

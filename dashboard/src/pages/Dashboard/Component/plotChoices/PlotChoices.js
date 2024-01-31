@@ -32,8 +32,7 @@ function plotChoice({ setPlotChoice, field_status,groupBy }) {
         // <Button key="multi-layer" onClick={() => { setPlotChoice("facet") }}><img src={multi_layer} className="plotButton"></img></Button> 
     ];
     return (
-        <Grid container spacing={2} alignItems="center" justifyContent="center">
-      <Grid item xs={12} md={11}>
+        
             <ButtonGroup
                 orientation="vertical"
                 aria-label="vertical contained button group"
@@ -43,8 +42,7 @@ function plotChoice({ setPlotChoice, field_status,groupBy }) {
                 {buttons}
             </ButtonGroup>
 
-            </Grid>
-    </Grid>
+       
     );
 }
 

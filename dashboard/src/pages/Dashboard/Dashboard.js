@@ -28,10 +28,10 @@ function Dashboard() {
 
   const [sortCondition, setSortCondition] = useState("");
   const [topN, setTopN] = useState("");
-  
-  
-  const [aggregation_density_checked, set_aggregation_density_checked] = useState([])
-  const [isCheckedPara,setIsCheckedPara] =useState(false)
+
+  const [aggregation_density_checked, set_aggregation_density_checked] =
+    useState([]);
+  const [isCheckedPara, setIsCheckedPara] = useState(false);
   const [formDataCurrent, setFormDataCurrent] = useState({
     filter_list: [],
     field: "",
@@ -43,81 +43,85 @@ function Dashboard() {
   return (
     <div className="App">
       <Header />
-      <div className="main_sec">
-        <div className="user_selection">
-          <Dataset
-            setFormFrame={setFormFrame}
-            setDisplayData={setDisplayData}
-            setAcronym_volume={setAcronym_volume}
-            setMeta={setMeta}
-          />
-          <Form
-            setDisplayData={setDisplayData}
-            setFormDataCurrent={setFormDataCurrent}
-            type_fields_dict={type_fields_dict}
-            setType_field_dict={setType_field_dict}
-            formFrame={formFrame}
-            meta={meta}
-            setN_value={setN_value}
-            setOriginalArray={setOriginalArray}
-            setSortCondition={setSortCondition}
-            setTopN={setTopN}
-            isCheckedPara={isCheckedPara}
-            setIsCheckedPara={setIsCheckedPara}
-          />
-        </div>
-
-        <Paper
-          className="display_container"
-          elevation={10}
-          style={{ backgroundColor: "rgb(246, 241, 228)" }}
-        >
-          <Paper className="chart" elevation={5} variant="elevation">
-            <SortCheckbox
-              originalArray={originalArray}
-              displayData={displayData}
+      <Grid container spacing={3} style={{ height: "80vh" }} columns={20} sx={{padding:'10px'}}>
+        <Grid item xs={4}>
+          <div className="user_selection">
+            <Dataset
+              setFormFrame={setFormFrame}
               setDisplayData={setDisplayData}
-              field={formDataCurrent.field}
-              agg={formDataCurrent.aggregate}
-              N={n_value}
-              sortCondition={sortCondition}
-              setSortCondition={setSortCondition}
-              topN={topN}
-              setTopN={setTopN}
-              meta={meta}
-              groupBy={formDataCurrent.group_by}
-              aggregation={formDataCurrent.aggregate}
-              acronym_volumn={acronym_volume}
-              aggregation_density_checked={aggregation_density_checked}
+              setAcronym_volume={setAcronym_volume}
+              setMeta={setMeta}
             />
+            <Form
+              setDisplayData={setDisplayData}
+              setFormDataCurrent={setFormDataCurrent}
+              type_fields_dict={type_fields_dict}
+              setType_field_dict={setType_field_dict}
+              formFrame={formFrame}
+              meta={meta}
+              setN_value={setN_value}
+              setOriginalArray={setOriginalArray}
+              setSortCondition={setSortCondition}
+              setTopN={setTopN}
+              isCheckedPara={isCheckedPara}
+              setIsCheckedPara={setIsCheckedPara}
+            />
+          </div>
+        </Grid>
+        <Grid item xs={15} >
+          <Paper
+            className="display_container"
+            elevation={10}
+            style={{ backgroundColor: "rgb(246, 241, 228)"  }}
+          >
+            <Paper className="chart" >
+              <SortCheckbox
+                originalArray={originalArray}
+                displayData={displayData}
+                setDisplayData={setDisplayData}
+                field={formDataCurrent.field}
+                agg={formDataCurrent.aggregate}
+                N={n_value}
+                sortCondition={sortCondition}
+                setSortCondition={setSortCondition}
+                topN={topN}
+                setTopN={setTopN}
+                meta={meta}
+                groupBy={formDataCurrent.group_by}
+                aggregation={formDataCurrent.aggregate}
+                acronym_volumn={acronym_volume}
+                aggregation_density_checked={aggregation_density_checked}
+              />
 
-            <Chart
-              displayData={displayData}
-              field={formDataCurrent.field}
-              groupBy={formDataCurrent.group_by}
-              aggregation={formDataCurrent.aggregate}
-              plotChoice={plotChoice}
+              <Chart
+                displayData={displayData}
+                field={formDataCurrent.field}
+                groupBy={formDataCurrent.group_by}
+                aggregation={formDataCurrent.aggregate}
+                plotChoice={plotChoice}
+                setPlotChoice={setPlotChoice}
+                field_status={type_fields_dict[formDataCurrent.field]}
+                acronym_volume={acronym_volume}
+                meta={meta}
+                n_value={n_value}
+              />
+            </Paper>
+          </Paper>
+        </Grid>
+        <Grid item xs={1}>
+          <Paper
+            className="drawing_selection_container"
+            elevation={10}
+            style={{ backgroundColor: "rgb(189, 227, 209)" }}
+          >
+            <PlotChoice
               setPlotChoice={setPlotChoice}
               field_status={type_fields_dict[formDataCurrent.field]}
-              acronym_volume={acronym_volume}
-              meta={meta}
-              n_value={n_value}
-              
+              groupBy={formDataCurrent.group_by}
             />
           </Paper>
-        </Paper>
-        <Paper
-          className="drawing_selection_container"
-          elevation={10}
-          style={{ backgroundColor: "rgb(189, 227, 209)" }}
-        >
-          <PlotChoice
-            setPlotChoice={setPlotChoice}
-            field_status={type_fields_dict[formDataCurrent.field]}
-            groupBy={formDataCurrent.group_by}
-          />
-        </Paper>
-      </div>
+        </Grid>
+      </Grid>
       <Footer />
     </div>
   );
