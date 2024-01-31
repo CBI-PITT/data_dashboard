@@ -19,6 +19,7 @@ es = Elasticsearch(es_server, request_timeout=180)
 
 INDEX = ""
 DENSITY = False
+serialized_parameters = {}
 
 
 def filter_indices(indices_list, substring):
@@ -39,6 +40,8 @@ def get_index():
 def choosen_index(index_name):
     global INDEX
     INDEX = index_name
+    global serialized_parameters
+    serialized_parameters = {}
     time.sleep(1)
     # fileds = list(
     #     es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"].keys()
@@ -99,8 +102,6 @@ acronym_volume_25 = volume_reader(25)
 #     index_registration.Registration().index_density_registration_map
 # )
 
-serialized_parameters = {}
-
 
 @dahsboard_bp.route("/api/index_choosen/meta/<index_name>")
 def meta(index_name):
@@ -126,23 +127,34 @@ def meta(index_name):
     parameters_info = parameters.query.filter_by(es_index=index_name).all()
 
     global serialized_parameters
-    serialized_parameters = {
-        "meta": {
-            "aggregation_condition": parameters_info[0].density_agg,
-            "atlas_structure_acronym_column_name": parameters_info[
-                0
-            ].density_atlas_col_name,
-            "metadata_calculation_name": parameters_info[0].n_value_col_name,
-        },
-        "acronym_volumn": {},
-    }
-    if parameters_info[0].resolution_micrometer == 25:
-        serialized_parameters["acronym_volumn"] = acronym_volume_25
-        return serialized_parameters
-    elif parameters_info[0].resolution_micrometer == 10:
-        serialized_parameters["acronym_volumn"] = acronym_volume_10
-        return serialized_parameters
+    if parameters_info:
+        serialized_parameters = {
+            "meta": {
+                "aggregation_condition": parameters_info[0].density_agg,
+                "atlas_structure_acronym_column_name": parameters_info[
+                    0
+                ].density_atlas_col_name,
+                "metadata_calculation_name": parameters_info[0].n_value_col_name,
+            },
+            "acronym_volumn": {},
+        }
+        if parameters_info[0].resolution_micrometer == 25:
+            serialized_parameters["acronym_volumn"] = acronym_volume_25
+            return serialized_parameters
+        elif parameters_info[0].resolution_micrometer == 10:
+            serialized_parameters["acronym_volumn"] = acronym_volume_10
+            return serialized_parameters
+        else:
+            return serialized_parameters
     else:
+        serialized_parameters = {
+            "meta": {
+                "aggregation_condition": None,
+                "atlas_structure_acronym_column_name": None,
+                "metadata_calculation_name": None,
+            },
+            "acronym_volumn": {},
+        }
         return serialized_parameters
 
 
@@ -169,47 +181,6 @@ def custom_sort(item):
     # print(item.get('key_as_string'))
     # print(type(item.get('key_as_string')))
     return item.get("key_as_string", item.get("key"))
-
-
-# def query_without_field(groupBy):
-#     s = Search(using=es, index=INDEX)
-
-
-# # Create a Composite aggregation for combined group by
-#     composite_aggregation = aggs.Composite(sources=[
-#         {term: {'terms': {'field': term}}} for term in groupBy
-#     ], size=10000)
-
-#     # Add the Composite aggregation to the search
-#     s.aggs.bucket('combined_group', composite_aggregation)
-
-#     # Set the size to 0 to only get aggregation results
-#     s = s.extra(size=0)
-
-#     # Execute the search
-#     result = s.execute()
-
-#     # Access the combined aggregation results
-#     combined_buckets = result.aggregations.combined_group.buckets
-#     json_result = []
-#     # Process the aggregation results and print doc_count for each combination
-#     for combined_bucket in combined_buckets:
-#         # key = combined_bucket.key
-#         # doc_count = combined_bucket.doc_count
-#         # print(f"Combined group: {key}, Doc Count: {doc_count}")
-
-#         for combined_bucket in combined_buckets:
-#             key_values = [combined_bucket['key'][term] for term in groupBy]
-#             key_as_string = '|'.join(map(str, key_values))
-#             value_count = combined_bucket.doc_count
-
-#             json_result.append({
-#                 'key': key_values,
-#                 'key_as_string': key_as_string,
-#                 'value_count': value_count
-#             })
-#             print(json_result)
-#     return json_result
 
 
 @dahsboard_bp.route("/api/query", methods=["POST"])
@@ -242,7 +213,7 @@ def query_data_source2():
 
     # print(
     #     "serialized_parameters",
-    #     serialized_parameters["meta"]["atlas_structure_acronym_column_name"],
+    #     serialized_parameters["acronym_volumn"],
     # )
     if (
         json_data["field"]
@@ -253,29 +224,26 @@ def query_data_source2():
         in json_data["aggregate"]
         and serialized_parameters["acronym_volumn"]
     ):
-        print("inininin")
+        print("Density calculation in ...")
         field = serialized_parameters["meta"]["atlas_structure_acronym_column_name"]
         agg = serialized_parameters["meta"]["aggregation_condition"]
         resolution = serialized_parameters["acronym_volumn"]
-        print("check here",agg+'_'+field)
-        
+
         for item in response:
-            
             acronym = (
                 item["key"]
                 if len(json_data["group_by"]) == 1
                 else item["key"][json_data["group_by"].index(field)]
             )
-            item["density" + "_" + field] = {'value':''}
+            item["density" + "_" + field] = {"value": ""}
             if resolution.get(acronym):
-                
-                item["density" + "_" + field]['value'] = (
+                item["density" + "_" + field]["value"] = (
                     item[agg + "_" + field]["value"] / resolution[acronym]
                 )
             else:
                 item["density" + "_" + field]["value"] = 0
     else:
-        print("not equal")
+        print("Query not satisfied to density calculation")
 
     # return response
     response_sorted = sorted(response, key=custom_sort)
