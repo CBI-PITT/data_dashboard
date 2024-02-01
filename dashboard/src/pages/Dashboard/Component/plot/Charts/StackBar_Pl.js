@@ -22,6 +22,7 @@ export default function StackedBar({ data,type }) {
     font: {
       size: 16, // Increase the overall font size of the chart layout
     },
+   
   };
 
   return (

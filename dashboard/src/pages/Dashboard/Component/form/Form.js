@@ -7,7 +7,8 @@ import GetFilterList from "./Get_filterList";
 import Box from "@mui/material/Box";
 import React, { useEffect, useState } from "react";
 import Skeleton from "@mui/material/Skeleton";
-import { Button, Paper, Alert } from "@mui/material";
+import { Button, Alert } from "@mui/material";
+import { Paper, Grid, Typography } from "@mui/material";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import SendIcon from "@mui/icons-material/Send";
@@ -339,9 +340,7 @@ function Form({
             setFormDataCurrent(formDataUpdated);
             setOpen(false);
             if (
-              formData_n_value.group_by.includes(
-                meta.metadata_calculation_name
-              )
+              formData_n_value.group_by.includes(meta.metadata_calculation_name)
             ) {
               if (formDataUpdated.group_by.length === 1) {
                 setN_value(calculateUniqueValues_key_string(data));
@@ -384,11 +383,17 @@ function Form({
   if (formFrame !== undefined && formFrame !== "dataset retrieving") {
     return (
       <Paper
-        component={"form"}
+        component="form"
         variant="elevation"
         elevation={10}
-        className="form"
-        style={{ backgroundColor: "#feeeed" }}
+        style={{
+          backgroundColor: "#feeeed",
+          marginTop: "2%",
+          padding: "20px",
+          position: "relative",
+          maxHeight: '80vh', // Adjust the value as needed
+        overflowY: 'auto',
+        }}
         onSubmit={handleSubmit}
       >
         <Backdrop
@@ -397,9 +402,10 @@ function Form({
         >
           <CircularProgress color="inherit" />
         </Backdrop>
-        <div className="form_main">
-          <div className="filter_list">
-            <br></br>
+
+        <Grid container>
+          <Grid item xs={12} style={{ background: "#fff", borderTopLeftRadius:'10px' ,borderTopRightRadius:'10px' }}>
+            <Typography variant="h6">Filter Settings</Typography>
             <GetFilterList
               list={filter_list}
               form_Data={formDataUpdated}
@@ -414,48 +420,45 @@ function Form({
               key_Continuous={key_Continuous}
               value_Continuous={value_Continuous}
             />
-            <br></br>
-          </div>
-          <div className="filter">
-            <div></div>
-            <div className="continuous">
-              <GetConti
-                key_Continuous={key_Continuous}
-                value_Continuous={value_Continuous}
-                form_Data={formDataUpdated}
-                set_FormData={setFormDataUpdated}
-              />
-            </div>
+          </Grid>
 
-            <div className="categorical">
-              <GetCate
-                key_category={key_Category}
-                value_category={value_Category}
-                formData={formDataUpdated}
-                set_FormData={setFormDataUpdated}
-              />
-            </div>
-          </div>
-          <div className="groupBy">
+          
+          <Grid item xs={12}style={{ background: "#fff",  }}>
+            
+            <GetConti
+              key_Continuous={key_Continuous}
+              value_Continuous={value_Continuous}
+              form_Data={formDataUpdated}
+              set_FormData={setFormDataUpdated}
+            />
+          </Grid>
+
+          <Grid item xs={12} style={{ background: "#fff",  }}>
+            <br></br>
+            <GetCate
+              key_category={key_Category}
+              value_category={value_Category}
+              formData={formDataUpdated}
+              set_FormData={setFormDataUpdated}
+            />
+          </Grid>
+          <Grid item xs={12}>
             <br></br>
             <GetGroupBy
               list={GroupBy_list}
               form_Data={formDataUpdated}
               set_FormData={setFormDataUpdated}
             />
-            <br></br>
-          </div>
-          <div className="field">
+          </Grid>
+          <Grid item xs={12}>
             <br></br>
             <GetField
               list={Field_axis_list}
               form_Data={formDataUpdated}
               set_FormData={setFormDataUpdated}
             />
-            <br></br>
-            <br></br>
-          </div>
-          <div className="aggregation">
+          </Grid>
+          <Grid item xs={12}>
             <br></br>
             <GetAggregation
               list={Aggregation_list}
@@ -463,87 +466,81 @@ function Form({
               set_FormData={setFormDataUpdated}
               field_status={type_fields_dict[formDataUpdated.field]}
             />
-            <br></br>
-            <br></br>
-          </div>
-          <div>
+          </Grid>
+          <Grid item xs={12}>
             <ParaCheck
               isCheckedPara={isCheckedPara}
               setIsCheckedPara={setIsCheckedPara}
               className="paracheck"
             />
-          </div>
-        </div>
-        <br></br>
-        <div>
-          <Button
-            type="reset"
-            variant="contained"
-            color="inherit"
-            size="small"
-            id="reset"
-            endIcon={<DeleteIcon />}
-            onClick={handleReset}
-          >
-            Reset
-          </Button>
-          <Button
-            type="submit"
-            variant="contained"
-            color="inherit"
-            size="small"
-            id="send"
-            endIcon={<SendIcon />}
-          >
-            Send
-          </Button>
-        </div>
-        <br></br>
+          </Grid>
+          <Grid item xs={12}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <Button
+                type="reset"
+                variant="contained"
+                color="inherit"
+                size="small"
+                endIcon={<DeleteIcon />}
+                onClick={handleReset}
+              >
+                Reset
+              </Button>
+              <Button
+                type="submit"
+                variant="contained"
+                color="inherit"
+                size="small"
+                endIcon={<SendIcon />}
+              >
+                Send
+              </Button>
+            </div>
+          </Grid>
+        </Grid>
       </Paper>
     );
   } else {
     return (
-      <div className="form">
-        <Paper
-          component={"form"}
-          variant="elevation"
-          elevation={10}
-          className="form_data"
-          style={{ backgroundColor: "#feeeed" }}
-        >
-          <br></br>
-          {formFrame === "dataset retrieving" ? (
-            <div>
-              <Alert className="dataset_alert" severity="success">
-                Dataset is retrieving — <strong>Please wait</strong>
-              </Alert>
-              <Box className="filter">
-                <Skeleton animation="wave" variant="rounded" height={60} />
-              </Box>
-              <br></br>
-              <Box className="groupBy">
-                <Skeleton animation="wave" variant="rounded" height={60} />
-              </Box>
-              <br></br>
-              <Box className="field">
-                <Skeleton animation="wave" variant="rounded" height={60} />
-              </Box>
-              <br></br>
-              <Box className="aggregation">
-                <Skeleton animation="wave" variant="rounded" height={60} />
-              </Box>
-
-              <br></br>
-            </div>
-          ) : (
-            <Alert className="dataset_alert" severity="info">
-              Dataset is waiting to be selected —{" "}
-              <strong>Please choose one!</strong>
+      <Paper
+        component={"form"}
+        variant="elevation"
+        elevation={10}
+        className="form_data"
+        style={{ backgroundColor: "#feeeed", marginTop: "2%" }}
+      >
+        <br></br>
+        {formFrame === "dataset retrieving" ? (
+          <div>
+            <Alert className="dataset_alert" severity="success">
+              Dataset is retrieving — <strong>Please wait</strong>
             </Alert>
-          )}
-          <br></br>
-        </Paper>
-      </div>
+            <Box className="filter">
+              <Skeleton animation="wave" variant="rounded" height={60} />
+            </Box>
+            <br></br>
+            <Box className="groupBy">
+              <Skeleton animation="wave" variant="rounded" height={60} />
+            </Box>
+            <br></br>
+            <Box className="field">
+              <Skeleton animation="wave" variant="rounded" height={60} />
+            </Box>
+            <br></br>
+            <Box className="aggregation">
+              <Skeleton animation="wave" variant="rounded" height={60} />
+            </Box>
+
+            <br></br>
+          </div>
+        ) : (
+          <Alert className="dataset_alert" severity="info">
+            Dataset is waiting to be selected —{" "}
+            <strong>Please choose one!</strong>
+          </Alert>
+        )}
+        <br></br>
+      </Paper>
     );
   }
 }

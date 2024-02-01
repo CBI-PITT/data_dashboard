@@ -32,7 +32,7 @@ export default function Dividers({ index_status }) {
             </List>
           </Grid> */}
     
-          <Grid item xs={12} md={12} lg={6}>
+          <Grid  xs={12} sm={12} md={12} lg={12} xl={6}>
             <List sx={{  bgcolor: 'rgb(245, 246, 246)' }}>
               <ListItem>
                 <ListItemAvatar>
@@ -45,7 +45,7 @@ export default function Dividers({ index_status }) {
             </List>
           </Grid>
     
-          <Grid item xs={12} md={12} lg={6}>
+          <Grid  xs={12} sm={12} md={12} lg={12} xl={6}>
             <List sx={{  bgcolor: 'rgb(245, 246, 246)' }}>
               <ListItem>
                 <ListItemAvatar>

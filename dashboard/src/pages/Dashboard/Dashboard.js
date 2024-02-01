@@ -43,9 +43,9 @@ function Dashboard() {
   return (
     <div className="App">
       <Header />
-      <Grid container spacing={3} style={{ height: "80vh" }} columns={20} sx={{padding:'10px'}}>
-        <Grid item xs={4}>
-          <div className="user_selection">
+      <Grid container spacing={3} style={{ backgroundColor: "rgb(246, 241, 228)" }} columns={20} sx={{padding:'10px'}}>
+        <Grid  item xs={20} sm={20} md={3} lg ={3}xl={4}>
+          
             <Dataset
               setFormFrame={setFormFrame}
               setDisplayData={setDisplayData}
@@ -66,15 +66,14 @@ function Dashboard() {
               isCheckedPara={isCheckedPara}
               setIsCheckedPara={setIsCheckedPara}
             />
-          </div>
+         
         </Grid>
-        <Grid item xs={15} >
-          <Paper
-            className="display_container"
-            elevation={10}
-            style={{ backgroundColor: "rgb(246, 241, 228)"  }}
-          >
-            <Paper className="chart" >
+        <Grid item xs={20} sm={20} md={16} lg={15.5} xl={15}>
+          
+            
+            <Paper className="chart"elevation={10}
+            // style={{ backgroundColor: "rgb(246, 241, 228)"  }}
+             >
               <SortCheckbox
                 originalArray={originalArray}
                 displayData={displayData}
@@ -106,11 +105,12 @@ function Dashboard() {
                 n_value={n_value}
               />
             </Paper>
-          </Paper>
+            
+          
         </Grid>
-        <Grid item xs={1}>
+        <Grid item xs={20} sm={20} md={1} lg={1.5}  xl={1}>
           <Paper
-            className="drawing_selection_container"
+            
             elevation={10}
             style={{ backgroundColor: "rgb(189, 227, 209)" }}
           >
