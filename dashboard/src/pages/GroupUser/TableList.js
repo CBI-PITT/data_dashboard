@@ -10,6 +10,8 @@ import {
   Paper,
 } from "@mui/material";
 import HOST from "../../config/path";
+import Modal from './JobModal';
+import "./GroupUser.css"
 
 const TableList = ({ selectedOption }) => {
   const [data, setData] = useState([]);
@@ -92,16 +94,28 @@ const TableList = ({ selectedOption }) => {
     ))
   );
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleNewJobClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
   const newIndexButton = selectedOption !== 'user' && (
-    <Button variant="contained" color="primary" style={{ marginTop: '20px' ,marginRight:'20px', float:"right"}}>
-      New {selectedOption === 'mydata' ? 'Index' : selectedOption.charAt(2).toUpperCase() + selectedOption.slice(3)}
-    </Button>
+    <button onClick={handleNewJobClick}>New Job</button>
+//    <Button variant="contained" color="primary" style={{ marginTop: '20px' ,marginRight:'20px', float:"right"}}>
+//      New Job
+//    </Button>
   );
 
   return (
     <Paper elevation={2} style={{ padding: '20px', marginLeft: '20px' }}>
       <TableContainer >
       {newIndexButton}
+        <Modal isOpen={isModalOpen} onClose={handleCloseModal} />
         <Table>
           <TableHead>{renderTableHeader()}</TableHead>
           <TableBody>{renderTableRows()}</TableBody>
