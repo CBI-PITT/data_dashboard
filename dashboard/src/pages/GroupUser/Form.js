@@ -21,13 +21,33 @@ function ImageAnalysisForm() {
 
   // Handler for file selection
   const handleFileSelect = (e) => {
-    setSelectedFile(e.target.files[0]);
+//    setSelectedFile(e.target.files[0]);
   };
   
   // Handler for folder selection
   const handleFolderSelect = (e) => {
-    setSelectedFolder(e.target.files[0]);
+//    setSelectedFolder(e.target.files[0]);
   };
+
+function downloadJSON(data, filename) {
+  // Step 1: Create a JSON object
+  const jsonData = JSON.stringify(data, null, 2); // null and 2 for pretty formatting
+
+  // Step 2: Convert JSON object to string
+
+  // Step 3: Create a Blob from the string
+  const blob = new Blob([jsonData], { type: 'application/json' });
+
+  // Step 4: Create a download link
+  const link = document.createElement('a');
+  link.href = window.URL.createObjectURL(blob);
+  link.download = filename;
+
+  // Step 5: Trigger a click on the download link
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
 
   // Handler for form submission
   const handleSubmit = (e) => {
@@ -66,8 +86,9 @@ function ImageAnalysisForm() {
     formData.customMethodComputer = customMethodComputer;
 
     // Serialize the object to JSON
-    const jsonData = JSON.stringify(formData);
-    console.log('Form Data JSON:', jsonData);
+//    const jsonData = JSON.stringify(formData);
+//    console.log('Form Data JSON:', jsonData);
+    downloadJSON(formData, "example.json")
   };
 
   return (
@@ -167,6 +188,7 @@ function ImageAnalysisForm() {
             </>
           )}
         </div>
+        <button type="submit" className="dark-button">Create Job</button>
       </form>
     </div>
   );
