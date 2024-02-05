@@ -105,10 +105,10 @@ const TableList = ({ selectedOption }) => {
   };
 
   const newIndexButton = selectedOption !== 'user' && (
-    <button onClick={handleNewJobClick}>New Job</button>
-//    <Button variant="contained" color="primary" style={{ marginTop: '20px' ,marginRight:'20px', float:"right"}}>
-//      New Job
-//    </Button>
+//    <button onClick={handleNewJobClick}>New Job</button>
+    <Button onClick={handleNewJobClick} variant="contained" color="primary" style={{ marginTop: '20px' ,marginRight:'20px', float:"right"}}>
+      New Job
+    </Button>
   );
 
   return (
