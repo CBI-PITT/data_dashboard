@@ -21,12 +21,12 @@ function ImageAnalysisForm() {
 
   // Handler for file selection
   const handleFileSelect = (e) => {
-//    setSelectedFile(e.target.files[0]);
+    setSelectedFile(e.target.value);
   };
   
   // Handler for folder selection
   const handleFolderSelect = (e) => {
-//    setSelectedFolder(e.target.files[0]);
+    setSelectedFolder(e.target.value);
   };
 
 function downloadJSON(data, filename) {
@@ -52,43 +52,49 @@ function downloadJSON(data, filename) {
   // Handler for form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Perform task creation here with the selected options
-    // console.log('Selected File:', selectedFile);
-    // console.log('Selected Folder:', selectedFolder);
-    // console.log('Pre-process Checked:', preProcessChecked);
-    // console.log('Align Checked:', alignChecked);
-    // console.log('Spot Count Checked:', spotCountChecked);
-    // console.log('Pre-process Method:', preProcessMethod);
-    // console.log('Align Method:', alignMethod);
-    // console.log('Spot Count Method:', spotCountMethod);
-    // console.log('Pre-process Computer:', preProcessComputer);
-    // console.log('Align Computer:', alignComputer);
-    // console.log('Spot Count Computer:', spotCountComputer);
 
     // Initialize an empty object to store form data
     const formData = {};
 
     // Populate the object with values from the state
-    formData.selectedFile = selectedFile;
-    formData.selectedFolder = selectedFolder;
-    formData.extractTiffsChecked = extractTiffsChecked;
-    formData.preProcessChecked = preProcessChecked;
-    formData.alignChecked = alignChecked;
-    formData.spotCountChecked = spotCountChecked;
+    formData.ims_file = selectedFile;
+    formData.output_folder = selectedFolder;
+    formData.actions = [];
+    if (extractTiffsChecked) {
+        formData.actions.push("extract_tiff_series");
+    }
+    if (preProcessChecked) {
+        formData.actions.push("get_best_registration");
+    }
+    if (alignChecked) {
+        formData.actions.push("register_brain");
+    }
+    if (spotCountChecked) {
+        formData.actions.push("detect_cells");
+    }
     // formData.preProcessMethod = preProcessMethod;
-    formData.alignMethod = alignMethod;
-    formData.spotCountMethod = spotCountMethod;
-    formData.customMethod = customMethod;
-    formData.preProcessComputer = preProcessComputer;
-    formData.extractTiffsComputer = extractTiffsComputer;
-    formData.alignComputer = alignComputer;
-    formData.spotCountComputer = spotCountComputer;
-    formData.customMethodComputer = customMethodComputer;
+//    formData.alignMethod = alignMethod;
+//    formData.spotCountMethod = spotCountMethod;
+//    formData.customMethod = customMethod;
+//    formData.preProcessComputer = preProcessComputer;
+//    formData.extractTiffsComputer = extractTiffsComputer;
+//    formData.alignComputer = alignComputer;
+//    formData.spotCountComputer = spotCountComputer;
+//    formData.customMethodComputer = customMethodComputer;
 
-    // Serialize the object to JSON
-//    const jsonData = JSON.stringify(formData);
-//    console.log('Form Data JSON:', jsonData);
-    downloadJSON(formData, "example.json")
+    const currentDate = new Date();
+
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+
+    const hours = String(currentDate.getHours()).padStart(2, '0');
+    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+    const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+    const formattedDate = `${year}${month}${day}_${hours}${minutes}${seconds}`;
+
+    downloadJSON(formData, `pollux_settings_${formattedDate}.json`)
   };
 
   return (
