@@ -1,5 +1,5 @@
 from flask import Blueprint
-from db_models.models import user_credentials
+from db_models.models import user_credentials, job_info
 from flask import  jsonify
 group_user_bp = Blueprint('group_user_bp', __name__)
 @group_user_bp.route("/group_user/info/<id>")
@@ -57,5 +57,34 @@ def getGroupUserJob(id):
         }]
         # Return the data as JSON
         return jsonify(job_info)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@group_user_bp.route("/group_user/jobs/")
+def getGroupUserJobs():
+    try:
+        jobs = job_info.query.all()
+        if jobs:
+            jobs_json = [
+                {
+                    'job_name': x.job_name,
+                    'pipline': x.pipline_name,
+                    'dataset': '',
+                    'timestamp': x.time,
+                    'status': x.status
+                }
+                for x in jobs
+            ]
+        else:
+            jobs_json = [{
+                'job_name': '',
+                'pipline': '',
+                'dataset': '',
+                'timestamp': '',
+                'status': ''
+            }]
+        # Return the data as JSON
+        return jsonify(jobs_json)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
