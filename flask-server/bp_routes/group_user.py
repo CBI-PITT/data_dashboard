@@ -1,5 +1,5 @@
 from flask import Blueprint
-from db_models.models import user_credentials, job_info
+from db_models.models import user_credentials, job_info, index_info
 from flask import  jsonify
 group_user_bp = Blueprint('group_user_bp', __name__)
 @group_user_bp.route("/group_user/info/<id>")
@@ -28,22 +28,36 @@ def getGroupUserInfo(id):
         return jsonify(user_info)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+
+
 @group_user_bp.route("/group_user/data/")
 def getGroupUserData():
     try:
-        
-        data_info = [{
-            'index_name' : 'klimstra',
-            'pipline' :'pip1',
-            'created' : '2024-1-9',
-            'modified' : '2024-1-10'
-        }]
+        indices = index_info.query.all()
+        if indices:
+            data_info = [
+                {
+                    'index_name': x.index_name,
+                    'pipline': '',
+                    'created': x.created,
+                    'modified': x.modified
+                }
+                for x in indices
+            ]
+        else:
+            data_info = [{
+                'index_name' : '',
+                'pipline' :'',
+                'created' : '',
+                'modified' : ''
+            }]
         # Return the data as JSON
         return jsonify(data_info)
     except Exception as e:
+        print("Error", e)
         return jsonify({"error": str(e)}), 500
-    
+
+
 @group_user_bp.route("/group_user/job/<id>")
 def getGroupUserJob(id):
     try:
