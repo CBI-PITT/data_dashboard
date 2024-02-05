@@ -47,7 +47,7 @@ const Sidebar = ({ onSelect }) => {
           <ListItemIcon style={iconStyle}>
             <WorkIcon />
           </ListItemIcon>
-          <ListItemText primary="My Job" />
+          <ListItemText primary="My Jobs" />
         </ListItem>
       </List>
     </Paper>
