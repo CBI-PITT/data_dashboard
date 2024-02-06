@@ -25,7 +25,7 @@ const TableList = ({ selectedOption }) => {
       // Example: Fetching data using fetch
       let url = "";
       if (selectedOption === "user") {
-        url = url_user + id;
+        url = url_user;
       } else if (selectedOption === "mydata") {
         url = url_data;
       } else if (selectedOption === "myjob") {
@@ -112,7 +112,7 @@ const TableList = ({ selectedOption }) => {
 
   const newJobButton = selectedOption !== 'user' && (
     <Button onClick={handleNewJobClick} variant="contained" color="primary" style={{ marginTop: '20px' ,marginRight:'20px', float:"right"}}>
-      New Job
+      New Job JSON
     </Button>
   );
 
