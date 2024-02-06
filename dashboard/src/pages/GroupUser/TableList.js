@@ -18,18 +18,18 @@ const TableList = ({ selectedOption }) => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const url_user = "/group_user/info/";
   const url_data = "/group_user/data/";
-  const url_job = "/group_user/job/";
+  const url_jobs = "/group_user/jobs/";
   useEffect(
     (id) => {
       // Fetch data from MySQL or your API here
       // Example: Fetching data using fetch
       let url = "";
       if (selectedOption === "user") {
-        url = url_user + id;
+        url = url_user;
       } else if (selectedOption === "mydata") {
         url = url_data;
       } else if (selectedOption === "myjob") {
-        url = url_job + id;
+        url = url_jobs;
       }
       fetch(HOST + url)
         .then((response) => response.json())
@@ -105,16 +105,21 @@ const TableList = ({ selectedOption }) => {
   };
 
   const newIndexButton = selectedOption !== 'user' && (
-//    <button onClick={handleNewJobClick}>New Job</button>
+    <Button variant="contained" color="primary" style={{ marginTop: '20px' ,marginRight:'20px', float:"right"}}>
+      New Index
+    </Button>
+  );
+
+  const newJobButton = selectedOption !== 'user' && (
     <Button onClick={handleNewJobClick} variant="contained" color="primary" style={{ marginTop: '20px' ,marginRight:'20px', float:"right"}}>
-      New Job
+      New Job JSON
     </Button>
   );
 
   return (
     <Paper elevation={2} style={{ padding: '20px', marginLeft: '20px' }}>
       <TableContainer >
-      {newIndexButton}
+      {selectedOption === 'mydata' ? newIndexButton : newJobButton}
         <Modal isOpen={isModalOpen} onClose={handleCloseModal} />
         <Table>
           <TableHead>{renderTableHeader()}</TableHead>

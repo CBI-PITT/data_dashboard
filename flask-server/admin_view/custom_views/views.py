@@ -87,3 +87,15 @@ class FileUploadView(BaseView):
 
     def inaccessible_callback(self, name, **kwargs):
         return self.render("admin/security/login.html")
+
+
+class StepAdmin(ModelView):
+    column_display_pk = True
+    column_hide_backrefs = False
+    column_list = ('id', 'name', 'container', 'input', 'output', 'parameters', 'type')
+
+
+class PipelineAdmin(ModelView):
+    column_display_pk = True
+    column_hide_backrefs = False
+    column_list = ('id', 'name', 'steps')
