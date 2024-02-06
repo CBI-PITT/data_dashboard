@@ -2,7 +2,7 @@
 import imp
 from flask import Blueprint, request, current_app
 from flask_login import current_user
-from db_models.models import db, admin_credentials, field_info, parameters, index_info
+from db_models.models import db, user_credentials, field_info, parameters, index_info
 from flask import  jsonify, render_template, request, redirect, url_for
 from flask_login import login_user, logout_user
 import os
@@ -23,8 +23,8 @@ administrator_bp = Blueprint("administrator", __name__)
 def admin_login():
     # print(request.form['account'])
     # print(request.form['password'])
-    user = admin_credentials.query.filter_by(
-        account=request.form["account"], password=request.form["password"]
+    user = user_credentials.query.filter_by(
+        is_superuser=True, account=request.form["account"], password=request.form["password"]
     ).first()
     print(user)
     if user:

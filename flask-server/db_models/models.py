@@ -13,12 +13,12 @@ class field_info(db.Model):
     es_index = db.Column(db.String(100))
 
 
-class admin_credentials(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
-    account = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(100))
-    # is_admin = db.Column(db.Boolean, default=False)
+# class admin_credentials(db.Model, UserMixin):
+#     id = db.Column(db.Integer, primary_key=True)
+#     name = db.Column(db.String(100))
+#     account = db.Column(db.String(100), unique=True)
+#     password = db.Column(db.String(100))
+#     # is_admin = db.Column(db.Boolean, default=False)
 
 
 class group_list(db.Model):
@@ -57,7 +57,19 @@ class user_credentials(db.Model):
     name = db.Column(db.String(100))
     # group_id = db.Column(db.Integer, db.ForeignKey('group_list.id'))  # TODO: M2M
     groups = db.relationship('group_list', secondary='user_group_association', backref="users")
-    is_group_admin = db.Column(db.Boolean)
+    is_active = db.Column(db.Boolean, default=True)
+    is_authenticated = db.Column(db.Boolean, default=False)
+    is_superuser = db.Column(db.Boolean, default=False)
+    is_group_admin = db.Column(db.Boolean, default=False)
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return self.id
+
+    def __str__(self):
+        return self.account
 
 
 class step(db.Model):

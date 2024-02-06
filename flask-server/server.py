@@ -44,7 +44,7 @@ login_manager = LoginManager(app)
 @login_manager.user_loader
 def load_user(user_id):
     # load the user from the database
-    return admin_credentials.query.get(int(user_id))
+    return user_credentials.query.get(int(user_id))
 
 
 admin = Admin(
