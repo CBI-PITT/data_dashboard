@@ -24,11 +24,13 @@ def admin_login():
     # print(request.form['account'])
     # print(request.form['password'])
     user = user_credentials.query.filter_by(
-        is_superuser=True, account=request.form["account"], password=request.form["password"]
+        account=request.form["account"], password=request.form["password"]
     ).first()
-    print(user)
-    if user:
+    if user and user.is_superuser:
         login_user(user)
+        user.is_authenticated = True
+        db.session.add_all([user])
+        db.session.commit()
         print("logged in")
         return redirect(url_for("admin.home"))
 
