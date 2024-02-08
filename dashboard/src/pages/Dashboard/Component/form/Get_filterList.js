@@ -197,7 +197,7 @@ function GetFilterList({ list, form_Data, set_FormData, formFrame, setkey_Catego
         list.sort((a, b) => a.localeCompare(b))
         return (
 
-            <div>
+            
                 <FormControl sx={{ m: 1, width: '95%' }}>
                     <InputLabel id="groupBy-multiple-checkbox-label">Filter List</InputLabel>
                     <Select
@@ -223,7 +223,7 @@ function GetFilterList({ list, form_Data, set_FormData, formFrame, setkey_Catego
                         ))}
                     </Select>
                 </FormControl>
-            </div>
+          
 
 
         )

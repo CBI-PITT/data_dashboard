@@ -113,7 +113,7 @@ export default function StackBarChart({
   //   );
   // } else {
     return (
-      <div className="chartFill">
+      <div >
         
         <Column {...config} />
       </div>

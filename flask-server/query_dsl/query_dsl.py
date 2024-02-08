@@ -16,7 +16,7 @@ def create_aggs(fields):
 class Query:
     def filterContinuous(self, continuous_name):
         continuousName = continuous_name
-        sizeValue = 10000
+        sizeValue = 100000
         filterRetrieve_query_body = {
             "size": 0,
             "aggs": {
@@ -28,7 +28,7 @@ class Query:
 
     def filterCategorical(self, category_name):
         categoryName = category_name
-        sizeValue = 10000
+        sizeValue = 100000
         filterRetrieve_query_body = {
             "size": 0,
             "aggs": {
@@ -42,7 +42,7 @@ class Query:
             "size": 0,
             "query": {"bool": {"filter": {"bool": {"must": []}}}},
         }
-        sizeValue = 10000
+        sizeValue = 100000
         categorical = filters["categorical"]
         continuous = filters["continuous"]
         for item in categorical:
@@ -87,4 +87,54 @@ class Query:
 
         return form_query_body
 
+    def formCompositeQuery(self, field: str, filters: dict, groupBy: list, aggregation: list, cadinality_field=None):
+        form_query_body = {
+            "size": 0,
+            "query": {"bool": {"filter": {"bool": {"must": []}}}},
+        }
+        sizeValue = 100000
+        categorical = filters["categorical"]
+        continuous = filters["continuous"]
+        for item in categorical:
+            should = []
+            # form_query_body['query']['bool']['filter']['bool']['must'].append({'bool' : {'should' : []}})
+            for val in categorical[item]:
+                should.append({"term": {item: val}})
+            bool = {"bool": {"should": should}}
+            form_query_body["query"]["bool"]["filter"]["bool"]["must"].append(bool)
+        # print(form_query_body)
+        for item in continuous:
+            # print(continuous[item],continuous[item][0],continuous[item][1])
+            range = {
+                "range": {
+                    item: {"gte": continuous[item][0], "lte": continuous[item][1]}
+                }
+            }
+            form_query_body["query"]["bool"]["filter"]["bool"]["must"].append(range)
+
+        form_query_body["aggs"] = {"categories": {"aggs": {}}}
+        
+        form_query_body["aggs"]["categories"]["composite"] = {
+            "sources": [],
+            "size": sizeValue,
+        }
+        for item in groupBy:
+            form_query_body["aggs"]["categories"]["composite"]["sources"].append(
+                { item: { "terms": { "field": item } } },
+            )
+
+        aggs = {}
+        for item in aggregation:
+            aggs[item + "_" + field] = {item: {"field": field}}
+        if cadinality_field:
+        
+            aggs['N'] = {'cardinality': {"field": cadinality_field}}
+        
+        form_query_body["aggs"]["categories"]["aggs"] = aggs
+        # json_form_query = json.dumps(form_query_body,indent=2)
+        # print(form_query_body)
+
+        return form_query_body
+
     
+

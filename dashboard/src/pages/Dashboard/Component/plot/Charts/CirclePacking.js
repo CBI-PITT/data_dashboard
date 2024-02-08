@@ -85,14 +85,21 @@ export default function CirclePackingChart({
         //     </div>
         //   );
         // } else {
+
+          
+
+          
           let data = { children: [] };
 
           displayData.forEach((element) => {
+            let x_array = []
+              groupBy.forEach((gb) => {
+                x_array.push(element["key"][gb]);
+              });
             let block = {
-              name:
-                groupBy.length === 1
-                  ? element["key"]
-                  : element["key_as_string"],
+              
+              name: x_array.join("|"),
+               
               value: element[agg + "_" + field]["value"],
             };
             data.children.push(block);

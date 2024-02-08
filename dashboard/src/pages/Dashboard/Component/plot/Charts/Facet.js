@@ -3,6 +3,7 @@ import { DataView } from "@antv/data-set";
 import { Button } from '@mui/material';
 import React, { useState } from 'react';
 
+// import Plotly from 'plotly.js';
 
 // export default function FacetChart({ data_BLA, data_acronym_density_BLA, groupBy, field, aggregation, density_dict,displayData,N}){
 //     {
@@ -229,8 +230,10 @@ import React, { useState } from 'react';
 //       }
 // }
 
+// const Plot = createPlotlyComponent(Plotly);
 
 export default function FacetChart  ()  {
+  return
   const data = [
     {
       value_count_atlas_structure_acronym: 42008,
@@ -291,40 +294,28 @@ export default function FacetChart  ()  {
   ];
 
  
-  const config = {
-    type: 'tree',
-  fields: ['time_point','route'],
-  cols: 3,
-  // 超过3个换行
-  padding: [0, 10, 10],
-  appendPadding: 30,
-  data,
-  axes: {},
-  
-  eachView: (view, f) => {
-    return {
+  function createPieData(labels, values, title) {
+    const trace = {
+      labels: labels,
+      values: values,
       type: 'pie',
-      options: {
-        data: f.data,
-        angleField: 'value_count_atlas_structure_acronym',
-        colorField: 'sex',
-        radius: 0.8,
-        label: {
-          type: 'inner',
-          offset: '-50%',
-          content: '{value}',
-          style: {
-            textAlign: 'center',
-          },
-        },
-        interactions: [
-          { type: 'element-selected' },
-          { type: 'element-active' },
-        ],
-      },
+      hoverinfo: 'label+percent',
     };
-  },
-  };
+  
+    const layout = {
+      title: title,
+    };
+  
+    return { data: [trace], layout: layout };
+  }
+  
+  // Create data for the pie plot
+  const labels = data.map(item => item.route);
+  const values = data.map(item => item.value_count_atlas_structure_acronym);
+  const piePlotData = createPieData(labels, values, 'Pie Plot');
+  
+  // React component
+  
 
-  return <Facet {...config} />;
+  
 };

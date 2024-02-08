@@ -9,8 +9,8 @@ import pandas as pd
 server = "http://localhost:9200"
 es = Elasticsearch(request_timeout=600, hosts=server)
 
-INDEX = "cebra2.0"
-SHARDS = 12
+INDEX = "cebra3.0"
+SHARDS = 1
 # REPLICAS = 2
 # Create Index
 mappings = {
@@ -187,10 +187,10 @@ metadata = (
     "/home/kelin/Documents/dashboard_data/cebra/02CL89/data_for_dashboard/metadata.csv"
 )
 files = [
-    "/home/kelin/Documents/dashboard_data/cebra/02CL89/data_for_dashboard/job_00836_df_for_dashboard.csv",
-    "/home/kelin/Documents/dashboard_data/cebra/02CL89/data_for_dashboard/job_00834_df_for_dashboard.csv",
-    "/home/kelin/Documents/dashboard_data/cebra/02CL89/data_for_dashboard/job_00833_df_for_dashboard.csv",
-    "/home/kelin/Documents/dashboard_data/cebra/02CL89/data_for_dashboard/job_00835_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/02CL89/data_for_dashboard_2/job_00836_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/02CL89/data_for_dashboard_2/job_00834_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/02CL89/data_for_dashboard_2/job_00833_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/02CL89/data_for_dashboard_2/job_00835_df_for_dashboard.csv",
 ]
 
 for file in files:
@@ -207,24 +207,24 @@ metadata = (
     "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard/metadata.csv"
 )
 files = [
-    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard/job_01179_df_for_dashboard.csv",
-    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard/job_01181_df_for_dashboard.csv",
-    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard/job_01202_df_for_dashboard.csv",
-    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard/job_01103_df_for_dashboard.csv",
-    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard/job_01174_df_for_dashboard.csv",
-    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard/job_01178_df_for_dashboard.csv",
-    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard/job_01109_df_for_dashboard.csv",
-    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard/job_01151_df_for_dashboard.csv",
-    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard/job_01115_df_for_dashboard.csv",
-    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard/job_01175_df_for_dashboard.csv",
-    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard/job_01159_df_for_dashboard.csv",
-    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard/job_01161_df_for_dashboard.csv",
-    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard/job_01116_df_for_dashboard.csv",
-    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard/job_01111_df_for_dashboard.csv",
-    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard/job_01182_df_for_dashboard.csv",
-    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard/job_01106_df_for_dashboard.csv",
-    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard/job_01093_df_for_dashboard.csv",
-    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard/job_01117_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard_2/job_01179_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard_2/job_01181_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard_2/job_01202_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard_2/job_01103_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard_2/job_01174_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard_2/job_01178_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard_2/job_01109_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard_2/job_01151_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard_2/job_01115_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard_2/job_01175_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard_2/job_01159_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard_2/job_01161_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard_2/job_01116_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard_2/job_01111_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard_2/job_01182_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard_2/job_01106_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard_2/job_01093_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/03CL12/data_for_dashboard_2/job_01117_df_for_dashboard.csv",
 ]
 
 for file in files:
@@ -242,11 +242,11 @@ metadata = (
     "/home/kelin/Documents/dashboard_data/cebra/03CL47/data_for_dashboard/metadata.csv"
 )
 files = [
-    "/home/kelin/Documents/dashboard_data/cebra/03CL47/data_for_dashboard/job_01251_df_for_dashboard.csv",
-    "/home/kelin/Documents/dashboard_data/cebra/03CL47/data_for_dashboard/job_01250_df_for_dashboard.csv",
-    "/home/kelin/Documents/dashboard_data/cebra/03CL47/data_for_dashboard/job_01255_df_for_dashboard.csv",
-    "/home/kelin/Documents/dashboard_data/cebra/03CL47/data_for_dashboard/job_01249_df_for_dashboard.csv",
-    "/home/kelin/Documents/dashboard_data/cebra/03CL47/data_for_dashboard/job_01253_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/03CL47/data_for_dashboard_2/job_01251_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/03CL47/data_for_dashboard_2/job_01250_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/03CL47/data_for_dashboard_2/job_01255_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/03CL47/data_for_dashboard_2/job_01249_df_for_dashboard.csv",
+    "/home/kelin/Documents/dashboard_data/cebra/03CL47/data_for_dashboard_2/job_01253_df_for_dashboard.csv",
 ]
 
 for file in files:
