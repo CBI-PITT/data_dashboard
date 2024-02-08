@@ -26,8 +26,8 @@ function Form({
   setOriginalArray,
   setSortCondition,
   setTopN,
-  isCheckedPara,
-  setIsCheckedPara,
+ 
+  setAggList,
 }) {
   const [Field_axis_list, setField_axis_list] = useState();
 
@@ -39,9 +39,9 @@ function Form({
   const [GroupBy_list, setGroupBy_List] = useState();
   const [Aggregation_list, setAggregation_list] = useState();
   const [filter_list, setFilter_list] = useState();
-
+  const [isCheckedPara, setIsCheckedPara] = useState(false);
   const url_query = "/api/query";
-
+  const url_query_paras = "/api/query_paras"
   const [formDataUpdated, setFormDataUpdated] = useState({
     filter_list: [],
     field: "",
@@ -49,7 +49,6 @@ function Form({
     group_by: [],
     aggregate: [],
   });
-
   useEffect(() => {
     if (formFrame === undefined || formFrame === "dataset retrieving") {
       return;
@@ -291,9 +290,9 @@ function Form({
           //     );
           //   }
           // }
-          setDisplayData(data);
-          setOriginalArray(data);
-
+          setDisplayData(data.data);
+          setOriginalArray(data.data);
+          setAggList(data.agg_list);
           setSortCondition("");
           setTopN("");
           setFormDataCurrent(formDataUpdated);
@@ -306,17 +305,14 @@ function Form({
           // debugger;
         });
     } else {
-      if (!formDataUpdated.group_by.includes(meta.metadata_calculation_name)) {
+      
         if (meta.metadata_calculation_name == null) {
           setN_value("N/A");
           return;
         }
-        let formData_n_value = JSON.parse(JSON.stringify(formDataUpdated));
-        // push metadata_calculation_name to the array
-        formData_n_value.group_by.push(meta.metadata_calculation_name);
-        formData_send = JSON.stringify(formData_n_value);
+        
         console.log("client request send with metadata", formData_send);
-        fetch(HOST + url_query, {
+        fetch(HOST + url_query_paras, {
           headers: { "Content-Type": "application/json" },
           method: "POST",
           body: formData_send,
@@ -324,43 +320,21 @@ function Form({
           .then((res) => res.json())
           .then((data) => {
             console.log("server data received for N", data);
-            // setN_value(
-            //   calculateUniqueValues_key_array(
-            //     data,
-            //     formData_n_value.group_by.indexOf(
-            //       meta.metadata_calculation_name
-            //     )
-            //   )
-            // );
-            setDisplayData(data);
-            setOriginalArray(data);
-
+            setDisplayData(data.data);
+            setOriginalArray(data.data);
+            setAggList(data.agg_list);
+            setN_value(data.total_n)
             setSortCondition("");
             setTopN("");
             setFormDataCurrent(formDataUpdated);
             setOpen(false);
-            if (
-              formData_n_value.group_by.includes(meta.metadata_calculation_name)
-            ) {
-              if (formDataUpdated.group_by.length === 1) {
-                setN_value(calculateUniqueValues_key_string(data));
-              } else {
-                setN_value(
-                  calculateUniqueValues_key_array(
-                    data,
-                    formData_n_value.group_by.indexOf(
-                      meta.metadata_calculation_name
-                    )
-                  )
-                );
-              }
-            }
+        
           })
           .catch((error) => {
             console.log(error);
             // debugger;
           });
-      }
+      
     }
   };
 
@@ -391,8 +365,8 @@ function Form({
           marginTop: "2%",
           padding: "20px",
           position: "relative",
-          maxHeight: '80vh', // Adjust the value as needed
-        overflowY: 'auto',
+          maxHeight: "80vh", // Adjust the value as needed
+          overflowY: "auto",
         }}
         onSubmit={handleSubmit}
       >
@@ -404,7 +378,15 @@ function Form({
         </Backdrop>
 
         <Grid container>
-          <Grid item xs={12} style={{ background: "#fff", borderTopLeftRadius:'10px' ,borderTopRightRadius:'10px' }}>
+          <Grid
+            item
+            xs={12}
+            style={{
+              background: "#fff",
+              borderTopLeftRadius: "10px",
+              borderTopRightRadius: "10px",
+            }}
+          >
             <Typography variant="h6">Filter Settings</Typography>
             <GetFilterList
               list={filter_list}
@@ -422,9 +404,7 @@ function Form({
             />
           </Grid>
 
-          
-          <Grid item xs={12}style={{ background: "#fff",  }}>
-            
+          <Grid item xs={12} style={{ background: "#fff" }}>
             <GetConti
               key_Continuous={key_Continuous}
               value_Continuous={value_Continuous}
@@ -433,7 +413,7 @@ function Form({
             />
           </Grid>
 
-          <Grid item xs={12} style={{ background: "#fff",  }}>
+          <Grid item xs={12} style={{ background: "#fff" }}>
             <br></br>
             <GetCate
               key_category={key_Category}
