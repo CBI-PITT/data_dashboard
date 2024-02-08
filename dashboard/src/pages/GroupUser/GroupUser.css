@@ -1,0 +1,12 @@
+/* styles.css */
+.modal {
+  display: none;
+}
+
+.modal.open {
+  display: block;
+}
+
+.modal-content {
+  /* Add your modal styles here */
+}

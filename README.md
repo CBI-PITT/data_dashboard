@@ -4,7 +4,23 @@
 #### Backend:
 `conda install elasticsearch`
 
-`pip install flask flask_cors pandas numpy`
+`pip install flask flask_cors flask_login flask_sqlalchemy flask_admin pandas numpy elasticsearch_dsl pymysql mysqlclient`
+
+install MySQL dependencies:
+
+`sudo apt-get install build-essential libapache2-mod-wsgi-py3 libmysqlclient-dev`
+
+`sudo apt install mysql-server`
+
+create database and user:
+
+`mysql> CREATE DATABASE dashboard`
+
+`mysql> CREATE USER 'dev'@'localhost' IDENTIFIED BY 'password';`
+
+`mysql> grant all privileges on *.* to 'dev'@'localhost';`
+
+`mysql> INSERT INTO admin_credentials (id, account , password) VALUES (1, 'dev', 'password');`
 
 `cd flask-server`
 

@@ -19,6 +19,7 @@ es = Elasticsearch(es_server, request_timeout=180)
 
 INDEX = ""
 DENSITY = False
+serialized_parameters = {}
 
 
 def filter_indices(indices_list, substring):
@@ -39,6 +40,8 @@ def get_index():
 def choosen_index(index_name):
     global INDEX
     INDEX = index_name
+    global serialized_parameters
+    serialized_parameters = {}
     time.sleep(1)
     # fileds = list(
     #     es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"].keys()
@@ -99,8 +102,6 @@ acronym_volume_25 = volume_reader(25)
 #     index_registration.Registration().index_density_registration_map
 # )
 
-serialized_parameters = {}
-
 
 @dahsboard_bp.route("/api/index_choosen/meta/<index_name>")
 def meta(index_name):
@@ -126,23 +127,34 @@ def meta(index_name):
     parameters_info = parameters.query.filter_by(es_index=index_name).all()
 
     global serialized_parameters
-    serialized_parameters = {
-        "meta": {
-            "aggregation_condition": parameters_info[0].density_agg,
-            "atlas_structure_acronym_column_name": parameters_info[
-                0
-            ].density_atlas_col_name,
-            "metadata_calculation_name": parameters_info[0].n_value_col_name,
-        },
-        "acronym_volumn": {},
-    }
-    if parameters_info[0].resolution_micrometer == 25:
-        serialized_parameters["acronym_volumn"] = acronym_volume_25
-        return serialized_parameters
-    elif parameters_info[0].resolution_micrometer == 10:
-        serialized_parameters["acronym_volumn"] = acronym_volume_10
-        return serialized_parameters
+    if parameters_info:
+        serialized_parameters = {
+            "meta": {
+                "aggregation_condition": parameters_info[0].density_agg,
+                "atlas_structure_acronym_column_name": parameters_info[
+                    0
+                ].density_atlas_col_name,
+                "metadata_calculation_name": parameters_info[0].n_value_col_name,
+            },
+            "acronym_volumn": {},
+        }
+        if parameters_info[0].resolution_micrometer == 25:
+            serialized_parameters["acronym_volumn"] = acronym_volume_25
+            return serialized_parameters
+        elif parameters_info[0].resolution_micrometer == 10:
+            serialized_parameters["acronym_volumn"] = acronym_volume_10
+            return serialized_parameters
+        else:
+            return serialized_parameters
     else:
+        serialized_parameters = {
+            "meta": {
+                "aggregation_condition": None,
+                "atlas_structure_acronym_column_name": None,
+                "metadata_calculation_name": None,
+            },
+            "acronym_volumn": {},
+        }
         return serialized_parameters
 
 
@@ -167,6 +179,7 @@ query = Query.Query()
 
 def custom_sort(item):
     return item.get("key_as_string", item.get("key"))
+
 
 
 
@@ -251,6 +264,7 @@ def query_data_source():
 
 @dahsboard_bp.route("/api/query_paras", methods=["POST"])
 def query_paras():
+
     json_data = request.json
 
     # print("before: " + time.asctime(time.localtime(time.time())))
@@ -382,6 +396,7 @@ def query_paras():
         }
         return jsonify(response_final)
 
+
     # return jsonify(response)
 def density(json_data, response, agg_list=None):
     if (
@@ -393,6 +408,7 @@ def density(json_data, response, agg_list=None):
         in json_data["aggregate"]
         and serialized_parameters["acronym_volumn"]
     ):
+
         
         field = serialized_parameters["meta"]["atlas_structure_acronym_column_name"]
         agg = serialized_parameters["meta"]["aggregation_condition"]
@@ -407,6 +423,7 @@ def density(json_data, response, agg_list=None):
             item["density" + "_" + field] = {"value": ""}
             if resolution.get(acronym):
 
+
                 item["density" + "_" + field]["value"] = (
                     item[agg + "_" + field]["value"] / resolution[acronym]
                 )
@@ -415,6 +432,7 @@ def density(json_data, response, agg_list=None):
         if agg_list:
             agg_list.append('density')
     else:
+
         print("density calculation not satisfied")
     return {'response':response,
                 'agg_list':agg_list}
@@ -499,6 +517,7 @@ def es_query_search(field,filter,groupBy,aggregation,metadata_calculation_name=N
     )
     print("after: " + time.asctime(time.localtime(time.time())))
     return resp.body["aggregations"]["categories"]["buckets"]
+
 
 def boxplot_filterOut(agg_list):
     filtered_list = [s for s in agg_list if not re.match(r'^boxplot', s, re.IGNORECASE)]

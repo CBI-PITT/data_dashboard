@@ -1,4 +1,5 @@
 // GroupUserMain.js
+import "./GroupUser.css"
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import TableList from './TableList';

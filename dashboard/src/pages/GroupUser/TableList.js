@@ -10,24 +10,26 @@ import {
   Paper,
 } from "@mui/material";
 import HOST from "../../config/path";
+import Modal from './JobModal';
+import "./GroupUser.css"
 
 const TableList = ({ selectedOption }) => {
   const [data, setData] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const url_user = "/group_user/info/";
   const url_data = "/group_user/data/";
-  const url_job = "/group_user/job/";
+  const url_jobs = "/group_user/jobs/";
   useEffect(
     (id) => {
       // Fetch data from MySQL or your API here
       // Example: Fetching data using fetch
       let url = "";
       if (selectedOption === "user") {
-        url = url_user + id;
+        url = url_user;
       } else if (selectedOption === "mydata") {
         url = url_data;
       } else if (selectedOption === "myjob") {
-        url = url_job + id;
+        url = url_jobs;
       }
       fetch(HOST + url)
         .then((response) => response.json())
@@ -92,16 +94,33 @@ const TableList = ({ selectedOption }) => {
     ))
   );
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleNewJobClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
   const newIndexButton = selectedOption !== 'user' && (
     <Button variant="contained" color="primary" style={{ marginTop: '20px' ,marginRight:'20px', float:"right"}}>
-      New {selectedOption === 'mydata' ? 'Index' : selectedOption.charAt(2).toUpperCase() + selectedOption.slice(3)}
+      New Index
+    </Button>
+  );
+
+  const newJobButton = selectedOption !== 'user' && (
+    <Button onClick={handleNewJobClick} variant="contained" color="primary" style={{ marginTop: '20px' ,marginRight:'20px', float:"right"}}>
+      New Job JSON
     </Button>
   );
 
   return (
     <Paper elevation={2} style={{ padding: '20px', marginLeft: '20px' }}>
       <TableContainer >
-      {newIndexButton}
+      {selectedOption === 'mydata' ? newIndexButton : newJobButton}
+        <Modal isOpen={isModalOpen} onClose={handleCloseModal} />
         <Table>
           <TableHead>{renderTableHeader()}</TableHead>
           <TableBody>{renderTableRows()}</TableBody>
