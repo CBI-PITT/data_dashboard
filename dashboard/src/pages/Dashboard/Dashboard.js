@@ -13,8 +13,8 @@ function Dashboard() {
   const [type_fields_dict, setType_field_dict] = useState({});
 
   const [displayData, setDisplayData] = useState();
-
-  const [plotChoice, setPlotChoice] = useState("stack_bar");
+  const [aggList, setAggList] = useState([]);
+  const [plotChoice, setPlotChoice] = useState("stack_bar_pl");
 
   const [formFrame, setFormFrame] = useState();
 
@@ -31,7 +31,7 @@ function Dashboard() {
 
   const [aggregation_density_checked, set_aggregation_density_checked] =
     useState([]);
-  const [isCheckedPara, setIsCheckedPara] = useState(false);
+  const [errorBarChecked, setErrorBarChecked] = useState(true);
   const [formDataCurrent, setFormDataCurrent] = useState({
     filter_list: [],
     field: "",
@@ -43,74 +43,80 @@ function Dashboard() {
   return (
     <div className="App">
       <Header />
-      <Grid container spacing={3} style={{ backgroundColor: "rgb(246, 241, 228)" }} columns={20} sx={{padding:'10px'}}>
-        <Grid  item xs={20} sm={20} md={3} lg ={3}xl={4}>
-          
-            <Dataset
-              setFormFrame={setFormFrame}
-              setDisplayData={setDisplayData}
-              setAcronym_volume={setAcronym_volume}
-              setMeta={setMeta}
-            />
-            <Form
-              setDisplayData={setDisplayData}
-              setFormDataCurrent={setFormDataCurrent}
-              type_fields_dict={type_fields_dict}
-              setType_field_dict={setType_field_dict}
-              formFrame={formFrame}
-              meta={meta}
-              setN_value={setN_value}
-              setOriginalArray={setOriginalArray}
-              setSortCondition={setSortCondition}
-              setTopN={setTopN}
-              isCheckedPara={isCheckedPara}
-              setIsCheckedPara={setIsCheckedPara}
-            />
-         
+      <Grid
+        container
+        spacing={3}
+        style={{ backgroundColor: "rgb(246, 241, 228)" }}
+        columns={20}
+        sx={{ padding: "10px" }}
+      >
+        <Grid item xs={20} sm={20} md={3} lg={3} xl={4}>
+          <Dataset
+            setFormFrame={setFormFrame}
+            setDisplayData={setDisplayData}
+            setAcronym_volume={setAcronym_volume}
+            setMeta={setMeta}
+          />
+          <Form
+            setDisplayData={setDisplayData}
+            setFormDataCurrent={setFormDataCurrent}
+            type_fields_dict={type_fields_dict}
+            setType_field_dict={setType_field_dict}
+            formFrame={formFrame}
+            meta={meta}
+            setN_value={setN_value}
+            setOriginalArray={setOriginalArray}
+            setSortCondition={setSortCondition}
+            setTopN={setTopN}
+            setAggList={setAggList}
+          />
         </Grid>
         <Grid item xs={20} sm={20} md={16} lg={15.5} xl={15}>
-          
-            
-            <Paper className="chart"elevation={10}
-            // style={{ backgroundColor: "rgb(246, 241, 228)"  }}
-             >
-              <SortCheckbox
-                originalArray={originalArray}
-                displayData={displayData}
-                setDisplayData={setDisplayData}
-                field={formDataCurrent.field}
-                agg={formDataCurrent.aggregate}
-                N={n_value}
-                sortCondition={sortCondition}
-                setSortCondition={setSortCondition}
-                topN={topN}
-                setTopN={setTopN}
-                meta={meta}
-                groupBy={formDataCurrent.group_by}
-                aggregation={formDataCurrent.aggregate}
-                acronym_volumn={acronym_volume}
-                aggregation_density_checked={aggregation_density_checked}
-              />
-
-              <Chart
-                displayData={displayData}
-                field={formDataCurrent.field}
-                groupBy={formDataCurrent.group_by}
-                aggregation={formDataCurrent.aggregate}
-                plotChoice={plotChoice}
-                setPlotChoice={setPlotChoice}
-                field_status={type_fields_dict[formDataCurrent.field]}
-                acronym_volume={acronym_volume}
-                meta={meta}
-                n_value={n_value}
-              />
-            </Paper>
-            
-          
-        </Grid>
-        <Grid item xs={20} sm={20} md={1} lg={1.5}  xl={1}>
           <Paper
+            className="chart"
+            elevation={10}
+            // style={{ backgroundColor: "rgb(246, 241, 228)"  }}
+          >
+            <SortCheckbox
+              originalArray={originalArray}
             
+              setDisplayData={setDisplayData}
+              field={formDataCurrent.field}
+              agg={formDataCurrent.aggregate}
+              N={n_value}
+              sortCondition={sortCondition}
+              setSortCondition={setSortCondition}
+              topN={topN}
+              setTopN={setTopN}
+              meta={meta}
+              groupBy={formDataCurrent.group_by}
+              aggregation={formDataCurrent.aggregate}
+              acronym_volumn={acronym_volume}
+              errorBarChecked={errorBarChecked}
+              setErrorBarChecked={setErrorBarChecked}
+              // aggregation_density_checked={aggregation_density_checked}
+              aggList={aggList}
+              displayData={displayData}
+            />
+
+            <Chart
+              displayData={displayData}
+              field={formDataCurrent.field}
+              groupBy={formDataCurrent.group_by}
+              aggregation={formDataCurrent.aggregate}
+              plotChoice={plotChoice}
+              setPlotChoice={setPlotChoice}
+              field_status={type_fields_dict[formDataCurrent.field]}
+              acronym_volume={acronym_volume}
+              meta={meta}
+              n_value={n_value}
+              aggList={aggList}
+              errorBarChecked={errorBarChecked}
+            />
+          </Paper>
+        </Grid>
+        <Grid item xs={20} sm={20} md={1} lg={1.5} xl={1}>
+          <Paper
             elevation={10}
             style={{ backgroundColor: "rgb(189, 227, 209)" }}
           >
