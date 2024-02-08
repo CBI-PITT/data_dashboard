@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import InputLabel from "@mui/material/InputLabel";
@@ -17,14 +17,14 @@ const SortCheckbox = ({
   field,
   agg,
   N,
-  sortCondition,
-  setSortCondition,
-  topN,
-  setTopN,
   meta,
   groupBy,
   aggregation,
   acronym_volumn,
+  errorBarChecked, 
+  setErrorBarChecked,
+  aggList,
+  
 }) => {
   // const meta_config = {
   //   atlas_structure_acronym: meta.atlas_structure_acronym_column_name,
@@ -44,6 +44,13 @@ const SortCheckbox = ({
   //       acronym_volumn[acronym];
   //   });
   // }
+  const [sortCondition, setSortCondition] = useState("");
+  const [topN, setTopN] = useState("");
+  
+  useEffect(() => {
+    setSortCondition("");
+    setTopN("");
+  }, [originalArray]);
 
   const handleSort3 = () => {
     // Shallow copy for originalArray
@@ -96,40 +103,10 @@ const SortCheckbox = ({
   };
 
   if (displayData) {
-    let aggregation_density_checked = [...agg];
-    const firstObjectHasDensityAttribute = Object.keys(displayData[0]).some(
-      (key) => key.startsWith("density")
-    );
-    if (firstObjectHasDensityAttribute) {
-      aggregation_density_checked.push("density");
-      // aggregation_density_checked.push('density')
-    }
     return (
       <Grid container spacing={2}>
-        {/* <FormControlLabel
-          control={
-            <Checkbox
-              checked={isCheckedSort}
-              onChange={handleSort}
-              color="primary"
-              disabled={disableSort}
-            />
-          }
-          label={`Sort by`}
-          style={{ float: "left" }}
-        />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={isCheckedTopN}
-              onChange={handleTopN}
-              color="primary"
-              disabled={disableTopN}
-            />
-          }
-          label={`Top 20`}
-          style={{ float: "left" }}
-        /> */}
+        
+
         <Grid item>
           <FormControl sx={{ m: 1, minWidth: 120 }}>
             <InputLabel id="sortConditionx-label">Sort by</InputLabel>
@@ -147,7 +124,7 @@ const SortCheckbox = ({
               <MenuItem value="">
                 <em>None</em>
               </MenuItem>
-              {aggregation_density_checked.map((item) => (
+              {aggList.map((item) => (
                 <MenuItem value={item} key={item}>
                   {item}
                 </MenuItem>
@@ -179,6 +156,22 @@ const SortCheckbox = ({
             <Button variant="contained" onClick={handleSort3}>
               Apply
             </Button>
+          </FormControl>
+        </Grid>
+        <Grid item>
+          <FormControl sx={{ m: 2, minWidth: 50 }}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={errorBarChecked}
+                  onChange={() =>
+                    setErrorBarChecked((prevChecked) => !prevChecked)
+                  }
+                  color="primary"
+                />
+              }
+              label="Error bar"
+            />
           </FormControl>
         </Grid>
         <Grid item sx={{ marginLeft: "auto" }}>
