@@ -17,9 +17,9 @@ function plotChoice({ setPlotChoice, field_status,groupBy }) {
     // console.log(field_status)
 
     const buttons = [
-        <Button key="stack_bar" onClick={() => { setPlotChoice("stack_bar") }} ><img src={stackBarImg} className="plotButton"></img></Button>,
+        // <Button key="stack_bar" onClick={() => { setPlotChoice("stack_bar") }} ><img src={stackBarImg} className="plotButton"></img></Button>,
         <Button key="stack_bar_pl" onClick={() => { setPlotChoice("stack_bar_pl") }} ><img src={stackBarImg} className="plotButton"></img></Button>,
-        <Button key="bar" onClick={() => { setPlotChoice("group_bar") }}  disabled={groupBy.length !== 2 && groupBy.length !== 0}><img src={groupBarImg} className="plotButton"></img></Button>,
+        // <Button key="bar" onClick={() => { setPlotChoice("group_bar") }}  disabled={groupBy.length !== 2 && groupBy.length !== 0}><img src={groupBarImg} className="plotButton"></img></Button>,
         <Button key="group_bar_pl" onClick={() => { setPlotChoice("group_bar_pl") }}  disabled={groupBy.length !== 2 && groupBy.length !== 0}><img src={groupBarImg} className="plotButton"></img></Button>,
         <Button key="box" onClick={() => { setPlotChoice("box") }} disabled={field_status==='keyword'?true:false}><img src={boxImg} className="plotButton" ></img></Button>,
         <Button key="pie" onClick={() => { setPlotChoice("pie") }} ><img src={pieImg} className="plotButton" ></img></Button>,
