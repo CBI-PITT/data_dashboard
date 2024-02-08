@@ -23,6 +23,10 @@ export default function Area({ data,type,fill }) {
     font: {
       size: 16, // Increase the overall font size of the chart layout
     },
+    xaxis: {
+      type: 'category',
+      // Specify the numeric x-axis data as category array
+    }
   };
 
   return (

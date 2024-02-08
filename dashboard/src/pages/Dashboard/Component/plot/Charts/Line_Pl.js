@@ -22,7 +22,10 @@ export default function Line({ data,xCategories,type }) {
     font: {
       size: 16, // Increase the overall font size of the chart layout
     },
-   
+    xaxis: {
+      type: 'category',
+      // Specify the numeric x-axis data as category array
+    }
   };
 
   return (

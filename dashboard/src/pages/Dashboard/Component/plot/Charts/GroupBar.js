@@ -168,7 +168,7 @@ export default function GroupBarChart({
         },
       };
       return (
-        <div className="chartFill">
+        <div >
           <h3>{aggItem + "_" + field}</h3>
           <Column key={aggItem} {...config} />
         </div>

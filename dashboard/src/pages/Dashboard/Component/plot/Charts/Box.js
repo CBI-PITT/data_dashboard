@@ -18,8 +18,13 @@ export default function BoxChart({
   console.log(displayData);
 
   displayData.forEach((element) => {
+    let x_array = [];
+      groupBy.forEach((gb) => {
+        x_array.push(element["key"][gb]);
+      });
     let temp = {
-      x: groupBy.length === 1 ? element["key"] : element["key_as_string"],
+      
+      x: x_array.join("|"),
       min: element[boxplot_name]["min"],
       q1: element[boxplot_name]["q1"],
       median: element[boxplot_name]["q2"],
@@ -41,7 +46,24 @@ export default function BoxChart({
       fill: "#292929",
       fillOpacity: 0.6,
     },
-    
+    xAxis: {
+      label: {
+        autoHide: true,
+        autoRotate: true,
+        style: {
+          fontSize: 18,
+        },
+      },
+    },
+    yAxis: {
+      label: {
+        autoHide: true,
+        autoRotate: true,
+        style: {
+          fontSize: 18,
+        },
+      },
+    },
     animation: true,
   };
   return (

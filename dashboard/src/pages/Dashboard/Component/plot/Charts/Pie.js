@@ -115,11 +115,14 @@ export default function PieChart({
           let data = [];
 
           displayData.forEach((element) => {
+            let x_array = []
+              groupBy.forEach((gb) => {
+                x_array.push(element["key"][gb]);
+              });
             let block = {
-              type:
-                groupBy.length === 1
-                  ? element["key"]
-                  : element["key_as_string"],
+              
+              type: x_array.join("|"),
+               
               value: element[agg + "_" + field]["value"],
             };
             data.push(block);
@@ -174,7 +177,7 @@ export default function PieChart({
 
           // return <h1>hello</h1>
           return (
-            <div key={agg}>
+            <div key={agg} >
               <h3>{agg + "_" + field}</h3>
               <Pie {...config} />
               <br />
