@@ -25,7 +25,7 @@ const TableList = ({ selectedOption }) => {
       // Example: Fetching data using fetch
       let url = "";
       if (selectedOption === "user") {
-        url = url_user;
+        url = url_user + id;
       } else if (selectedOption === "mydata") {
         url = url_data;
       } else if (selectedOption === "myjob") {
