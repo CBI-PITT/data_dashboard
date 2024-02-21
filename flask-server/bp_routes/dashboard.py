@@ -264,7 +264,7 @@ def query_data_source():
 
 @dahsboard_bp.route("/api/query_paras", methods=["POST"])
 def query_paras():
-
+    print(INDEX)
     json_data = request.json
 
     # print("before: " + time.asctime(time.localtime(time.time())))
@@ -498,7 +498,11 @@ def totalN_and_std(buckets_add, buckets, agg_original, groupby_original, field):
             std_values = dict_std.get(string_groupby, {}).get(agg + '_' + field)
             bucket["avg_" + agg + "_" + field] = {
                 "value": bucket[agg + "_" + field]["value"] / bucket["N"]["value"],
-                "std": np.std(std_values) if std_values else None
+                # standerd deviation
+                # "std": np.std(std_values) if std_values else None 
+
+                # standerd error
+                "std": np.std(std_values) / np.sqrt(len(std_values))if std_values else None
             }
 
     return {'response': buckets, 'total_n': total_n}
