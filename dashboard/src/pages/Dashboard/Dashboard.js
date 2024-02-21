@@ -7,7 +7,7 @@ import Form from "./Component/form/Form";
 import { Paper, Grid } from "@mui/material";
 import Footer from "./Component/layout/footer";
 import Header from "./Component/layout/header";
-import SortCheckbox from "./Component/plot/Control/SortCheckBox";
+import MetricsTool from "./Component/plot/Control/MetricsTool";
 import N_number from "./Component/plot/Control/N_number";
 function Dashboard() {
   const [type_fields_dict, setType_field_dict] = useState({});
@@ -28,7 +28,8 @@ function Dashboard() {
 
   const [sortCondition, setSortCondition] = useState("");
   const [topN, setTopN] = useState("");
-
+  const [dimension,setDimension] = useState('')
+  const [groupByKeys,setGroupByKeys] = useState([])
   const [aggregation_density_checked, set_aggregation_density_checked] =
     useState([]);
   const [errorBarChecked, setErrorBarChecked] = useState(true);
@@ -69,6 +70,8 @@ function Dashboard() {
             setSortCondition={setSortCondition}
             setTopN={setTopN}
             setAggList={setAggList}
+            setDimension={setDimension}
+            setGroupByKeys={setGroupByKeys}
           />
         </Grid>
         <Grid item xs={20} sm={20} md={16} lg={15.5} xl={15}>
@@ -77,9 +80,9 @@ function Dashboard() {
             elevation={10}
             // style={{ backgroundColor: "rgb(246, 241, 228)"  }}
           >
-            <SortCheckbox
+            <MetricsTool
               originalArray={originalArray}
-            
+              plotChoice = {plotChoice}
               setDisplayData={setDisplayData}
               field={formDataCurrent.field}
               agg={formDataCurrent.aggregate}
@@ -94,7 +97,9 @@ function Dashboard() {
               acronym_volumn={acronym_volume}
               errorBarChecked={errorBarChecked}
               setErrorBarChecked={setErrorBarChecked}
-              // aggregation_density_checked={aggregation_density_checked}
+              dimension={dimension}
+              setDimension={setDimension}
+              setGroupByKeys={setGroupByKeys}
               aggList={aggList}
               displayData={displayData}
             />
@@ -112,6 +117,10 @@ function Dashboard() {
               n_value={n_value}
               aggList={aggList}
               errorBarChecked={errorBarChecked}
+              dimension={dimension}
+              setDimension={setDimension}
+              groupByKeys={groupByKeys}
+              setGroupByKeys={setGroupByKeys}
             />
           </Paper>
         </Grid>
