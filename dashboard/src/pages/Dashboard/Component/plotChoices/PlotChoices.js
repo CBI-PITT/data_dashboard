@@ -29,7 +29,7 @@ function plotChoice({ setPlotChoice, field_status,groupBy }) {
         <Button key="line" onClick={() => { setPlotChoice("line_pl") }}><img src={lineImg} className="plotButton"></img></Button>,
         // <Button key="area" onClick={() => { setPlotChoice("area") }}><img src={areaImg} className="plotButton"></img></Button>,
         <Button key="area" onClick={() => { setPlotChoice("area_pl") }}><img src={areaImg} className="plotButton"></img></Button>,
-        // <Button key="multi-layer" onClick={() => { setPlotChoice("facet") }}><img src={multi_layer} className="plotButton"></img></Button> 
+        <Button key="multi-layer" onClick={() => { setPlotChoice("facet") }}><img src={multi_layer} className="plotButton"></img></Button> 
     ];
     return (
         

@@ -26,7 +26,8 @@ export default function StackedBar({ data,type }) {
       type: 'category',
       // Specify the numeric x-axis data as category array
       
-    }
+    },
+    
    
   };
 
@@ -34,7 +35,7 @@ export default function StackedBar({ data,type }) {
     <Plot
       data={data}
       layout={layout}
-      style={{ width: "100%", height: "100%" }}
+      style={{ width: "100%", height: "90%" }}
     />
   );
 }

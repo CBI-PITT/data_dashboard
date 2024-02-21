@@ -1,321 +1,237 @@
-import { Facet} from '@ant-design/plots';
-import { DataView } from "@antv/data-set";
-import { Button } from '@mui/material';
-import React, { useState } from 'react';
+import React from "react";
+import Typography from "@mui/material/Typography";
+import Plot from "react-plotly.js";
 
-// import Plotly from 'plotly.js';
+function PieCharts({ groupedData }) {
+  const generatePieCharts = (data, prefix = "") => {
+    const pieCharts = [];
 
-// export default function FacetChart({ data_BLA, data_acronym_density_BLA, groupBy, field, aggregation, density_dict,displayData,N}){
-//     {
-//       console.log(displayData)
-//       // return(<h2>Sorry, Its under construction</h2>)
-//         // const newData = [
-//         //   {
-//         //     value_count_atlas_structure_acronym: 42008,
-//         //     time_point: "24.0",
-//         //     route: "aerosol",
-//         //     treatment: "veev",
-//         //   },
-//         //   {
-//         //     value_count_atlas_structure_acronym: 66922,
-//         //     time_point: "24.0",
-//         //     route: "subcutaneous",
-//         //     treatment: "veev",
-//         //   },
-//         //   {
-//         //     value_count_atlas_structure_acronym: 4072799,
-//         //     time_point: "48.0",
-//         //     route: "aerosol",
-//         //     treatment: "veev",
-//         //   },
-//         //   {
-//         //     value_count_atlas_structure_acronym: 311055,
-//         //     time_point: "48.0",
-//         //     route: "subcutaneous",
-//         //     treatment: "veev",
-//         //   },
-//         //   {
-//         //     value_count_atlas_structure_acronym: 713686,
-//         //     time_point: "72.0",
-//         //     route: "aerosol",
-//         //     treatment: "eeev",
-//         //   },
-//         //   {
-//         //     value_count_atlas_structure_acronym: 11700626,
-//         //     time_point: "72.0",
-//         //     route: "aerosol",
-//         //     treatment: "veev",
-//         //   },
-//         //   {
-//         //     value_count_atlas_structure_acronym: 100795,
-//         //     time_point: "72.0",
-//         //     route: "subcutaneous",
-//         //     treatment: "eeev",
-//         //   },
-//         //   {
-//         //     value_count_atlas_structure_acronym: 1952691,
-//         //     time_point: "72.0",
-//         //     route: "subcutaneous",
-//         //     treatment: "veev",
-//         //   },
-//         //   {
-//         //     value_count_atlas_structure_acronym: 5875594,
-//         //     time_point: "96.0",
-//         //     route: "aerosol",
-//         //     treatment: "eeev",
-//         //   },
-//         //   {
-//         //     value_count_atlas_structure_acronym: 4966133,
-//         //     time_point: "96.0",
-//         //     route: "aerosol",
-//         //     treatment: "veev",
-//         //   },
-//         //   {
-//         //     value_count_atlas_structure_acronym: 48154321,
-//         //     time_point: "96.0",
-//         //     route: "subcutaneous",
-//         //     treatment: "eeev",
-//         //   },
-//         //   {
-//         //     value_count_atlas_structure_acronym: 6635356,
-//         //     time_point: "96.0",
-//         //     route: "subcutaneous",
-//         //     treatment: "veev",
-//         //   },
-//         // ];
-    
-//         // const config = {
-//         //   // appendPadding: [0, 16, 16, 16],
-//         //   data: newData,
-//         //   type: "tree",
-//         //   fields: ["time_point", "treatment"],
-//         //   // coordinate: { type: 'theta' },
-    
-//         //   // tree-facet 连接线样式和是否平滑
-//         //   meta: {
-//         //     percent: {
-//         //       formatter(val) {
-//         //         return (val * 100).toFixed(2) + "%";
-//         //       },
-//         //     },
-//         //   },
-//         //   line: {
-//         //     style: {
-//         //       stroke: "#dedede",
-//         //     },
-//         //     smooth: false,
-//         //   },
-//         //   tooltip: {
-//         //     showMarkers: false,
-//         //   },
-//         //   eachView: (view, facet) => {
-//         //     //   // 对角线的图形，做数据封箱之后绘制图形
-//         //     const dv = new DataView();
-//         //     dv.source(facet.data).transform({
-//         //       type: "percent",
-//         //       field: "value_count_atlas_structure_acronym",
-//         //       dimension: "route",
-//         //       // as: ['percent'],
-//         //     });
-//         //     return {
-//         //       type: "pie",
-//         //       options: {
-//         //         data: dv.rows,
-//         //         angleField: "value_count_atlas_structure_acronym",
-//         //         colorField: "route",
-//         //         pieStyle: {
-//         //           opacity: 0.85,
-//         //         },
-//         //         // 添加动画
-//         //         animation: true,
-//         //         // 添加交互
-//         //         interactions: [
-//         //           {
-//         //             type: "association-element-active",
-//         //           },
-//         //           {
-//         //             type: "association-highlight",
-//         //           },
-//         //           {
-//         //             type: "association-tooltip",
-//         //           },
-//         //         ],
-//         //       },
-//         //     };
-//         //   },
-//         // };
-//         // return <Facet {...config} />;
-//         // return (
-//         //   <div>
-//         //   <h1>Under Construction 🚧 </h1>
-//         //   </div>
-//         // )
-//         return (
-//           <div>
-//             {aggregation.map((agg) => {
-//               let data = [];
-//               displayData.forEach((element) => {
-//                 let block = {};
-//                 block[agg + "_" + field] = element[agg + "_" + field]["value"];
-//                 if (groupBy.length === 1) {
-//                   block[groupBy[0]] = element["key"];
-//                 } else {
-//                   for (let i = 0; i < groupBy.length; i++) {
-//                     block[groupBy[i]] = element["key"][i];
-//                   }
-//                 }
-//                 data.push(block);
-//               });
-//               // console.log("tree data", data);
-//               let config = {
-//                 // appendPadding: [0, 16, 16, 16],
-//                 data,
-//                 type: "tree",
-//                 fields: ['sex','treatment','time_point'],
-//                 line: {
-//                   style: {
-//                     stroke: "#dedede",
-//                   },
-//                   smooth: true,
-//                 },
-//                 tooltip: {
-//                   showMarkers: false,
-//                 },
-//                 eachView: (view, facet) => {
-//                   let dv = new DataView();
-//                   dv.source(facet.data).transform({
-//                     type: "percent",
-//                     field: agg + "_" + field,
-//                     dimension: 'atlas_structure_acronym',
-//                     // as: 'percent',
-//                   });
-//                   return {
-//                     type: "pie",
-//                     options: {
-//                       data: dv.rows,
-//                       angleField: agg + "_" + field,
-//                       colorField: 'atlas_structure_acronym',
-//                       pieStyle: {
-//                         opacity: 0.85,
-//                       },
-//                       animation: {},
-//                       interactions: [
-//                         {
-//                           type: "association-active",
-//                         },
-//                         {
-//                           type: "association-tooltip",
-//                         },
-//                       ],
-//                     },
-//                   };
-//                 },
-//               };
-//               return (
-//                 <div>
-//                   <h3>{agg + "_" + field}</h3>
-//                   {/* {facetComp(config)} */}
-//                   <Facet {...config} key={agg + "_" + field} />
-//                   {/* <Button onClick={()=>{
-//                     setDimention('route')
-//                   }}>dimension</Button>
-//                   <Button onClick={()=>{setFields(['treatment','time_point'])}}>fields</Button> */}
-                  
-//                   <br />
-//                 </div>
-//               );
-//             })}
-//           </div>
-//         );
-//       }
-// }
+    Object.keys(data).forEach((key) => {
+      const currentKey = prefix ? `${prefix} ${key}` : key;
 
-// const Plot = createPlotlyComponent(Plotly);
+      if (typeof data[key] === "object" && !Array.isArray(data[key])) {
+        pieCharts.push(...generatePieCharts(data[key], currentKey));
+      } else {
+        const valueCount = data[key]?.value_count || 0;
+        const avgValueCount = data[key]?.avg_value_count || 0;
 
-export default function FacetChart  ()  {
-  return
-  const data = [
-    {
-      value_count_atlas_structure_acronym: 42008,
-      time_point: "1.0",
-      route: "saline",
-      treatment: "veev",
-      sex: "f"
-    },
-    {
-      value_count_atlas_structure_acronym: 66922,
-      time_point: "1.0",
-      route: "saline",
-      treatment: "veev",
-      sex: "m"
-    },
-    {
-      value_count_atlas_structure_acronym: 4072799,
-      time_point: "1.0",
-      route: "morphine",
-      treatment: "veev",
-      sex: "f"
-    },
-    {
-      value_count_atlas_structure_acronym: 311055,
-      time_point: "1.0",
-      route: "morphine",
-      treatment: "veev",
-      sex: "m"
-    },
-    {
-      value_count_atlas_structure_acronym: 713686,
-      time_point: "4.0",
-      route: "saline",
-      treatment: "eeev",
-      sex: "f"
-    },
-    {
-      value_count_atlas_structure_acronym: 11700626,
-      time_point: "4.0",
-      route: "saline",
-      treatment: "veev",
-      sex: "m"
-    },
-    {
-      value_count_atlas_structure_acronym: 100795,
-      time_point: "4.0",
-      route: "morphine",
-      treatment: "eeev",
-      sex: "f"
-    },
-    {
-      value_count_atlas_structure_acronym: 1952691,
-      time_point: "4.0",
-      route: "morphine",
-      treatment: "veev",
-      sex: "m"
+        pieCharts.push({
+          labels: ["value_count", "avg_value_count"],
+          values: [valueCount, avgValueCount],
+          type: "pie",
+          name: currentKey,
+          hoverinfo: "label+value+name",
+        });
+      }
+    });
+
+    return pieCharts;
+  };
+
+  const pieChartsData = generatePieCharts(groupedData);
+
+  return (
+    <div>
+      {pieChartsData.map((data, index) => (
+        <div key={index}>
+          <Plot data={[data]} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default function FacetChart({
+  displayData,
+  aggregation,
+  field,
+  dimension,
+  groupByKeys,
+}) {
+  // console.log(Object.keys(check))
+  // sorting problem when field on numerical value
+  // last layer should be array type instead of {}
+
+  // method 1 for facet data construction 
+  // const groupedData = displayData.reduce((acc, obj) => {
+  //   const groupByKeysContent = groupByKeys.map((key) => obj.key[key]);
+
+  //   const dimensionContent = obj.key[dimension];
+
+  //   const values = {};
+  //   aggregation.forEach((agg) => {
+  //     values[agg] = obj[agg + "_" + field]?.value || 0;
+  //   });
+  //   let currentLevel = acc;
+  //   groupByKeysContent.forEach((key) => {
+  //     if (!currentLevel[key]) {
+  //       currentLevel[key] = {};
+  //     }
+  //     currentLevel = currentLevel[key];
+  //   });
+  //   // console.log(currentLevel)
+  //   aggregation.forEach((agg) => {
+  //     if (!currentLevel[agg]) {
+  //       currentLevel[agg] = [];
+  //       // console.log(label_content)
+  //       currentLevel[agg].push({
+  //         [dimensionContent]:values[agg]
+  //       })
+
+  //     } else {
+  //       currentLevel[agg].push({
+  //         [dimensionContent]:values[agg]
+  //       })
+  //     }
+  //   });
+  //   return acc;
+  // }, {});
+
+  // method 2 for facet data construction 
+  const groupedData = displayData.reduce((acc, obj) => {
+    const groupByKeysContent = groupByKeys.map((key) => obj.key[key]);
+
+    const dimensionContent = obj.key[dimension];
+
+    const values = {};
+    aggregation.forEach((agg) => {
+      values[agg] = obj[agg + "_" + field]?.value || 0;
+    });
+    let currentLevel = acc;
+    groupByKeysContent.forEach((key) => {
+      if (!currentLevel[key]) {
+        currentLevel[key] = {};
+      }
+      currentLevel = currentLevel[key];
+    });
+    // console.log(currentLevel)
+    aggregation.forEach((agg) => {
+      if (!currentLevel[agg]) {
+        currentLevel[agg] = {
+          'labels_list': [],
+          'values_list': [],
+        };
+        // console.log(label_content)
+        currentLevel[agg].labels_list.push(dimensionContent)
+        currentLevel[agg].values_list.push(values[agg])
+        
+      } else {
+        currentLevel[agg].labels_list.push(dimensionContent)
+        currentLevel[agg].values_list.push(values[agg])
+      }
+    });
+    return acc;
+  }, {});
+
+  // console.log(groupedData);
+
+  let agg_list_render = {};
+  let agg_list_set = [];
+  aggregation.forEach((agg) => {
+    agg_list_render[agg] = [];
+    agg_list_set.push(agg);
+  });
+
+  function loopThroughObject(obj, keyInfo = "") {
+    for (const key in obj) {
+      if (typeof obj[key] === "object" && obj[key] !== null) {
+        const newKeyInfo = keyInfo ? `${keyInfo}-${key}` : key;
+        // If the value is an object (including arrays), recursively call the function
+        if (agg_list_set.includes(key)) {
+          
+          // console.log(obj[key]);
+          // console.log(obj[key].map(obj => Object.keys(obj)[0]));
+          // console.log(Object.values(obj[key]))
+          
+          let chartData = {
+            // access data for method 1
+            // labels: obj[key].map((obj) => Object.keys(obj)[0]),
+            // values: obj[key].map((obj) => Object.values(obj)[0]),
+
+            // access data for method 2
+            labels:obj[key].labels_list,
+            values: obj[key].values_list,
+            type: "pie",
+            textinfo: "none",
+            sort: false,
+          };
+          agg_list_render[key].push(
+            <Plot
+              data={[chartData]}
+              layout={{
+                width: 400,
+                height: 400,
+                title: `${key}  (${keyInfo})`,
+                sort: false,
+              }}
+            />
+          );
+        }
+        loopThroughObject(obj[key], newKeyInfo);
+      } else {
+        return;
+      }
     }
-  ];
-
- 
-  function createPieData(labels, values, title) {
-    const trace = {
-      labels: labels,
-      values: values,
-      type: 'pie',
-      hoverinfo: 'label+percent',
-    };
-  
-    const layout = {
-      title: title,
-    };
-  
-    return { data: [trace], layout: layout };
   }
-  
-  // Create data for the pie plot
-  const labels = data.map(item => item.route);
-  const values = data.map(item => item.value_count_atlas_structure_acronym);
-  const piePlotData = createPieData(labels, values, 'Pie Plot');
-  
-  // React component
-  
+  loopThroughObject(groupedData);
+  return (
+    <div>
+      {aggregation.map((agg) => (
+        <div key={agg}>
+          <Typography variant="h5">
+            {agg}_ {field}
+          </Typography>
+          {agg_list_render[agg]}
+        </div>
+      ))}
+    </div>
+  );
+}
+// console.log(groupedData)
+// return <PieCharts groupedData={groupedData} />;
 
-  
-};
+// const pieCharts = [];
+
+// Object.entries(groupedData).forEach(([groupKey, subGroups]) => {
+//   const subGroupCharts = [];
+
+//   Object.entries(subGroups).forEach(([subGroupKey, data]) => {
+//     const lable_content = Object.keys(data); // Get all unique acronyms as labels
+//     console.log(lable_content)
+
+//     const valuesData = lable_content.map(label => data[label].value_count); // Extract value for each label
+//     const chartData = aggregation.map(agg => ({
+//       values: valuesData,
+//       labels: lable_content,
+//       type: 'pie',
+//       textinfo: 'none',
+//       name: agg,
+//     }));
+//     console.log(chartData)
+//     subGroupCharts.push(
+//       <div key={`${groupKey}-${subGroupKey}`} style={{ display: 'inline-block', margin: '10px' }}>
+//         <h4>{groupBy.join(': ')} - {groupKey} - {subGroupKey}</h4>
+//         <div style={{ display: 'flex' }}>
+//           {chartData.map((data, index) => (
+//             <div key={index} style={{ marginRight: '20px' }}>
+//               <h5>{lable_content[index]} Distribution</h5>
+//               <Plot
+//                 data={[data]}
+//                 layout={{ width: 400, height: 400, title: `${lable_content[index]} Pie Chart for ${subGroupKey}` }}
+//               />
+//             </div>
+//           ))}
+//         </div>
+//       </div>
+//     );
+//   });
+
+//   pieCharts.push(
+//     <div key={groupKey}>
+//       <h3>{groupBy.join(': ')} - {groupKey}</h3>
+//       {subGroupCharts}
+//     </div>
+//   );
+// });
+
+// return <div>{pieCharts}</div>;

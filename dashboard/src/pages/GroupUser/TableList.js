@@ -20,12 +20,12 @@ const TableList = ({ selectedOption }) => {
   const url_data = "/group_user/data/";
   const url_jobs = "/group_user/jobs/";
   useEffect(
-    (id) => {
+    (id=1) => {
       // Fetch data from MySQL or your API here
       // Example: Fetching data using fetch
       let url = "";
       if (selectedOption === "user") {
-        url = url_user;
+        url = url_user + id;
       } else if (selectedOption === "mydata") {
         url = url_data;
       } else if (selectedOption === "myjob") {

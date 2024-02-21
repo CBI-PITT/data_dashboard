@@ -10,8 +10,10 @@ import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import N_number from "./N_number";
 import Grid from "@mui/material/Grid";
-const SortCheckbox = ({
+import { errorBarToolList,facetToolList } from "./Options";
+const MetricsTool = ({
   displayData,
+  plotChoice,
   setDisplayData,
   originalArray,
   field,
@@ -21,10 +23,13 @@ const SortCheckbox = ({
   groupBy,
   aggregation,
   acronym_volumn,
-  errorBarChecked, 
+  errorBarChecked,
   setErrorBarChecked,
+  dimension,
+  setDimension,
+  setGroupByKeys,
+
   aggList,
-  
 }) => {
   // const meta_config = {
   //   atlas_structure_acronym: meta.atlas_structure_acronym_column_name,
@@ -105,8 +110,6 @@ const SortCheckbox = ({
   if (displayData) {
     return (
       <Grid container spacing={2}>
-        
-
         <Grid item>
           <FormControl sx={{ m: 1, minWidth: 120 }}>
             <InputLabel id="sortConditionx-label">Sort by</InputLabel>
@@ -151,6 +154,7 @@ const SortCheckbox = ({
             />
           </FormControl>
         </Grid>
+        
         <Grid item>
           <FormControl sx={{ m: 2, minWidth: 50 }}>
             <Button variant="contained" onClick={handleSort3}>
@@ -158,22 +162,56 @@ const SortCheckbox = ({
             </Button>
           </FormControl>
         </Grid>
-        <Grid item>
-          <FormControl sx={{ m: 2, minWidth: 50 }}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={errorBarChecked}
-                  onChange={() =>
-                    setErrorBarChecked((prevChecked) => !prevChecked)
+        {
+          errorBarToolList.includes(plotChoice) ? ( // Check if plotChoice is included in errorBarToolList
+            <Grid item>
+              <FormControl sx={{ m: 2, minWidth: 50 }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={errorBarChecked}
+                      onChange={() =>
+                        setErrorBarChecked((prevChecked) => !prevChecked)
+                      }
+                      color="primary"
+                    />
                   }
-                  color="primary"
+                  label="Error bar"
                 />
-              }
-              label="Error bar"
-            />
+              </FormControl>
+            </Grid>
+          ) : null // If plotChoice is not included, render null (or you can render another component or JSX)
+          
+        }
+        {
+        facetToolList.includes(plotChoice) ? ( 
+          <Grid item>
+          <FormControl sx={{ m: 1, minWidth: 120 }}>
+            <InputLabel id="sortConditionx-label">Dimension</InputLabel>
+            <Select
+              labelId="facetDimension-label"
+              id="facetDimension"
+              value={dimension}
+              label="facetDimension *"
+              name="facetDimension"
+              onChange={(event) => {
+                setDimension(event.target.value);
+                setGroupByKeys(groupBy.filter(item => item !== event.target.value))
+              }}
+              // autoWidth
+            >
+              
+              {groupBy.map((item) => (
+                <MenuItem value={item} key={item}>
+                  {item}
+                </MenuItem>
+              ))}
+              
+            </Select>
           </FormControl>
         </Grid>
+        ) : null 
+        }
         <Grid item sx={{ marginLeft: "auto" }}>
           <FormControl sx={{ m: 3, minWidth: 50 }}>
             <N_number N={N} />
@@ -184,4 +222,4 @@ const SortCheckbox = ({
   }
 };
 
-export default SortCheckbox;
+export default MetricsTool;

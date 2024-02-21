@@ -32,7 +32,7 @@ export default function Line({ data,xCategories,type }) {
     <Plot
       data={data}
       layout={layout}
-      style={{ width: "100%", height: "100%" }}
+      style={{ width: "100%", height: "90%" }}
     />
   );
 }

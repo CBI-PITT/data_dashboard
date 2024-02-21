@@ -33,7 +33,7 @@ export default function Area({ data,type,fill }) {
     <Plot
       data={data}
       layout={layout}
-      style={{ width: "100%", height: "100%" }}
+      style={{ width: "100%", height: "90%" }}
     />
   );
 }

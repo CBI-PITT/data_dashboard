@@ -26,8 +26,10 @@ function Form({
   setOriginalArray,
   setSortCondition,
   setTopN,
- 
+
   setAggList,
+  setDimension,
+  setGroupByKeys,
 }) {
   const [Field_axis_list, setField_axis_list] = useState();
 
@@ -41,7 +43,7 @@ function Form({
   const [filter_list, setFilter_list] = useState();
   const [isCheckedPara, setIsCheckedPara] = useState(false);
   const url_query = "/api/query";
-  const url_query_paras = "/api/query_paras"
+  const url_query_paras = "/api/query_paras";
   const [formDataUpdated, setFormDataUpdated] = useState({
     filter_list: [],
     field: "",
@@ -297,7 +299,12 @@ function Form({
           setTopN("");
           setFormDataCurrent(formDataUpdated);
           setOpen(false);
-
+          setDimension(formDataUpdated.group_by[0]);
+          setGroupByKeys(
+            formDataUpdated.group_by.filter(
+              (item) => item !== formDataUpdated.group_by[0]
+            )
+          );
           // console.log("setDisplayData", displayData)
         })
         .catch((error) => {
@@ -305,36 +312,39 @@ function Form({
           // debugger;
         });
     } else {
-      
-        if (meta.metadata_calculation_name == null) {
-          setN_value("N/A");
-          return;
-        }
-        
-        console.log("client request send with metadata", formData_send);
-        fetch(HOST + url_query_paras, {
-          headers: { "Content-Type": "application/json" },
-          method: "POST",
-          body: formData_send,
+      if (meta.metadata_calculation_name == null) {
+        setN_value("N/A");
+        return;
+      }
+
+      console.log("client request send with metadata", formData_send);
+      fetch(HOST + url_query_paras, {
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+        body: formData_send,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("server data received for N", data);
+          setDisplayData(data.data);
+          setOriginalArray(data.data);
+          setAggList(data.agg_list);
+          setN_value(data.total_n);
+          setSortCondition("");
+          setTopN("");
+          setFormDataCurrent(formDataUpdated);
+          setOpen(false);
+          setDimension(formDataUpdated.group_by[0]);
+          setGroupByKeys(
+            formDataUpdated.group_by.filter(
+              (item) => item !== formDataUpdated.group_by[0]
+            )
+          );
         })
-          .then((res) => res.json())
-          .then((data) => {
-            console.log("server data received for N", data);
-            setDisplayData(data.data);
-            setOriginalArray(data.data);
-            setAggList(data.agg_list);
-            setN_value(data.total_n)
-            setSortCondition("");
-            setTopN("");
-            setFormDataCurrent(formDataUpdated);
-            setOpen(false);
-        
-          })
-          .catch((error) => {
-            console.log(error);
-            // debugger;
-          });
-      
+        .catch((error) => {
+          console.log(error);
+          // debugger;
+        });
     }
   };
 

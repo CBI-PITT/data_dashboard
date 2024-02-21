@@ -26,6 +26,10 @@ function Chart({
   n_value,
   aggList,
   errorBarChecked,
+  dimension,
+  setDimension,
+  groupByKeys,
+  setGroupByKeys,
 }) {
   // Request condition = { "field": "atlas_structure_acronym", "filter": { "categorical": { "atlas_structure_acronym": [], "file_path": [], "route": [], "time_point": [], "transformed_coord_units": [], "treatment": [], "uuid_brain": [], "uuid_cell": [], "voxel_spacing": [], "voxel_spacing_units": [] }, "continuous": { "Unnamed: 0": [0, 32153394], "atlas_structure_number": [0, 614454277], "metadata": [18, 39], "n_channels": [1, 2], "x_downsampled": [0, 887], "x_transformed": [0, 13925], "x_transformed_px": [0, 557], "y_downsampled": [0, 276], "y_transformed": [0, 8000], "y_transformed_px": [0, 320], "z_downsampled": [4, 1210], "z_transformed": [0, 16850], "z_transformed_px": [0, 674] } }, "group_by": ["time_point", "route", "treatment"], "aggregate": ["value_count", "cardinality"] }
 
@@ -89,7 +93,7 @@ function Chart({
   // load situation
   // BLA pre-load
   // PC, Circle, Box on-load
-  console.log(aggList);
+  // console.log(aggList);
 
   if (displayData === undefined) {
     // return <p>Loading....</p>
@@ -122,7 +126,6 @@ function Chart({
   let data_BLA = [];
   let data_acronym_density_BLA = [];
 
-  
   // data source for stack_bar line and area
   let data_bla_pl = [];
   for (const agg of aggList) {
@@ -141,7 +144,7 @@ function Chart({
       type: "",
     });
   }
-  console.log(data_bla_pl);
+  // console.log(data_bla_pl);
   displayData.forEach((element) => {
     aggList.forEach((agg) => {
       let x_array = [];
@@ -171,9 +174,8 @@ function Chart({
       element["hovertemplate"] = "%{x}<br>%{y}";
     }
   });
-  console.log("data_pl", data_bla_pl);
-  
-  
+  // console.log("data_pl", data_bla_pl);
+
   // data source for group_bar
   let data_traces_group = [];
   aggList.forEach((agg) => {
@@ -183,7 +185,7 @@ function Chart({
       value: item[agg + "_" + field]["value"],
       N: item["N"] ? item["N"]["value"] : null, // Include the N value
     }));
-  
+
     // Grouping data by groupBy[0] and groupBy[1]
     const groupedData = groups.reduce((acc, curr) => {
       const key = curr[groupBy[0]] + "-" + curr[groupBy[1]];
@@ -191,13 +193,13 @@ function Chart({
       acc[key].push(curr);
       return acc;
     }, {});
-  
+
     // Extracting unique values for groupBy[0] and groupBy[1]
     const [groupBy0Values, groupBy1Values] = [
       [...new Set(groups.map((item) => item[groupBy[0]]))],
       [...new Set(groups.map((item) => item[groupBy[1]]))],
     ];
-  
+
     // Creating traces for each group
     const traces = groupBy1Values.map((groupBy1Value) => ({
       x: groupBy0Values, // Swapping groupBy0Values and groupBy1Values
@@ -221,10 +223,15 @@ function Chart({
         }
       }),
     }));
-  
+
     data_traces_group.push(traces);
   });
-  
+  let arr = [];
+  let haspmaps_array = [];
+  for (let i = 0; i < groupBy.length; i++) {
+    haspmaps_array[i] = {};
+  }
+  displayData.forEach((element) => {});
 
   // let data_traces_group = [];
   // aggList.forEach((agg) => {
@@ -234,7 +241,7 @@ function Chart({
   //         value: item[agg + "_" + field]["value"],
   //         N: item["N"] ? item["N"]["value"] : null, // Include N value if it exists
   //     }));
-  
+
   //     // Grouping data by groupBy[0] and groupBy[1]
   //     const groupedData = groups.reduce((acc, curr) => {
   //         const key = curr[groupBy[0]] + "-" + curr[groupBy[1]];
@@ -242,13 +249,13 @@ function Chart({
   //         acc[key].push(curr.value);
   //         return acc;
   //     }, {});
-  
+
   //     // Extracting unique values for groupBy[0] and groupBy[1]
   //     const [groupBy0Values, groupBy1Values] = [
   //         [...new Set(groups.map((item) => item[groupBy[0]]))],
   //         [...new Set(groups.map((item) => item[groupBy[1]]))],
   //     ];
-  
+
   //     // Creating traces for each group
   //     const traces = groupBy1Values.map((groupBy1Value) => ({
   //         x: groupBy0Values, // Swapping groupBy0Values and groupBy1Values
@@ -266,14 +273,11 @@ function Chart({
   //                 : ""
   //         ),
   //     }));
-  
+
   //     data_traces_group.push(traces);
   // });
 
-  
-console.log(data_traces_group)
-
-
+  // console.log(data_traces_group)
 
   if (plotChoice === "stack_bar") {
     return (
@@ -391,15 +395,11 @@ console.log(data_traces_group)
   } else if (plotChoice === "facet") {
     return (
       <FacetChart
-        data_BLA={data_BLA}
-        data_acronym_density_BLA={data_acronym_density_BLA}
-        groupBy={groupBy}
         aggregation={aggList}
         field={field}
-        meta={meta_config}
         displayData={displayData}
-        plotChoice={plotChoice}
-        N={N}
+        dimension={dimension}
+        groupByKeys={groupByKeys}
       />
     );
   }
