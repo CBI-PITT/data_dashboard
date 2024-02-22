@@ -257,7 +257,9 @@ function Form({
     setN_value("Calculating...");
 
     let formData_boxplot_add = JSON.parse(JSON.stringify(formDataUpdated));
-
+    formData_boxplot_add['INDEX'] =sessionStorage.getItem('INDEX')
+    formData_boxplot_add['serialized_parameters'] = JSON.parse(sessionStorage.getItem('serialized_parameters'))
+    console.log(formData_boxplot_add)
     if (type_fields_dict[formData_boxplot_add["field"]] !== "keyword") {
       formData_boxplot_add["aggregate"].push("boxplot");
     }

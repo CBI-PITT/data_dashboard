@@ -44,6 +44,7 @@ function Dataset({ setFormFrame, setDisplayData, setAcronym_volume, setMeta }) {
             setFormFrame("dataset retrieving");
             setDisplayData();
             let index = event.target.value;
+            sessionStorage.setItem('INDEX', index);
             axios
               .get(HOST + url_index_choosen + index)
               .then((response) => {
@@ -73,6 +74,7 @@ function Dataset({ setFormFrame, setDisplayData, setAcronym_volume, setMeta }) {
               .then((response) => {
                 console.log("Index meta retreive successfully");
                 console.log(response.data)
+                sessionStorage.setItem('serialized_parameters',JSON.stringify(response.data))
                 setMeta(response.data["meta"]);
                 setAcronym_volume(response.data["acronym_volumn"]);
               });

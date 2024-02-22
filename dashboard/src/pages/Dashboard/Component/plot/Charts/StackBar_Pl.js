@@ -1,12 +1,12 @@
 import React from "react";
 import Plot from "react-plotly.js";
 
-export default function StackedBar({ data,type }) {
+export default function StackedBar({ data, type }) {
   // Sample data
 
   // Layout configuration
-  data.forEach(element => {
-    element.type = type
+  data.forEach((element) => {
+    element.type = type;
   });
   const layout = {
     barmode: "stack", // Stack bars on top of each other
@@ -23,12 +23,9 @@ export default function StackedBar({ data,type }) {
       size: 16, // Increase the overall font size of the chart layout
     },
     xaxis: {
-      type: 'category',
+      type: "category",
       // Specify the numeric x-axis data as category array
-      
     },
-    
-   
   };
 
   return (

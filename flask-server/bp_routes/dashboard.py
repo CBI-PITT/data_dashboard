@@ -1,11 +1,10 @@
 from dataclasses import field
-from re import S
+
 from flask import Blueprint
 from flask import jsonify
 from elasticsearch import Elasticsearch
 from sqlalchemy import true
 from config.es_config import es_server
-
 from db_models.models import parameters
 from flask import request
 import query_dsl.query_dsl as Query
@@ -13,13 +12,13 @@ import time
 import numpy as np
 import pandas as pd
 import re
+
 dahsboard_bp = Blueprint("dashboard", __name__)
 
 es = Elasticsearch(es_server, request_timeout=180)
 
 INDEX = ""
 DENSITY = False
-serialized_parameters = {}
 
 
 def filter_indices(indices_list, substring):
@@ -40,8 +39,8 @@ def get_index():
 def choosen_index(index_name):
     global INDEX
     INDEX = index_name
-    global serialized_parameters
-    serialized_parameters = {}
+    # global serialized_parameters
+    # serialized_parameters = {}
     time.sleep(1)
     # fileds = list(
     #     es.indices.get_mapping(index=INDEX)[INDEX]["mappings"]["properties"].keys()
@@ -96,37 +95,20 @@ def volume_reader(um):
     return acronym_volume_dict
 
 
-acronym_volume_10 = volume_reader(10)
-acronym_volume_25 = volume_reader(25)
-# indexDensityRegistrationMap = (
-#     index_registration.Registration().index_density_registration_map
-# )
+acronym_volume_dict = {
+    "acronym_volume_10": volume_reader(10),
+    "acronym_volume_25": volume_reader(25),
+}
+# acronym_volume_10 = volume_reader(10)
+# acronym_volume_25 = volume_reader(25)
 
 
 @dahsboard_bp.route("/api/index_choosen/meta/<index_name>")
 def meta(index_name):
-    # if indexDensityRegistrationMap.get(index_name):
-    # obj = indexDensityRegistrationMap.get(index_name)
-    # response = {
-    #     "meta": {
-    #         "aggregation_condition": obj.aggregation_condition,
-    #         "atlas_structure_acronym_column_name": obj.atlas_structure_acronym_column_name,
-    #         "metadata_calculation_name": obj.metadata_calculation_name,
-    #     },
-    #     "acronym_volumn": {},
-    # }
-    # if obj.atlas_resolution == "25um":
-    #     response["acronym_volumn"] = acronym_volume_25
-    #     return jsonify(response)
-    # elif obj.atlas_resolution == "10um":
-    #     response["acronym_volumn"] = acronym_volume_10
-    #     return jsonify(response)
-    # else:
-    #     return jsonify(response)
 
     parameters_info = parameters.query.filter_by(es_index=index_name).all()
 
-    global serialized_parameters
+    serialized_parameters = {}
     if parameters_info:
         serialized_parameters = {
             "meta": {
@@ -139,10 +121,10 @@ def meta(index_name):
             "acronym_volumn": {},
         }
         if parameters_info[0].resolution_micrometer == 25:
-            serialized_parameters["acronym_volumn"] = acronym_volume_25
+            serialized_parameters["acronym_volumn"] = "acronym_volume_25"
             return serialized_parameters
         elif parameters_info[0].resolution_micrometer == 10:
-            serialized_parameters["acronym_volumn"] = acronym_volume_10
+            serialized_parameters["acronym_volumn"] = "acronym_volume_10"
             return serialized_parameters
         else:
             return serialized_parameters
@@ -153,14 +135,14 @@ def meta(index_name):
                 "atlas_structure_acronym_column_name": None,
                 "metadata_calculation_name": None,
             },
-            "acronym_volumn": {},
+            "acronym_volumn": None,
         }
-        return serialized_parameters
+        return jsonify(serialized_parameters)
 
 
 @dahsboard_bp.route("/api/index_choosen/current_status/<index_name>")
 def choosen_index_current_status(index_name):
-    
+
     indices = es.cat.indices(format="json")
     current_status = {}
     # print(indices)
@@ -181,85 +163,25 @@ def custom_sort(item):
     return item.get("key_as_string", item.get("key"))
 
 
-
-
 @dahsboard_bp.route("/api/query", methods=["POST"])
 def query_data_source():
     json_data = request.json
-
-    # print("before: " + time.asctime(time.localtime(time.time())))
-
-    # # resp = query.formQuery(
-    # #      json_data["field"],
-    # #         json_data["filter"],
-    # #         json_data["group_by"],
-    # #         json_data["aggregate"],
-    # # )
-    # # return resp
-
-    # resp = es.search(
-    #     index=INDEX,
-    #     body=query.formCompositeQuery(
-    #         json_data["field"],
-    #         json_data["filter"],
-    #         json_data["group_by"],
-    #         json_data["aggregate"],
-    #     ),
-    # )
-    # # return jsonify(query.formCompositeQuery(
-    # #         json_data["field"],
-    # #         json_data["filter"],
-    # #         json_data["group_by"],
-    # #         json_data["aggregate"],
-    # #     ))
-    # print("after: " + time.asctime(time.localtime(time.time())))
-
-    response = es_query_search(json_data["field"],json_data["filter"],json_data["group_by"],json_data["aggregate"])
-    # print("bucket length", len(resp.body["aggregations"]["categories"]["buckets"]))
-    # print(
-    #     "serialized_parameters",
-    #     serialized_parameters["meta"]["atlas_structure_acronym_column_name"],
-    # )
+    print(json_data)
+    print(type(json_data["serialized_parameters"]))
+    response = es_query_search(
+        json_data["INDEX"],
+        json_data["field"],
+        json_data["filter"],
+        json_data["group_by"],
+        json_data["aggregate"],
+    )
     agg_list = json_data["aggregate"]
-    # if (
-    #     json_data["field"]
-    #     == serialized_parameters["meta"]["atlas_structure_acronym_column_name"]
-    #     and serialized_parameters["meta"]["atlas_structure_acronym_column_name"]
-    #     in json_data["group_by"]
-    #     and serialized_parameters["meta"]["aggregation_condition"]
-    #     in json_data["aggregate"]
-    #     and serialized_parameters["acronym_volumn"]
-    # ):
-    #     print("inininin")
-    #     field = serialized_parameters["meta"]["atlas_structure_acronym_column_name"]
-    #     agg = serialized_parameters["meta"]["aggregation_condition"]
-    #     resolution = serialized_parameters["acronym_volumn"]
-    #     print("check here", agg + "_" + field)
-
-    #     for item in response:
-
-    #         acronym = item["key"][
-    #             serialized_parameters["meta"]["atlas_structure_acronym_column_name"]
-    #         ]
-    #         item["density" + "_" + field] = {"value": ""}
-    #         if resolution.get(acronym):
-
-    #             item["density" + "_" + field]["value"] = (
-    #                 item[agg + "_" + field]["value"] / resolution[acronym]
-    #             )
-    #         else:
-    #             item["density" + "_" + field]["value"] = 0
-    #     agg_list.append("density")
-    # else:
-    #     print("density calculation not satisfied")
-    density_result = density(json_data,response,agg_list)
-    response_density_check = density_result['response']
-    agg_list_density_check = density_result['agg_list']
+    density_result = density(json_data, response, agg_list)
+    response_density_check = density_result["response"]
+    agg_list_density_check = density_result["agg_list"]
     agg_final = boxplot_filterOut(agg_list_density_check)
     response_final = {"agg_list": agg_final, "data": response_density_check}
     return jsonify(response_final)
-
-    
 
 
 @dahsboard_bp.route("/api/query_paras", methods=["POST"])
@@ -267,71 +189,28 @@ def query_paras():
     print(INDEX)
     json_data = request.json
 
-    # print("before: " + time.asctime(time.localtime(time.time())))
-
-    # # resp = query.formQuery(
-    # #      json_data["field"],
-    # #         json_data["filter"],
-    # #         json_data["group_by"],
-    # #         json_data["aggregate"],
-    # # )
-    # # return resp
-
-    # resp = es.search(
-    #     index=INDEX,
-    #     body=query.formCompositeQuery(
-    #         json_data["field"],
-    #         json_data["filter"],
-    #         json_data["group_by"],
-    #         json_data["aggregate"],
-    #         serialized_parameters["meta"]["metadata_calculation_name"],
-    #     ),
-    # )
-
-    # print("after: " + time.asctime(time.localtime(time.time())))
-
-    response = es_query_search(json_data["field"],json_data["filter"],json_data["group_by"],json_data["aggregate"],serialized_parameters["meta"]["metadata_calculation_name"])
+    response = es_query_search(
+        json_data["INDEX"],
+        json_data["field"],
+        json_data["filter"],
+        json_data["group_by"],
+        json_data["aggregate"],
+        json_data["serialized_parameters"]["meta"]["metadata_calculation_name"],
+    )
 
     agg_list = list(json_data["aggregate"])
-    # if (
-    #     json_data["field"]
-    #     == serialized_parameters["meta"]["atlas_structure_acronym_column_name"]
-    #     and serialized_parameters["meta"]["atlas_structure_acronym_column_name"]
-    #     in json_data["group_by"]
-    #     and serialized_parameters["meta"]["aggregation_condition"]
-    #     in json_data["aggregate"]
-    #     and serialized_parameters["acronym_volumn"]
-    # ):
-    #     print("inininin")
-    #     field = serialized_parameters["meta"]["atlas_structure_acronym_column_name"]
-    #     agg = serialized_parameters["meta"]["aggregation_condition"]
-    #     resolution = serialized_parameters["acronym_volumn"]
-    #     print("check here", agg + "_" + field)
 
-    #     for item in response:
-
-    #         acronym = item["key"][
-    #             serialized_parameters["meta"]["atlas_structure_acronym_column_name"]
-    #         ]
-    #         item["density" + "_" + field] = {"value": ""}
-    #         if resolution.get(acronym):
-
-    #             item["density" + "_" + field]["value"] = (
-    #                 item[agg + "_" + field]["value"] / resolution[acronym]
-    #             )
-    #         else:
-    #             item["density" + "_" + field]["value"] = 0
-    #     agg_list.append("density")
-    # else:
-    #     print("density calculation not satisfied")
-    density_result = density(json_data,response,agg_list)
-    response_density_check = density_result['response']
-    agg_list_density_check = density_result['agg_list']
+    density_result = density(json_data, response, agg_list)
+    response_density_check = density_result["response"]
+    agg_list_density_check = density_result["agg_list"]
     total_n = None
     agg_list_boxplot_filterOut = boxplot_filterOut(agg_list_density_check)
     agg_list_boxplot_filterOut_copy = list(agg_list_boxplot_filterOut)
-    
-    if serialized_parameters["meta"]["metadata_calculation_name"] in json_data["group_by"]:
+
+    if (
+        json_data["serialized_parameters"]["meta"]["metadata_calculation_name"]
+        in json_data["group_by"]
+    ):
         for item in response_density_check:
             for agg in agg_list:
                 item["avg" + "_" + agg + "_" + json_data["field"]] = {
@@ -339,54 +218,39 @@ def query_paras():
                     / item["N"]["value"],
                     "std": 0,
                 }
-        total_n = totalN(response_density_check)
+        total_n = totalN(response_density_check, json_data["serialized_parameters"])
         response_final = {
-        "agg_list": agg_list_boxplot_filterOut,
-        "data": response_density_check,
-        "total_n": total_n,
+            "agg_list": agg_list_boxplot_filterOut,
+            "data": response_density_check,
+            "total_n": total_n,
         }
         return jsonify(response_final)
     else:
-        groupby_original =  list(json_data["group_by"])
+        groupby_original = list(json_data["group_by"])
         group_by_added = list(json_data["group_by"])
-        group_by_added.append(serialized_parameters["meta"]["metadata_calculation_name"])
-        response_groupby_added = es_query_search(json_data["field"],json_data["filter"],group_by_added,json_data["aggregate"])
-    #     if (
-    #     json_data["field"]
-    #     == serialized_parameters["meta"]["atlas_structure_acronym_column_name"]
-    #     and serialized_parameters["meta"]["atlas_structure_acronym_column_name"]
-    #     in json_data["group_by"]
-    #     and serialized_parameters["meta"]["aggregation_condition"]
-    #     in json_data["aggregate"]
-    #     and serialized_parameters["acronym_volumn"]
-    # ):
-            
-    #         field = serialized_parameters["meta"]["atlas_structure_acronym_column_name"]
-    #         agg = serialized_parameters["meta"]["aggregation_condition"]
-    #         resolution = serialized_parameters["acronym_volumn"]
-           
+        group_by_added.append(
+            json_data["serialized_parameters"]["meta"]["metadata_calculation_name"]
+        )
+        response_groupby_added = es_query_search(
+            json_data["INDEX"],
+            json_data["field"],
+            json_data["filter"],
+            group_by_added,
+            json_data["aggregate"],
+        )
 
-    #         for item in response_groupby_added:
-
-    #             acronym = item["key"][
-    #                 serialized_parameters["meta"]["atlas_structure_acronym_column_name"]
-    #             ]
-    #             item["density" + "_" + field] = {"value": ""}
-    #             if resolution.get(acronym):
-
-    #                 item["density" + "_" + field]["value"] = (
-    #                     item[agg + "_" + field]["value"] / resolution[acronym]
-    #                 )
-    #             else:
-    #                 item["density" + "_" + field]["value"] = 0
-            
-    #     else:
-    #         print("density calculation not satisfied")
-        density_result = density(json_data,response_groupby_added)
-        response_groupby_added_density_check = density_result['response']
-        result_std = totalN_and_std(response_groupby_added_density_check, response_density_check, agg_list_boxplot_filterOut_copy,groupby_original,json_data['field'])
-        response_std = result_std['response']
-        total_n = result_std['total_n']
+        density_result = density(json_data, response_groupby_added)
+        response_groupby_added_density_check = density_result["response"]
+        result_std = totalN_and_std(
+            response_groupby_added_density_check,
+            response_density_check,
+            agg_list_boxplot_filterOut_copy,
+            groupby_original,
+            json_data["field"],
+            json_data["serialized_parameters"],
+        )
+        response_std = result_std["response"]
+        total_n = result_std["total_n"]
         for agg in agg_list_boxplot_filterOut_copy:
             agg_list_boxplot_filterOut.append("avg" + "_" + agg)
         response_final = {
@@ -397,32 +261,38 @@ def query_paras():
         return jsonify(response_final)
 
 
-    # return jsonify(response)
 def density(json_data, response, agg_list=None):
     if (
         json_data["field"]
-        == serialized_parameters["meta"]["atlas_structure_acronym_column_name"]
-        and serialized_parameters["meta"]["atlas_structure_acronym_column_name"]
+        == json_data["serialized_parameters"]["meta"][
+            "atlas_structure_acronym_column_name"
+        ]
+        and json_data["serialized_parameters"]["meta"][
+            "atlas_structure_acronym_column_name"
+        ]
         in json_data["group_by"]
-        and serialized_parameters["meta"]["aggregation_condition"]
+        and json_data["serialized_parameters"]["meta"]["aggregation_condition"]
         in json_data["aggregate"]
-        and serialized_parameters["acronym_volumn"]
+        and json_data["serialized_parameters"]["acronym_volumn"]
     ):
 
-        
-        field = serialized_parameters["meta"]["atlas_structure_acronym_column_name"]
-        agg = serialized_parameters["meta"]["aggregation_condition"]
-        resolution = serialized_parameters["acronym_volumn"]
-        
+        field = json_data["serialized_parameters"]["meta"][
+            "atlas_structure_acronym_column_name"
+        ]
+        agg = json_data["serialized_parameters"]["meta"]["aggregation_condition"]
+        resolution = acronym_volume_dict[
+            json_data["serialized_parameters"]["acronym_volumn"]
+        ]
 
         for item in response:
 
             acronym = item["key"][
-                serialized_parameters["meta"]["atlas_structure_acronym_column_name"]
+                json_data["serialized_parameters"]["meta"][
+                    "atlas_structure_acronym_column_name"
+                ]
             ]
             item["density" + "_" + field] = {"value": ""}
             if resolution.get(acronym):
-
 
                 item["density" + "_" + field]["value"] = (
                     item[agg + "_" + field]["value"] / resolution[acronym]
@@ -430,84 +300,67 @@ def density(json_data, response, agg_list=None):
             else:
                 item["density" + "_" + field]["value"] = 0
         if agg_list:
-            agg_list.append('density')
+            agg_list.append("density")
     else:
 
         print("density calculation not satisfied")
-    return {'response':response,
-                'agg_list':agg_list}
+    return {"response": response, "agg_list": agg_list}
 
 
-def totalN(buckets):
+def totalN(buckets, serialized_parameters):
     totalN_set = set()
     for bucket in buckets:
-        totalN_set.add(bucket['key'][serialized_parameters["meta"]["metadata_calculation_name"]])
+        totalN_set.add(
+            bucket["key"][serialized_parameters["meta"]["metadata_calculation_name"]]
+        )
     return len(totalN_set)
 
-# def totalN_and_std(buckets_add, buckets, agg_original, groupby_original, field):
-#     # print('-----------------', buckets)
-#     dict_std = {}
-#     for bucket in buckets_add:
-#         string_array_groupby = []
-#         for gb in groupby_original:
-#             string_array_groupby.append(str(bucket['key'].get(gb, '')))
-#         string_groupby = '|'.join(string_array_groupby)
-#         dict_std[string_groupby] = {}
-#         for agg in agg_original:
-#             dict_std[string_groupby][agg+'_'+field] = []
-#     totalN_set = set()
-#     for bucket in buckets_add:
-#         totalN_set.add(bucket['key'][serialized_parameters["meta"]["metadata_calculation_name"]])
-#         string_array_groupby = []
-#         for gb in groupby_original:
-#             string_array_groupby.append(str(bucket['key'].get(gb, '')))
-#         string_groupby = '|'.join(string_array_groupby)
-#         for agg in agg_original:
-#             dict_std[string_groupby][agg+'_'+field].append(bucket[agg+ '_'+field]['value'])
-#     total_n = len(totalN_set)
-#     print(dict_std)
-#     for bucket in buckets:
-#         string_array_groupby = []
-#         for gb in groupby_original:
-#             string_array_groupby.append(str(bucket['key'].get(gb, '')))
-#         string_groupby = '|'.join(string_array_groupby)
-#         for agg in agg_original:
-#             bucket["avg" + "_" + agg + "_" + field] = {
-#                     "value": bucket[agg + "_" + field]["value"]
-#                     / bucket["N"]["value"],
-#                     "std": np.std(dict_std.get(string_groupby).get(agg+'_'+field))
-#                 }
-#     # print(bucket)
-#     return {'response':buckets,
-#             'total_n':total_n}
-def totalN_and_std(buckets_add, buckets, agg_original, groupby_original, field):
+
+def totalN_and_std(
+    buckets_add, buckets, agg_original, groupby_original, field, serialized_parameters
+):
     dict_std = {}
     for bucket in buckets_add:
-        string_groupby = '|'.join(str(bucket['key'].get(gb, '')) for gb in groupby_original)
+        string_groupby = "|".join(
+            str(bucket["key"].get(gb, "")) for gb in groupby_original
+        )
         if string_groupby not in dict_std:
-            dict_std[string_groupby] = {agg + '_' + field: [] for agg in agg_original}
+            dict_std[string_groupby] = {agg + "_" + field: [] for agg in agg_original}
         for agg in agg_original:
-            dict_std[string_groupby][agg + '_' + field].append(bucket[agg + '_' + field]['value'])
-    
-    totalN_set = {bucket['key'][serialized_parameters["meta"]["metadata_calculation_name"]] for bucket in buckets_add}
+            dict_std[string_groupby][agg + "_" + field].append(
+                bucket[agg + "_" + field]["value"]
+            )
+
+    totalN_set = {
+        bucket["key"][serialized_parameters["meta"]["metadata_calculation_name"]]
+        for bucket in buckets_add
+    }
     total_n = len(totalN_set)
 
     for bucket in buckets:
-        string_groupby = '|'.join(str(bucket['key'].get(gb, '')) for gb in groupby_original)
+        string_groupby = "|".join(
+            str(bucket["key"].get(gb, "")) for gb in groupby_original
+        )
         for agg in agg_original:
-            std_values = dict_std.get(string_groupby, {}).get(agg + '_' + field)
+            std_values = dict_std.get(string_groupby, {}).get(agg + "_" + field)
             bucket["avg_" + agg + "_" + field] = {
                 "value": bucket[agg + "_" + field]["value"] / bucket["N"]["value"],
                 # standerd deviation
-                # "std": np.std(std_values) if std_values else None 
-
+                # "std": np.std(std_values) if std_values else None
                 # standerd error
-                "std": np.std(std_values) / np.sqrt(len(std_values))if std_values else None
+                "std": (
+                    np.std(std_values) / np.sqrt(len(std_values))
+                    if std_values
+                    else None
+                ),
             }
 
-    return {'response': buckets, 'total_n': total_n}
+    return {"response": buckets, "total_n": total_n}
 
-def es_query_search(field,filter,groupBy,aggregation,metadata_calculation_name=None):
+
+def es_query_search(
+    INDEX, field, filter, groupBy, aggregation, metadata_calculation_name=None
+):
     print("before: " + time.asctime(time.localtime(time.time())))
     resp = es.search(
         index=INDEX,
@@ -516,13 +369,13 @@ def es_query_search(field,filter,groupBy,aggregation,metadata_calculation_name=N
             filters=filter,
             groupBy=groupBy,
             aggregation=aggregation,
-            cadinality_field= metadata_calculation_name,
-        )
+            cadinality_field=metadata_calculation_name,
+        ),
     )
     print("after: " + time.asctime(time.localtime(time.time())))
     return resp.body["aggregations"]["categories"]["buckets"]
 
 
 def boxplot_filterOut(agg_list):
-    filtered_list = [s for s in agg_list if not re.match(r'^boxplot', s, re.IGNORECASE)]
+    filtered_list = [s for s in agg_list if not re.match(r"^boxplot", s, re.IGNORECASE)]
     return filtered_list
