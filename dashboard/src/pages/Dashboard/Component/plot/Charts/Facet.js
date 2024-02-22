@@ -156,7 +156,7 @@ export default function FacetChart({
             sort: false,
           };
           agg_list_render[key].push(
-            <Plot
+            <Plot key={keyInfo}
               data={[chartData]}
               layout={{
                 width: 400,
