@@ -27,6 +27,8 @@ create database and user:
 `python server.py`
 
 #### Elasticsearch:
+`docker network create elastic`
+
 `docker run --name elasticsearch --net elastic -p 9200:9200 -v /CBI_FastStore/Iana/BIL/data_mining_dashboard/elasticsearch/data:/usr/share/elasticsearch/data -e discovery.type=single-node -e ES_JAVA_OPTS="-Xms1g -Xmx1g" -e xpack.security.enabled=false -it docker.elastic.co/elasticsearch/elasticsearch:8.2.2`
 
 `docker run --name kibana --net elastic -p 5601:5601 docker.elastic.co/kibana/kibana:8.2.2`
@@ -41,5 +43,19 @@ create database and user:
 `cd dashboard`
 
 `npm install`
+
+`npm start`
+
+## To start provisioned dashboard:
+
+`docker start <elasticsearch_container_id>`
+
+`docker start <kibana_container_id>`
+
+`cd data_dashboard`
+
+`python flask-server/server.py`
+
+`cd ../dashboard`
 
 `npm start`
