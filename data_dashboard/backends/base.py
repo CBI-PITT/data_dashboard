@@ -60,6 +60,30 @@ class QuerySpec:
     aggregates: list
     n_field: str = None
     size_cap: int = DISTINCT_CAP
+    owner: str = None
+
+
+def build_identifier(name, owner):
+    """Dataset identifier for the API: `owner/name`; ownerless/legacy
+    datasets (owner None) use the plain name."""
+    if owner:
+        return '%s/%s' % (owner, name)
+    return name
+
+
+def parse_identifier(identifier):
+    """Split an `owner/name` identifier. Returns (name, owner_or_None).
+    An identifier without a slash addresses an ownerless/legacy dataset
+    (admin-only access, enforced in the routes)."""
+    identifier = str(identifier or '').strip()
+    if '/' in identifier:
+        owner, name = identifier.split('/', 1)
+        if not owner or not name:
+            raise UnknownFieldError('Invalid dataset identifier: %r' % (identifier,))
+        return name, owner
+    if not identifier:
+        raise UnknownFieldError('Invalid dataset identifier: %r' % (identifier,))
+    return identifier, None
 
 
 class DashboardBackendError(Exception):
@@ -110,33 +134,50 @@ def format_byte_size(num_bytes):
 
 
 class DashboardBackend(abc.ABC):
-    """Interface every dashboard storage backend implements."""
+    """Interface every dashboard storage backend implements.
+
+    Datasets are owned by a user (owner=None addresses ownerless/legacy
+    datasets, which only admins may access — enforced in the routes). Every
+    method takes an explicit owner; identifiers combine as `owner/name`.
+    """
 
     name = None
 
     @abc.abstractmethod
-    def list_datasets(self):
-        """Sorted list of dataset (index) names."""
+    def list_datasets(self, owner=None):
+        """Dataset identifiers visible to the given user. owner=None (admin)
+        lists every user's datasets plus ownerless/legacy ones."""
 
     @abc.abstractmethod
-    def dataset_exists(self, name):
+    def dataset_exists(self, name, owner=None):
         """True when the dataset name is known to this backend."""
 
     @abc.abstractmethod
-    def create_dataset(self, name, csv_path):
-        """Ingest a CSV file as a new (or replacement) dataset. Returns the
-        sanitized dataset name."""
+    def create_dataset(self, name, csv_path, owner=None):
+        """Ingest a CSV file as a NEW dataset (never overwrites; name
+        collisions get a _2, _3... suffix). Returns the final dataset name."""
 
     @abc.abstractmethod
-    def delete_dataset(self, name):
+    def delete_dataset(self, name, owner=None):
         """Remove a dataset and its meta."""
 
     @abc.abstractmethod
-    def get_field_types(self, name):
+    def rename_dataset(self, name, new_name, owner=None):
+        """Rename a dataset. Raises ValueError for collisions."""
+
+    @abc.abstractmethod
+    def merge_datasets(self, sources, new_name, owner=None):
+        """Stack several datasets into one new dataset. sources is a list of
+        (name, owner, fields_dict) where fields_dict adds constant columns so
+        the sources are comparable via group-by. Each source is additionally
+        tagged with a `sample` column. Sources are not modified."""
+
+    @abc.abstractmethod
+    def get_field_types(self, name, owner=None):
         """{field: type} with 'keyword' for categorical (string) fields."""
 
     @abc.abstractmethod
-    def get_filter_values(self, name):
+    def get_filter_values(self, name, owner=None):
         """(categorical, continuous) dicts for the query form.
 
         categorical: {field: [distinct values]}
@@ -144,21 +185,22 @@ class DashboardBackend(abc.ABC):
         """
 
     @abc.abstractmethod
-    def get_status(self, name):
+    def get_status(self, name, owner=None):
         """{health, status, storage_size, docs_count} for the dataset card."""
 
     @abc.abstractmethod
-    def get_meta(self, name):
+    def get_meta(self, name, owner=None):
         """Sidecar meta dict (schema cache + dashboard parameters); None when
         the dataset has no meta."""
 
     @abc.abstractmethod
     def query(self, spec):
-        """Run a QuerySpec, returning normalized bucket dicts."""
+        """Run a QuerySpec, returning normalized bucket dicts. spec.owner
+        scopes the dataset."""
 
-    def validate_fields(self, name, fields):
+    def validate_fields(self, name, fields, owner=None):
         """Raise UnknownFieldError for any field the dataset does not have."""
-        known = self.get_field_types(name)
+        known = self.get_field_types(name, owner)
         for field in fields:
             if field is not None and field not in known:
                 raise UnknownFieldError('Unknown field: %r' % (field,))

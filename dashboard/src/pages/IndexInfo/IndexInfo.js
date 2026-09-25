@@ -12,6 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import HOST from "../../config/path";
+import Header from "../Dashboard/Component/layout/header";
 const styles = {
   container: {
     maxWidth: "1800px",
@@ -79,6 +80,7 @@ const YourComponent = () => {
   const isEven = (num) => num % 2 === 0;
   return (
     <div style={styles.container}>
+      <Header />
       <Paper style={styles.root}>
         <Typography variant="h4" gutterBottom>
           Field Information

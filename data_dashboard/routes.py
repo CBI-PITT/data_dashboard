@@ -6,6 +6,12 @@ web (built React app) directories, wires the storage backend chosen in
 settings.ini, registers the JSON API routes and the single-page-app catch-all,
 then registers itself and returns the app.
 
+Every route is login-protected: datasets are owned by a user (one folder per
+user under datasets_dir), users only see and access their own datasets, and
+CBI_Admin (configurable via [dashboard] admins) sees everything. Dataset
+identifiers combine as `owner/name`; ownerless/legacy datasets are addressed
+with a plain name and are admin-only.
+
 When [dashboard] enabled is false, no routes are registered (the navbar link
 is hidden via the app config flag DATA_DASHBOARD_ENABLED).
 """
@@ -14,10 +20,14 @@ import os
 from dataclasses import replace
 
 from flask import Blueprint, jsonify, request, send_from_directory
-from flask_login import login_required
+from flask_login import current_user, login_required
 
 from .backends import get_backend
-from .backends.base import DashboardBackendError
+from .backends.base import (
+    DashboardBackendError,
+    build_identifier,
+    parse_identifier,
+)
 from .postprocess import (
     apply_density,
     boxplot_filter_out,
@@ -25,7 +35,12 @@ from .postprocess import (
     total_n_count,
 )
 from .query_form import parse_query_json
-from .utils import csv_within_allowed_roots, get_config, sanitize_dataset_name
+from .utils import (
+    csv_within_allowed_roots,
+    get_config,
+    sanitize_dataset_name,
+    sanitize_username,
+)
 
 routes_script_folder = os.path.dirname(__file__)
 settings = get_config(os.path.join(routes_script_folder, 'settings.ini'))
@@ -47,22 +62,69 @@ def init_blueprint(app, settings=settings, prefix='/dashboard'):
         app.config['DATA_DASHBOARD_ENABLED'] = False
         return app
 
+    admins = [
+        sanitize_username(name.strip())
+        for name in settings.get('dashboard', 'admins', fallback='CBI_Admin').split(',')
+        if name.strip()
+    ]
+
     blueprint = Blueprint('data_dashboard', __name__)
 
     def _error_response(exc, status=400):
         return jsonify({'error': str(exc)}), status
 
+    def _current_username():
+        """Sanitized username of the logged-in user (for the per-user folder)."""
+        return sanitize_username(current_user.get_id())
+
+    def _is_admin(username):
+        return username in admins
+
+    def _resolve_identifier(identifier, username):
+        """(name, owner) for an identifier, enforcing ownership: users may
+        only access their own datasets; admins may access anything, including
+        ownerless/legacy datasets (plain-name identifiers)."""
+        try:
+            name, owner = parse_identifier(identifier)
+        except DashboardBackendError as exc:
+            raise PermissionError(str(exc))
+        if owner is None:
+            # ownerless/legacy dataset: admin-only
+            if not _is_admin(username):
+                raise PermissionError(
+                    'Legacy datasets are only accessible to admins')
+        elif owner != username and not _is_admin(username):
+            raise PermissionError(
+                'You can only access your own datasets')
+        return name, owner
+
+    # -- session -----------------------------------------------------------
+
+    @blueprint.route('/api/whoami')
+    @login_required
+    def whoami():
+        username = _current_username()
+        return jsonify({'user': username, 'is_admin': _is_admin(username)})
+
     # -- dataset catalog ---------------------------------------------------
 
     @blueprint.route('/api/indices')
+    @login_required
     def get_indices():
-        return jsonify(backend.list_datasets())
+        username = _current_username()
+        owner = None if _is_admin(username) else username
+        return jsonify(backend.list_datasets(owner))
 
-    @blueprint.route('/api/index_choosen/<dataset>')
-    def choose_index(dataset):
+    @blueprint.route('/api/index_choosen/<path:identifier>')
+    @login_required
+    def choose_index(identifier):
+        username = _current_username()
         try:
-            field_types = backend.get_field_types(dataset)
-            categorical, continuous = backend.get_filter_values(dataset)
+            name, owner = _resolve_identifier(identifier, username)
+            field_types = backend.get_field_types(name, owner)
+            categorical, continuous = backend.get_filter_values(name, owner)
+        except PermissionError as exc:
+            return _error_response(exc, 403)
         except DashboardBackendError as exc:
             return _error_response(exc, 404)
         form_frame = {
@@ -74,9 +136,15 @@ def init_blueprint(app, settings=settings, prefix='/dashboard'):
         }
         return jsonify(form_frame)
 
-    @blueprint.route('/api/index_choosen/meta/<dataset>')
-    def index_meta(dataset):
-        meta = backend.get_meta(dataset) or {}
+    @blueprint.route('/api/index_choosen/meta/<path:identifier>')
+    @login_required
+    def index_meta(identifier):
+        username = _current_username()
+        try:
+            name, owner = _resolve_identifier(identifier, username)
+            meta = backend.get_meta(name, owner) or {}
+        except PermissionError as exc:
+            return _error_response(exc, 403)
         dash = meta.get('dashboard') or {}
         resolution = dash.get('atlas_resolution_micrometer')
         serialized = {
@@ -93,61 +161,80 @@ def init_blueprint(app, settings=settings, prefix='/dashboard'):
             serialized['acronym_volumn'] = 'acronym_volume_10'
         return jsonify(serialized)
 
-    @blueprint.route('/api/index_choosen/current_status/<dataset>')
-    def index_status(dataset):
+    @blueprint.route('/api/index_choosen/current_status/<path:identifier>')
+    @login_required
+    def index_status(identifier):
+        username = _current_username()
         try:
-            return jsonify(backend.get_status(dataset))
+            name, owner = _resolve_identifier(identifier, username)
+            return jsonify(backend.get_status(name, owner))
+        except PermissionError as exc:
+            return _error_response(exc, 403)
         except DashboardBackendError as exc:
             return _error_response(exc, 404)
 
     @blueprint.route('/indexInfo')
+    @login_required
     def index_info():
+        username = _current_username()
+        owner = None if _is_admin(username) else username
         rows = []
-        for dataset in backend.list_datasets():
-            meta = backend.get_meta(dataset) or {}
+        for identifier in backend.list_datasets(owner):
+            name, dataset_owner = parse_identifier(identifier)
+            meta = backend.get_meta(name, dataset_owner) or {}
             fields = meta.get('fields')
             if not fields:
                 try:
-                    fields = backend.get_field_types(dataset)
+                    fields = backend.get_field_types(name, dataset_owner)
                 except DashboardBackendError:
                     continue
             for field, ftype in fields.items():
                 rows.append({
                     'field': field,
                     'type': ftype,
-                    'es_index': dataset,
+                    'es_index': identifier,
                     'description': '',
                 })
         return jsonify(rows)
 
     # -- querying ----------------------------------------------------------
 
-    def _run_first_query(json_data, include_n_field):
+    def _run_first_query(json_data, username, include_n_field):
         spec = parse_query_json(json_data, include_n_field=include_n_field)
+        name, owner = _resolve_identifier(spec.dataset, username)
+        spec = replace(spec, dataset=name, owner=owner)
         buckets = backend.query(spec)
         agg_list = list(json_data.get('aggregate') or [])
         density_result = apply_density(json_data, buckets, agg_list)
         return spec, density_result['response'], density_result['agg_list']
 
     @blueprint.route('/api/query', methods=['POST'])
+    @login_required
     def query_data_source():
+        username = _current_username()
         json_data = request.get_json(silent=True)
         if not isinstance(json_data, dict):
             return _error_response('Invalid JSON payload')
         try:
-            spec, buckets, agg_list = _run_first_query(json_data, include_n_field=False)
+            spec, buckets, agg_list = _run_first_query(json_data, username, include_n_field=False)
+        except PermissionError as exc:
+            return _error_response(exc, 403)
         except (ValueError, DashboardBackendError) as exc:
             return _error_response(exc)
         return jsonify({'agg_list': boxplot_filter_out(agg_list), 'data': buckets})
 
     @blueprint.route('/api/query_paras', methods=['POST'])
+    @login_required
     def query_paras():
+        username = _current_username()
         json_data = request.get_json(silent=True)
         if not isinstance(json_data, dict):
             return _error_response('Invalid JSON payload')
         try:
             spec, buckets_density, agg_list_density = _run_first_query(
-                json_data, include_n_field=True)
+                json_data, username, include_n_field=True)
+        except PermissionError as exc:
+            return _error_response(exc, 403)
         except (ValueError, DashboardBackendError) as exc:
             return _error_response(exc)
 
@@ -216,25 +303,72 @@ def init_blueprint(app, settings=settings, prefix='/dashboard'):
         if not csv_within_allowed_roots(settings, csv_path):
             return _error_response(
                 'CSV path is outside the browsable roots or is not an existing CSV file', 403)
+        username = _current_username()
         try:
             name = sanitize_dataset_name(os.path.basename(csv_path))
-            existed = backend.dataset_exists(name)
-            backend.create_dataset(name, csv_path)
-            meta = backend.get_meta(name) or {}
+            final = backend.create_dataset(name, csv_path, owner=username)
+            meta = backend.get_meta(final, username) or {}
         except (ValueError, DashboardBackendError) as exc:
             return _error_response(exc)
         return jsonify({
             'status': 'ok',
-            'dataset': name,
-            'existed': existed,
+            'dataset': build_identifier(meta.get('name', final), username),
             'rows': meta.get('row_count'),
             'backend': backend.name,
         })
+
+    # -- dataset management (rename / merge) --------------------------------
+
+    @blueprint.route('/api/datasets/<path:identifier>/rename', methods=['POST'])
+    @login_required
+    def rename_dataset(identifier):
+        username = _current_username()
+        json_data = request.get_json(silent=True) or {}
+        new_name = json_data.get('new_name')
+        try:
+            name, owner = _resolve_identifier(identifier, username)
+            final = backend.rename_dataset(name, new_name, owner)
+        except PermissionError as exc:
+            return _error_response(exc, 403)
+        except (ValueError, DashboardBackendError) as exc:
+            return _error_response(exc)
+        return jsonify({'status': 'ok', 'dataset': build_identifier(final, owner)})
+
+    @blueprint.route('/api/merge', methods=['POST'])
+    @login_required
+    def merge_datasets():
+        username = _current_username()
+        json_data = request.get_json(silent=True) or {}
+        sources = json_data.get('datasets') or []
+        fields = json_data.get('fields') or {}
+        new_name = json_data.get('name')
+        if not isinstance(sources, list) or len(sources) < 2:
+            return _error_response('Merging requires at least two datasets')
+        if not new_name or not isinstance(new_name, str):
+            return _error_response("A 'name' for the merged dataset is required")
+        if not isinstance(fields, dict):
+            return _error_response("'fields' must be an object keyed by dataset identifier")
+        prepared = []
+        try:
+            for identifier in sources:
+                name, owner = _resolve_identifier(identifier, username)
+                source_fields = fields.get(identifier) or {}
+                if not isinstance(source_fields, dict):
+                    return _error_response(
+                        "Fields for %r must be an object of key/value pairs" % (identifier,))
+                prepared.append((name, owner, source_fields))
+            final = backend.merge_datasets(prepared, new_name, owner=username)
+        except PermissionError as exc:
+            return _error_response(exc, 403)
+        except (ValueError, DashboardBackendError) as exc:
+            return _error_response(exc)
+        return jsonify({'status': 'ok', 'dataset': build_identifier(final, username)})
 
     # -- built React single-page app ----------------------------------------
 
     @blueprint.route('/', defaults={'asset_path': ''})
     @blueprint.route('/<path:asset_path>')
+    @login_required
     def dashboard(asset_path):
         if asset_path:
             candidate = os.path.realpath(os.path.join(WEB_DIR, asset_path))

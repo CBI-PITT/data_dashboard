@@ -25,6 +25,18 @@ def sanitize_dataset_name(name):
     return name
 
 
+def sanitize_username(name):
+    """Sanitize a username for use as a per-user folder name. PEACE usernames
+    (LDAP ids like iana, dutta-p, CBI_Admin) pass through unchanged; hostile
+    ids get their invalid characters replaced instead of raising, because
+    usernames come from the authenticated session."""
+    name = os.path.basename(str(name or '').strip())
+    name = re.sub(r'[^A-Za-z0-9._-]+', '_', name).strip('._-')
+    if not name:
+        raise ValueError('Could not derive a valid user folder name')
+    return name
+
+
 def browsable_roots(settings):
     """Directories the add-to-dashboard endpoint accepts CSVs from.
 

@@ -17,17 +17,20 @@ from .base import (
     QuerySpec,
     UnknownDatasetError,
     UnknownFieldError,
+    build_identifier,
     format_byte_size,
     load_meta,
     meta_path,
+    parse_identifier,
     write_meta,
 )
 
 __all__ = [
     'AGGREGATES', 'Aggregate', 'CategoricalFilter', 'ContinuousFilter',
     'DashboardBackend', 'DashboardBackendError', 'DISTINCT_CAP', 'QuerySpec',
-    'UnknownDatasetError', 'UnknownFieldError', 'format_byte_size',
-    'load_meta', 'meta_path', 'write_meta', 'get_backend',
+    'UnknownDatasetError', 'UnknownFieldError', 'build_identifier',
+    'format_byte_size', 'load_meta', 'meta_path', 'parse_identifier',
+    'write_meta', 'get_backend',
 ]
 
 
