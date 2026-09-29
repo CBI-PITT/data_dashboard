@@ -5,22 +5,43 @@ PEACE data dashboard: visualizes and explores PEACE pipeline results as plots
 app as a blueprint with pluggable storage backends — **no ElasticSearch,
 MySQL or Kibana required by default**.
 
-## Ownership and privacy
+## The PEACE system
 
-Datasets are owned by a user: one folder per user under `datasets_dir`
-(`<datasets_dir>/<username>/<name>.parquet`). **Every dashboard route is
-login-protected** — users only see and access their own datasets; `CBI_Admin`
-(configurable via `[dashboard] admins`) sees everything, including
-ownerless/legacy datasets. Identifiers combine as `owner/name`.
+```
+                       researcher (web browser)
+                              │
+                              ▼
+              ┌───────────────────────────────┐
+              │        Flask web app          │
+              │  (generate_peace_json_test)   │
+              └───────┬───────────────┬───────┘
+              writes  │               │ mounts
+                      ▼               ▼
+         ┌──────────────────┐  ┌────────────────────────┐
+         │ JSON task files  │  │     file browser       │
+         │ (shared folder)  │  │ (flask_file_browser_   │
+         └────────┬─────────┘  │ test) + Add-to-        │
+                  │ polls      │ dashboard button       │
+                  ▼            └───────────┬────────────┘
+    ┌──────────────────────┐              │
+    │  back-end daemon     │              ▼
+    │  (peace_pipe_line_   │   ┌───────────────────────┐
+    │  slurm_test)         │   │    data dashboard     │
+    └──────────┬───────────┘   │    (data_dashboard)   │
+               │ sbatch        └───────────▲───────────┘
+               ▼                           │ results
+    ┌──────────────────────┐               │
+    │    SLURM cluster     │──── outputs ──┘
+    │  (job arrays, GPUs)  │
+    └──────────────────────┘
+```
 
-Dataset management in the dashboard UI:
-
-- **Add** — the file-browser "Add to dashboard" button always creates a NEW
-  dataset (name collisions get a `_2`, `_3`... suffix, never overwrite).
-- **Rename** — pencil button next to the Index picker.
-- **Merge** — pick 2+ of your datasets, assign per-dataset fields (e.g.
-  `treatment=ctrl`), get one new dataset with a `sample` column so group-by
-  compares the sources on one plot. Sources stay untouched.
+| Repository | Role |
+|---|---|
+| `../generate_peace_json_test/` | Flask web app that mounts this blueprint |
+| `../peace_pipe_line_slurm_test/` | Back-end pipeline that produces the results |
+| `../flask_file_browser_test/` | File browser with the Add-to-dashboard button |
+| **`data_dashboard` (this repo)** | Dashboard blueprint and datasets |
 
 ## Architecture
 
@@ -38,9 +59,7 @@ Dataset management in the dashboard UI:
     + the built React single-page app
   - `web/` — built React app, served by the blueprint
 - `dashboard/` — React (CRA) source. Pages trimmed to Dashboard + IndexInfo;
-  same-origin API calls (no CORS); `homepage: /dashboard`. The navbar (both
-  pages) shows the logged-in user via `/api/whoami` plus Home, IndexInfo and
-  Logout links, and hosts the rename/merge controls.
+  same-origin API calls (no CORS); `homepage: /dashboard`.
 - `import_csv.py` — CLI importer (`--backend`, klimstra-style metadata join,
   dashboard parameters)
 - `flask-server/`, `es_importing/` — legacy reference code (no longer used)
@@ -66,8 +85,12 @@ Edit `data_dashboard/settings.ini` (inside the package):
 
 - `[dashboard] enabled` — blueprint on/off (PEACE navbar link hidden when off)
 - `[dashboard] backend` — `parquet` (default) or `elasticsearch`
-- `[dashboard] datasets_dir` — where datasets are stored
-  (`<name>.parquet` + `<name>.dashboard_meta.json` per dataset)
+- `[dashboard] datasets_dir` — where datasets are stored, one folder per user
+  (`<datasets_dir>/<username>/<name>.parquet` +
+  `<name>.dashboard_meta.json` per dataset)
+- `[dashboard] admins` — usernames that can see and access every user's datasets
+- `[allowed_csv_dirs]` — browsable-root fallback for the Add-to-dashboard
+  endpoint when the file browser package is not installed
 - `[backend_elasticsearch] es_server` — ES instance to use when
   `backend = elasticsearch` (old `klimstra*`/`cebra*` indices stay readable)
 
@@ -93,15 +116,36 @@ automatically; re-ingest with `./import_csv.py --backend <other>`.
 - `GET /dashboard/api/index_choosen/<name>` (+ `/meta/`, `/current_status/`)
 - `POST /dashboard/api/query`, `POST /dashboard/api/query_paras`
 - `GET /dashboard/indexInfo`
-- `POST /dashboard/api/add_csv` (the CSV must live inside the file browser's
-  browsable roots; always creates a new dataset with a suffix on collision)
-- `GET /dashboard/api/whoami`
-- `POST /dashboard/api/datasets/<identifier>/rename`
-- `POST /dashboard/api/merge`
+- `POST /dashboard/api/add_csv` (login required; the CSV must live inside the
+  file browser's browsable roots)
 - `GET /dashboard/` (React SPA)
 
 The query JSON contract is unchanged from the original dashboard, so the
 React code works against either backend.
+
+## Security model
+
+- `POST /api/add_csv` requires login and resolves the submitted path against
+  the file browser's browsable roots with real-path containment (`..`
+  traversal and symlink escapes rejected); dataset names are sanitized.
+- Datasets are stored per user (`<datasets_dir>/<username>/`); the
+  `[dashboard] admins` list can access every user's datasets, and
+  ownerless/legacy files at the dataset root are visible to admins only.
+- The parquet backend ingests with explicit CSV options (quoted fields beyond
+  the sniffer sample are handled); malformed CSVs return a 400 with the
+  parser's error message instead of a 500.
+
+## Tests
+
+    python3 -m pytest
+
+Eight test modules (~85 tests) cover both storage backends (Parquet/DuckDB
+real; Elasticsearch via an in-python fake client), the quoted-CSV sniffer
+regression, the React Form.js query-payload parser, the API route contracts
+(formFrame/meta/query/query_paras/SPA serving), add-to-dashboard security
+(login, browsable-root containment, symlink escapes, name sanitization), and
+the blueprint flag/factory behavior. Dataset writes are sandboxed to a temp
+`datasets_dir`; no ES service or Flask app is needed.
 
 ## Legacy
 
