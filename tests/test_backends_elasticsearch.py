@@ -90,6 +90,31 @@ def test_create_dataset_writes_sidecar_meta(es_backend, tmp_path, datasets_dir):
     assert meta["continuous"]["x_raw"] == [1.0, 3.0]
 
 
+# -- delete containment -------------------------------------------------------
+
+
+def test_delete_containment_check_runs_before_any_removal(es_backend):
+    """The ensure_within containment check aborts with PermissionError before
+    the ES index delete runs, so a '..' identifier can neither remove files
+    outside the dashboard folder nor touch other indices."""
+    es_backend.es.indices_data["../../escape"] = {"mappings": {}, "docs": []}
+    with pytest.raises(PermissionError):
+        es_backend.delete_dataset("../../escape")
+    assert "../../escape" in es_backend.es.indices_data
+
+
+def test_delete_removes_index_and_sidecar(es_backend, tmp_path, datasets_dir):
+    import os
+    csv_path = tmp_path / "cells.csv"
+    csv_path.write_text("treatment,x_raw\nctrl,1.0\n")
+    es_backend.create_dataset("gone_soon", str(csv_path))
+    sidecar = os.path.join(datasets_dir, "gone_soon.dashboard_meta.json")
+    assert os.path.isfile(sidecar)
+    es_backend.delete_dataset("gone_soon")
+    assert "gone_soon" not in es_backend.es.indices_data
+    assert not os.path.isfile(sidecar)
+
+
 # -- schema and status --------------------------------------------------------
 
 

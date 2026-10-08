@@ -19,6 +19,7 @@ from .base import (
     DISTINCT_CAP,
     UnknownDatasetError,
     build_identifier,
+    ensure_within,
     format_byte_size,
     load_meta,
     meta_path,
@@ -137,7 +138,12 @@ class ParquetBackend(DashboardBackend):
         return os.path.isfile(self._parquet_file(name, owner))
 
     def delete_dataset(self, name, owner=None):
-        for path in (self._parquet_file(name, owner), self._meta_file(name, owner)):
+        # Containment check BEFORE any removal: both paths must resolve
+        # inside the dashboard folder (catches '..' names and symlink
+        # escapes), so nothing outside it can ever be deleted.
+        parquet_path = ensure_within(self.datasets_dir, self._parquet_file(name, owner))
+        meta_file = ensure_within(self.datasets_dir, self._meta_file(name, owner))
+        for path in (parquet_path, meta_file):
             if os.path.isfile(path):
                 os.remove(path)
 

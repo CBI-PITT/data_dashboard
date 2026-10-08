@@ -25,6 +25,7 @@ from flask_login import current_user, login_required
 from .backends import get_backend
 from .backends.base import (
     DashboardBackendError,
+    UnknownDatasetError,
     build_identifier,
     parse_identifier,
 )
@@ -88,6 +89,12 @@ def init_blueprint(app, settings=settings, prefix='/dashboard'):
             name, owner = parse_identifier(identifier)
         except DashboardBackendError as exc:
             raise PermissionError(str(exc))
+        # '..' in the name part would escape the per-user folder in every
+        # backend path join; reject it at this choke point so no dataset
+        # operation (delete, rename, merge, query, read) can traverse.
+        if '..' in name.replace('\\', '/').split('/'):
+            raise PermissionError(
+                'Dataset name must not contain path traversal segments: %r' % (name,))
         if owner is None:
             # ownerless/legacy dataset: admin-only
             if not _is_admin(username):
@@ -317,7 +324,7 @@ def init_blueprint(app, settings=settings, prefix='/dashboard'):
             'backend': backend.name,
         })
 
-    # -- dataset management (rename / merge) --------------------------------
+    # -- dataset management (rename / delete / merge) -----------------------
 
     @blueprint.route('/api/datasets/<path:identifier>/rename', methods=['POST'])
     @login_required
@@ -333,6 +340,24 @@ def init_blueprint(app, settings=settings, prefix='/dashboard'):
         except (ValueError, DashboardBackendError) as exc:
             return _error_response(exc)
         return jsonify({'status': 'ok', 'dataset': build_identifier(final, owner)})
+
+    @blueprint.route('/api/datasets/<path:identifier>/delete', methods=['POST'])
+    @login_required
+    def delete_dataset(identifier):
+        username = _current_username()
+        try:
+            name, owner = _resolve_identifier(identifier, username)
+            if not backend.dataset_exists(name, owner):
+                raise UnknownDatasetError(name)
+            # The backends re-check containment (ensure_within) before any
+            # file is removed, so only files inside the dashboard folder can
+            # ever be deleted; the original CSVs are never touched.
+            backend.delete_dataset(name, owner)
+        except PermissionError as exc:
+            return _error_response(exc, 403)
+        except (ValueError, DashboardBackendError) as exc:
+            return _error_response(exc)
+        return jsonify({'status': 'ok'})
 
     @blueprint.route('/api/merge', methods=['POST'])
     @login_required

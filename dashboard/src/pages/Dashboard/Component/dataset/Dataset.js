@@ -19,6 +19,7 @@ import IconButton from "@mui/material/IconButton";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import EditIcon from "@mui/icons-material/Edit";
 import CallMergeIcon from "@mui/icons-material/CallMerge";
+import DeleteIcon from "@mui/icons-material/Delete";
 import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import Dividers from "./Divider";
@@ -52,6 +53,8 @@ function Dataset({ setFormFrame, setDisplayData, setAcronym_volume, setMeta }) {
 
   const [renameOpen, setRenameOpen] = useState(false);
   const [renameValue, setRenameValue] = useState("");
+
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const [mergeOpen, setMergeOpen] = useState(false);
   const [mergeSelections, setMergeSelections] = useState([]);
@@ -104,6 +107,38 @@ function Dataset({ setFormFrame, setDisplayData, setAcronym_volume, setMeta }) {
         console.error("Rename failed:", error);
         window.alert(
           "Rename failed: " +
+            (error.response && error.response.data && error.response.data.error
+              ? error.response.data.error
+              : error.message)
+        );
+      });
+  };
+
+  const submitDelete = () => {
+    axios
+      .post(
+        HOST + url_rename + encodeURIComponent(selectedIndex) + "/delete",
+        {},
+        { headers: { "Content-Type": "application/json" } }
+      )
+      .then(() => {
+        if (selectedIndex === sessionStorage.getItem("INDEX")) {
+          sessionStorage.removeItem("INDEX");
+          setSelectedIndex("");
+          setIndexStatus({
+            health: "NaN",
+            status: "NaN",
+            storageSize: "NaN",
+            docCount: "NaN",
+          });
+        }
+        setDeleteOpen(false);
+        fetchIndices();
+      })
+      .catch((error) => {
+        console.error("Delete failed:", error);
+        window.alert(
+          "Delete failed: " +
             (error.response && error.response.data && error.response.data.error
               ? error.response.data.error
               : error.message)
@@ -239,6 +274,19 @@ function Dataset({ setFormFrame, setDisplayData, setAcronym_volume, setMeta }) {
             <CallMergeIcon />
           </IconButton>
         </Tooltip>
+        <Tooltip title="Delete selected dataset (dashboard only, original CSV is kept)">
+          <span>
+            <IconButton
+              onClick={() => setDeleteOpen(true)}
+              size="small"
+              sx={{ mb: 1.5 }}
+              disabled={!selectedIndex}
+              aria-label="Delete selected dataset"
+            >
+              <DeleteIcon />
+            </IconButton>
+          </span>
+        </Tooltip>
       </div>
 
       <Dividers index_status={indexStatus}></Dividers>
@@ -263,6 +311,21 @@ function Dataset({ setFormFrame, setDisplayData, setAcronym_volume, setMeta }) {
             variant="contained"
           >
             Rename
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)}>
+        <DialogTitle>Delete dataset</DialogTitle>
+        <DialogContent>
+          Delete <strong>{selectedIndex.split("/").pop()}</strong> from the
+          dashboard? This only removes the dataset from the dashboard — the
+          original CSV file is not affected. This cannot be undone.
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
+          <Button onClick={submitDelete} variant="contained" color="error">
+            Delete
           </Button>
         </DialogActions>
       </Dialog>

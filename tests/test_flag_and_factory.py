@@ -19,6 +19,7 @@ DASHBOARD_ROUTES = [
     "/dashboard/api/whoami",
     "/dashboard/api/merge",
     "/dashboard/api/datasets/<path:identifier>/rename",
+    "/dashboard/api/datasets/<path:identifier>/delete",
     "/dashboard/indexInfo",
 ]
 

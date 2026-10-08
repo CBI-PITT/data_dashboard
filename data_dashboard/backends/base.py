@@ -98,6 +98,32 @@ class UnknownFieldError(DashboardBackendError):
     pass
 
 
+def ensure_within(base_dir, *path_parts):
+    """Resolve a dataset file path under base_dir and refuse anything that
+    would land outside it, before the caller touches the filesystem.
+
+    Mirrors the repo's containment pattern (utils.csv_within_allowed_roots):
+    explicit '..' segments (and null/newline control characters) are rejected
+    before resolution, realpath resolves symlinks so a link pointing outside
+    base_dir is caught, and the resolved path must be strictly inside.
+    Raises PermissionError (routes map it to a 403)."""
+    parts = [str(part) for part in path_parts]
+    joined = os.path.join(base_dir, *parts)
+    if '\x00' in joined or '\n' in joined or '\r' in joined:
+        raise PermissionError(
+            'Dataset path contains control characters: %r' % (joined,))
+    for part in joined.replace('\\', '/').split(os.sep):
+        if part == '..':
+            raise PermissionError(
+                'Dataset path must stay inside the dashboard folder: %r' % (joined,))
+    real = os.path.realpath(joined)
+    base = os.path.realpath(base_dir)
+    if real != base and not real.startswith(base.rstrip(os.sep) + os.sep):
+        raise PermissionError(
+            'Dataset path must stay inside the dashboard folder: %r' % (joined,))
+    return real
+
+
 def meta_path(datasets_dir, name):
     return os.path.join(datasets_dir, name + '.dashboard_meta.json')
 
