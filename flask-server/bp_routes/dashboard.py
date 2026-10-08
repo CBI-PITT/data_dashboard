@@ -166,8 +166,8 @@ def custom_sort(item):
 @dahsboard_bp.route("/api/query", methods=["POST"])
 def query_data_source():
     json_data = request.json
-    print(json_data)
-    print(type(json_data["serialized_parameters"]))
+    print("JSON data:", json_data)
+    # print(type(json_data["serialized_parameters"]))
     response = es_query_search(
         json_data["INDEX"],
         json_data["field"],

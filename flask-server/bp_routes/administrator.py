@@ -224,8 +224,8 @@ def index_file():
         )
         db.session.add(new_entry_para)
         new_entry_index = index_info(
-            index_name = index_name,
-            created =  datetime.now().strftime("%Y-%m-%d"),
+            name=index_name,
+            created=datetime.now().strftime("%Y-%m-%d"),
             # modified = '',
             # breif = ''
         )
