@@ -5,21 +5,39 @@ import HOST from "../../../../config/path";
 
 const styles = {
   header: {
+    position: "sticky",
+    top: 0,
+    zIndex: 1020,
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
     gap: "12px",
-    padding: "8px 16px",
+    padding: "12px 20px",
+    backgroundColor: "#1b2129",
+    color: "#e8edf4",
   },
-  brand: { fontWeight: 600, margin: 0 },
-  links: { display: "flex", alignItems: "center", gap: "12px" },
-  link: { color: "inherit", textDecoration: "none" },
+  brand: {
+    fontWeight: 600,
+    fontSize: "1.1rem",
+    margin: 0,
+    whiteSpace: "nowrap",
+  },
+  links: { display: "flex", alignItems: "center", gap: "16px" },
+  link: {
+    color: "#e8edf4",
+    textDecoration: "none",
+    fontSize: "0.95rem",
+    whiteSpace: "nowrap",
+  },
   user: {
     display: "flex",
     alignItems: "center",
-    gap: "6px",
+    gap: "8px",
     fontWeight: 500,
+    fontSize: "0.95rem",
+    whiteSpace: "nowrap",
   },
+  admin: { color: "#9aa7b8", fontWeight: 400 },
 };
 
 export default function Header() {
@@ -53,7 +71,7 @@ export default function Header() {
         {user ? (
           <>
             <span>
-              {isAdmin ? "(admin) " : ""}
+              {isAdmin ? <span style={styles.admin}>(admin) </span> : null}
               {user}
             </span>
             <a href="/logout" style={styles.link}>

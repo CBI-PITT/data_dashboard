@@ -5,7 +5,6 @@ import PlotChoice from "./Component/plotChoices/PlotChoices";
 import Dataset from "./Component/dataset/Dataset";
 import Form from "./Component/form/Form";
 import { Paper, Grid } from "@mui/material";
-import Footer from "./Component/layout/footer";
 import Header from "./Component/layout/header";
 import MetricsTool from "./Component/plot/Control/MetricsTool";
 import N_number from "./Component/plot/Control/N_number";
@@ -137,7 +136,6 @@ function Dashboard() {
           </Paper>
         </Grid>
       </Grid>
-      <Footer />
     </div>
   );
 }
