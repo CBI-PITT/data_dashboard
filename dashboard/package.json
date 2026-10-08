@@ -2,6 +2,7 @@
   "name": "dashboard",
   "version": "0.1.0",
   "private": true,
+  "homepage": "/dashboard",
   "dependencies": {
     "@ant-design/plots": "^1.2.5",
     "@antv/data-set": "0.11.8",

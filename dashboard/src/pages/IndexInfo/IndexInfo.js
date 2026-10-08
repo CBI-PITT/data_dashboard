@@ -12,6 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import HOST from "../../config/path";
+import Header from "../Dashboard/Component/layout/header";
 const styles = {
   container: {
     maxWidth: "1800px",
@@ -78,7 +79,9 @@ const YourComponent = () => {
   const tableHeaders = [...new Set(data.flatMap(item => Object.keys(item)))];
   const isEven = (num) => num % 2 === 0;
   return (
-    <div style={styles.container}>
+    <>
+      <Header />
+      <div style={styles.container}>
       <Paper style={styles.root}>
         <Typography variant="h4" gutterBottom>
           Field Information
@@ -116,7 +119,8 @@ const YourComponent = () => {
           </TableBody>
         </Table>
       </TableContainer>
-    </div>
+      </div>
+    </>
   );
 };
 
