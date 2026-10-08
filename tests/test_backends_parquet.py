@@ -72,6 +72,45 @@ def test_list_datasets_and_exists_and_delete(parquet_backend, cells_csv):
     assert parquet_backend.list_datasets() == ["beta"]
 
 
+# -- delete containment -------------------------------------------------------
+
+
+def test_delete_containment_rejects_traversal(parquet_backend, cells_csv,
+                                              datasets_dir, tmp_path):
+    """'..' names must never escape the dashboard datasets folder: the decoy
+    sits exactly at the path the traversal would resolve to."""
+    parquet_backend.create_dataset("mine", cells_csv)
+    outside = os.path.abspath(
+        os.path.join(datasets_dir, "..", "..", "escape.parquet"))
+    with open(outside, "w") as fh:
+        fh.write("do not delete")
+    try:
+        with pytest.raises(PermissionError):
+            parquet_backend.delete_dataset("../../escape")
+        assert os.path.isfile(outside)
+        with open(outside) as fh:
+            assert fh.read() == "do not delete"
+        assert parquet_backend.dataset_exists("mine")
+    finally:
+        if os.path.isfile(outside):
+            os.remove(outside)
+
+
+def test_delete_containment_rejects_symlink_escape(parquet_backend, cells_csv,
+                                                   datasets_dir, tmp_path):
+    parquet_backend.create_dataset("mine", cells_csv)
+    os.makedirs(os.path.join(datasets_dir, "otheruser"), exist_ok=True)
+    victim = tmp_path / "victim.parquet"
+    victim.write_text("keep me")
+    link = os.path.join(datasets_dir, "otheruser", "link.parquet")
+    os.symlink(str(victim), link)
+    with pytest.raises(PermissionError):
+        parquet_backend.delete_dataset("link", "otheruser")
+    assert victim.read_text() == "keep me"
+    assert os.path.isfile(link)
+    assert parquet_backend.dataset_exists("mine")
+
+
 def test_sanitize_dataset_name():
     assert sanitize_dataset_name("/a/b/cells.csv") == "cells"
     assert sanitize_dataset_name("Cells Data (v2).csv") == "Cells_Data_v2"

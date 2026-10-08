@@ -29,6 +29,7 @@ from .base import (
     DISTINCT_CAP,
     UnknownDatasetError,
     build_identifier,
+    ensure_within,
     load_meta,
     meta_path,
     write_meta,
@@ -116,6 +117,10 @@ class ElasticsearchBackend(DashboardBackend):
         return bool(self.es.indices.exists(index=self._index_name(name, owner)))
 
     def delete_dataset(self, name, owner=None):
+        # Containment check BEFORE any removal: the sidecar path must resolve
+        # inside the dashboard folder (catches '..' names and symlink
+        # escapes), so nothing outside it can ever be deleted.
+        ensure_within(self.datasets_dir, meta_path(self._user_dir(owner), name))
         self.es.indices.delete(index=self._index_name(name, owner), ignore=[400, 404])
         path = meta_path(self._user_dir(owner), name)
         if os.path.isfile(path):

@@ -79,6 +79,7 @@ def test_routes_require_login(dashboard_client, dataset):
         ("/dashboard/api/query", payload()),
         ("/dashboard/api/merge", {}),
         ("/dashboard/api/datasets/" + dataset + "/rename", {}),
+        ("/dashboard/api/datasets/" + dataset + "/delete", {}),
     ):
         response = dashboard_client.post(url, json=json_body)
         assert response.status_code in (302, 401), (
@@ -378,6 +379,129 @@ def test_rename_other_users_dataset_403(dashboard_client, dashboard_login,
         "/dashboard/api/datasets/dutta-p/theirs/rename",
         json={"new_name": "mine"})
     assert response.status_code == 403
+
+
+def test_rename_rejects_path_traversal_403(dashboard_client, dashboard_login,
+                                           parquet_backend, dataset, tmp_path):
+    """'..' in the identifier name is rejected at the _resolve_identifier
+    choke point, before rename's raw src path could address a file outside
+    the dashboard datasets folder. The decoy sits exactly at the path
+    datasets_dir/iana/../../escape.parquet resolves to."""
+    outside = os.path.abspath(
+        os.path.join(parquet_backend._user_dir("iana"), "..", "..", "escape.parquet"))
+    with open(outside, "w") as fh:
+        fh.write("do not delete")
+    try:
+        dashboard_login("iana")
+        response = dashboard_client.post(
+            "/dashboard/api/datasets/iana/../../escape/rename",
+            json={"new_name": "sneaky"})
+        assert response.status_code == 403
+        with open(outside) as fh:
+            assert fh.read() == "do not delete"
+        assert parquet_backend.dataset_exists("job_0101_cells", "iana")
+    finally:
+        if os.path.isfile(outside):
+            os.remove(outside)
+
+
+# -- delete -------------------------------------------------------------------
+
+
+def test_delete_dataset(dashboard_client, dashboard_login, dataset,
+                        parquet_backend, cells_csv):
+    dashboard_login("iana")
+    response = dashboard_client.post(
+        "/dashboard/api/datasets/" + dataset + "/delete")
+    assert response.status_code == 200
+    assert response.get_json() == {"status": "ok"}
+    # the parquet copy and its sidecar are gone from the dashboard folder
+    assert not parquet_backend.dataset_exists("job_0101_cells", "iana")
+    assert not os.path.isfile(parquet_backend._meta_file("job_0101_cells", "iana"))
+    assert dashboard_client.get("/dashboard/api/indices").get_json() == []
+    # the original CSV the dataset was ingested from stays intact
+    assert os.path.isfile(cells_csv)
+
+
+def test_delete_unknown_dataset_400(dashboard_client, dashboard_login):
+    dashboard_login("iana")
+    response = dashboard_client.post(
+        "/dashboard/api/datasets/iana/nothere/delete")
+    assert response.status_code == 400
+
+
+def test_delete_other_users_dataset_403(dashboard_client, dashboard_login,
+                                        parquet_backend, cells_csv):
+    parquet_backend.create_dataset("theirs", cells_csv, owner="dutta-p")
+    dashboard_login("iana")
+    response = dashboard_client.post(
+        "/dashboard/api/datasets/dutta-p/theirs/delete")
+    assert response.status_code == 403
+    assert parquet_backend.dataset_exists("theirs", "dutta-p")
+
+
+def test_delete_rejects_path_traversal_403(dashboard_client, dashboard_login,
+                                           parquet_backend, dataset, tmp_path):
+    """identifier 'iana/../../escape' passes the ownership check but resolves
+    outside the dashboard datasets folder (datasets_dir/iana/../../) — the
+    containment checks must abort with 403 and leave the decoy file at the
+    escape target intact."""
+    outside = os.path.abspath(
+        os.path.join(parquet_backend._user_dir("iana"), "..", "..", "escape.parquet"))
+    with open(outside, "w") as fh:
+        fh.write("do not delete")
+    try:
+        dashboard_login("iana")
+        response = dashboard_client.post(
+            "/dashboard/api/datasets/iana/../../escape/delete")
+        assert response.status_code == 403
+        with open(outside) as fh:
+            assert fh.read() == "do not delete"
+        assert parquet_backend.dataset_exists("job_0101_cells", "iana")
+    finally:
+        if os.path.isfile(outside):
+            os.remove(outside)
+
+
+def test_delete_ownerless_traversal_rejected_for_admin_403(dashboard_client,
+                                                           dashboard_login,
+                                                           parquet_backend,
+                                                           dataset, tmp_path):
+    """Ownerless (plain-name) identifiers are admin-only, so a '..' name can
+    only reach the backends as an admin — still rejected by containment."""
+    outside = os.path.abspath(
+        os.path.join(parquet_backend.datasets_dir, "..", "..", "escape.parquet"))
+    with open(outside, "w") as fh:
+        fh.write("do not delete")
+    try:
+        dashboard_login("CBI_Admin")
+        response = dashboard_client.post(
+            "/dashboard/api/datasets/../../escape/delete")
+        assert response.status_code == 403
+        with open(outside) as fh:
+            assert fh.read() == "do not delete"
+    finally:
+        if os.path.isfile(outside):
+            os.remove(outside)
+
+
+def test_delete_rejects_symlink_escape_403(dashboard_client, dashboard_login,
+                                           parquet_backend, dataset, tmp_path):
+    """A symlink inside the owner's folder that points outside the dashboard
+    datasets folder must be refused by the realpath containment check."""
+    outside = os.path.join(str(tmp_path), "outside_target.parquet")
+    with open(outside, "w") as fh:
+        fh.write("keep me")
+    link = os.path.join(parquet_backend._user_dir("iana"), "escape_link.parquet")
+    os.symlink(outside, link)
+    dashboard_login("iana")
+    response = dashboard_client.post(
+        "/dashboard/api/datasets/iana/escape_link/delete")
+    assert response.status_code == 403
+    with open(outside) as fh:
+        assert fh.read() == "keep me"
+    assert os.path.isfile(link)
+    assert parquet_backend.dataset_exists("job_0101_cells", "iana")
 
 
 # -- merge --------------------------------------------------------------------
