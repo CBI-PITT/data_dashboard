@@ -67,6 +67,14 @@
   letter-spacing: 0.02em;
 }
 
+#coverHint {
+  margin-top: 8px;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--peace-muted);
+  max-width: 60ch;
+}
+
 .chartTitle {
   color: var(--peace-ink);
   font-size: 1rem;

@@ -30,6 +30,7 @@ function Chart({
   setDimension,
   groupByKeys,
   setGroupByKeys,
+  formFrame,
 }) {
   // Request condition = { "field": "atlas_structure_acronym", "filter": { "categorical": { "atlas_structure_acronym": [], "file_path": [], "route": [], "time_point": [], "transformed_coord_units": [], "treatment": [], "uuid_brain": [], "uuid_cell": [], "voxel_spacing": [], "voxel_spacing_units": [] }, "continuous": { "Unnamed: 0": [0, 32153394], "atlas_structure_number": [0, 614454277], "metadata": [18, 39], "n_channels": [1, 2], "x_downsampled": [0, 887], "x_transformed": [0, 13925], "x_transformed_px": [0, 557], "y_downsampled": [0, 276], "y_transformed": [0, 8000], "y_transformed_px": [0, 320], "z_downsampled": [4, 1210], "z_transformed": [0, 16850], "z_transformed_px": [0, 674] } }, "group_by": ["time_point", "route", "treatment"], "aggregate": ["value_count", "cardinality"] }
 
@@ -101,6 +102,11 @@ function Chart({
       <div className="cover">
         <img src={CoverImg} className="coverImg" alt="coverImg"></img>
         <h3 id="coverText">Statistics and Visualization</h3>
+        {formFrame === undefined ? (
+          <p id="coverHint">
+            Select a dataset from the panel on the left to get started
+          </p>
+        ) : null}
       </div>
     );
   }

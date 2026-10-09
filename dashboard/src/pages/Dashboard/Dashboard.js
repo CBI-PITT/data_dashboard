@@ -124,6 +124,7 @@ function Dashboard() {
               setDimension={setDimension}
               groupByKeys={groupByKeys}
               setGroupByKeys={setGroupByKeys}
+              formFrame={formFrame}
             />
           </Paper>
         </Grid>
