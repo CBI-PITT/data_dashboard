@@ -32,10 +32,12 @@ from .base import (
     ensure_within,
     load_meta,
     meta_path,
+    same_bound,
     write_meta,
 )
 
 NUMERIC_AGGS = ('min', 'max', 'avg', 'sum', 'boxplot')
+COLUMN_STATS_VALUE_CAP = 100
 
 
 def _pandas_type_to_es(dtype):
@@ -160,6 +162,9 @@ class ElasticsearchBackend(DashboardBackend):
     def create_dataset(self, name, csv_path, owner=None):
         from elasticsearch import helpers
         name = sanitize_dataset_name(name)
+        # The owner's folder may not exist yet (first dataset of a new user);
+        # the sidecar write below would fail without it.
+        os.makedirs(self._user_dir(owner), exist_ok=True)
         # Always-create semantics: an existing index name gets a _2, _3... suffix.
         match = re.match(r'^(.*)_(\d+)$', name)
         if match:
@@ -337,3 +342,163 @@ class ElasticsearchBackend(DashboardBackend):
             aggs['N'] = {'cardinality': {'field': spec.n_field}}
         form_query_body['aggs']['categories']['aggs'] = aggs
         return form_query_body
+
+    # -- spreadsheet rows ---------------------------------------------------
+
+    def get_rows(self, name, offset=0, limit=100, owner=None, filters=None):
+        """One page of raw rows for the spreadsheet view (search from/size in
+        stored order). Continuous filters that still carry the sidecar's full
+        min/max range (untouched sliders) are treated as no filter."""
+        index_name = self._index_name(name, owner)
+        if not self.es.indices.exists(index=index_name):
+            raise UnknownDatasetError(name)
+        offset = max(int(offset), 0)
+        limit = max(int(limit), 1)
+        field_types = self.get_field_types(name, owner)
+        meta = load_meta(self._user_dir(owner), name) or {}
+        full_ranges = dict(meta.get('continuous') or {})
+
+        must = []
+        for f in filters or []:
+            if f.field not in field_types:
+                raise UnknownDatasetError('Unknown field: %r' % (f.field,))
+            if isinstance(f, CategoricalFilter):
+                values = [v for v in f.values if str(v) != '']
+                if not values:
+                    # Empty selection means "no filter" (query() parity).
+                    continue
+                should = [{'term': {f.field: value}} for value in values]
+                must.append({'bool': {'should': should}})
+            else:
+                if f.min is None and f.max is None:
+                    continue
+                full = full_ranges.get(f.field)
+                if (isinstance(full, (list, tuple)) and len(full) == 2 and
+                        same_bound(f.min, full[0]) and same_bound(f.max, full[1])):
+                    continue
+                must.append({'range': {f.field: {'gte': f.min, 'lte': f.max}}})
+        query = {'bool': {'filter': {'bool': {'must': must}}}} if must else {'match_all': {}}
+
+        count_body = {'query': query}
+        if must:
+            total = self.es.count(index=index_name, body=count_body)['count']
+        else:
+            total = meta.get('row_count')
+            if total is None:
+                total = self.es.count(index=index_name, body=count_body)['count']
+
+        # Column order follows the mapping properties, matching get_field_types.
+        columns = list(field_types.keys())
+        resp = self.es.search(index=index_name, body={
+            'from': offset,
+            'size': limit,
+            'query': query,
+            'sort': ['_doc'],
+            '_source': columns,
+        })
+        rows = [
+            [doc['_source'].get(col) for col in columns]
+            for doc in resp['hits']['hits']
+        ]
+        return {'columns': columns, 'rows': rows, 'total': int(total)}
+
+    # -- column stats (numiqo-style picker) ---------------------------------
+
+    def get_column_stats(self, name, column, owner=None):
+        """Descriptive stats for one column. Categorical: frequency table
+        (top COLUMN_STATS_VALUE_CAP terms, fraction relative to the non-null
+        values). Numeric: extended_stats + percentiles. Date: stats only."""
+        index_name = self._index_name(name, owner)
+        if not self.es.indices.exists(index=index_name):
+            raise UnknownDatasetError(name)
+        field_types = self.get_field_types(name, owner)
+        if column not in field_types:
+            raise UnknownDatasetError('Unknown field: %r' % (column,))
+        ftype = field_types[column]
+        total = int(self.es.count(
+            index=index_name, body={'query': {'match_all': {}}})['count'])
+
+        if ftype == 'keyword' or ftype == 'boolean':
+            body = {
+                'size': 0,
+                'aggs': {
+                    column: {'terms': {'field': column, 'size': COLUMN_STATS_VALUE_CAP}},
+                    'distinct': {'cardinality': {'field': column}},
+                },
+            }
+            resp = self.es.search(index=index_name, body=body)
+            agg = resp['aggregations'][column]
+            buckets = agg['buckets']
+            sum_counts = sum(bucket['doc_count'] for bucket in buckets)
+            values = [
+                {
+                    'value': bucket['key'],
+                    'count': bucket['doc_count'],
+                    'fraction': (float(bucket['doc_count']) / float(sum_counts))
+                    if sum_counts else 0.0,
+                }
+                for bucket in buckets
+            ]
+            other = int(agg.get('sum_other_doc_count') or 0)
+            distinct = int((resp['aggregations'].get('distinct') or {}).get('value') or 0)
+            return {
+                'column': column,
+                'type': ftype,
+                'kind': 'categorical',
+                'values': values,
+                'distinct': distinct,
+                'missing': total - sum_counts,
+                'total': total,
+                'truncated': other > 0,
+            }
+
+        if ftype == 'date':
+            body = {
+                'size': 0,
+                'aggs': {'col_stats': {'stats': {'field': column}}},
+            }
+            resp = self.es.search(index=index_name, body=body)
+            s = resp['aggregations']['col_stats']
+            return {
+                'column': column,
+                'type': ftype,
+                'kind': 'date',
+                'stats': {
+                    'min': s.get('min'),
+                    'max': s.get('max'),
+                    'valid': int(s.get('count') or 0),
+                    'missing': total - int(s.get('count') or 0),
+                    'total': total,
+                },
+            }
+
+        body = {
+            'size': 0,
+            'aggs': {
+                'col_stats': {'extended_stats': {'field': column}},
+                'col_percentiles': {
+                    'percentiles': {'field': column, 'percents': [25, 50, 75]},
+                },
+            },
+        }
+        resp = self.es.search(index=index_name, body=body)
+        s = resp['aggregations']['col_stats']
+        p = resp['aggregations']['col_percentiles']['values']
+        valid = int(s.get('count') or 0)
+        return {
+            'column': column,
+            'type': ftype,
+            'kind': 'numeric',
+            'stats': {
+                'min': s.get('min'),
+                'max': s.get('max'),
+                'mean': s.get('avg'),
+                'median': p.get('50.0'),
+                'q25': p.get('25.0'),
+                'q75': p.get('75.0'),
+                'std': s.get('std_deviation'),
+                'valid': valid,
+                'missing': total - valid,
+                'total': total,
+            },
+        }

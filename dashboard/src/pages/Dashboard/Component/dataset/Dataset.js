@@ -46,7 +46,7 @@ export function parseFieldsText(text) {
   return fields;
 }
 
-function Dataset({ setFormFrame, setDisplayData, setAcronym_volume, setMeta }) {
+function Dataset({ setFormFrame, setDisplayData, setAcronym_volume, setMeta, setSelectedDataset }) {
   const [dataset, setDataset] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState("");
 
@@ -122,6 +122,7 @@ function Dataset({ setFormFrame, setDisplayData, setAcronym_volume, setMeta }) {
         if (selectedIndex === sessionStorage.getItem("INDEX")) {
           sessionStorage.removeItem("INDEX");
           setSelectedIndex("");
+          if (setSelectedDataset) setSelectedDataset("");
         }
         setDeleteOpen(false);
         fetchIndices();
@@ -192,6 +193,7 @@ function Dataset({ setFormFrame, setDisplayData, setAcronym_volume, setMeta }) {
               setDisplayData();
               let index = event.target.value;
               sessionStorage.setItem('INDEX', index);
+              if (setSelectedDataset) setSelectedDataset(index);
               setSelectedIndex(index);
               axios
                 .get(HOST + url_index_choosen + index)

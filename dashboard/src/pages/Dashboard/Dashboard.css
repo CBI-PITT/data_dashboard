@@ -37,7 +37,9 @@
 .chart {
   overflow-y: auto;
   overflow-x: auto;
-  height: 80vh;
+  /* Grows with its content (table on top, plot below) and scrolls when it
+     outgrows the viewport (navbar + grid padding aside). */
+  max-height: calc(100vh - 96px);
 }
 
 .plotButton {
@@ -74,4 +76,190 @@
   font-weight: 600;
   margin: 4px 0 8px;
   text-align: center;
+}
+
+/* Spreadsheet view (numiqo-style data table) */
+
+.dataTable {
+  margin-top: 16px;
+  padding: 0 16px 16px;
+}
+
+.dataTableHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 12px 4px 8px;
+}
+
+.dataTableTitle {
+  color: var(--peace-ink);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.dataTableCount {
+  color: var(--peace-muted);
+  display: inline-flex;
+  align-items: center;
+}
+
+.dataTableError {
+  margin: 8px 0;
+}
+
+.dataTableHeaderCell {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.dataTableHeaderName {
+  font-weight: 600;
+  color: var(--peace-ink);
+}
+
+.typeBadge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 3px 5px;
+  border-radius: 4px;
+  vertical-align: middle;
+  margin-left: 6px;
+}
+
+.typeBadgeCategorical {
+  background-color: #fdece6;
+  color: #b4530f;
+}
+
+.typeBadgeNumeric {
+  background-color: var(--peace-accent-soft, #eaf2ff);
+  color: var(--peace-accent, #0d6efd);
+}
+
+.typeBadgeDate {
+  background-color: #e8f5ee;
+  color: #1e7d4f;
+}
+
+.dataTableCell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 280px;
+  color: var(--peace-ink);
+}
+
+.dataTableRowNumber {
+  color: var(--peace-muted);
+  background-color: #f8fafc;
+  width: 1%;
+  text-align: right;
+}
+
+.dataTableRowOdd {
+  background-color: #f6f8fb;
+}
+
+.dataTableLoading {
+  display: flex;
+  justify-content: center;
+  padding: 12px;
+}
+
+.dataTableEmpty {
+  color: var(--peace-muted);
+  text-align: center;
+  padding: 16px;
+}
+
+/* Column statistics (numiqo-style column picker) */
+
+.columnStats {
+  margin-top: 12px;
+}
+
+.columnStatsTitle {
+  color: var(--peace-ink);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.columnChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 4px;
+}
+
+.columnChip {
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--peace-border);
+  border-radius: 999px;
+  padding: 4px 12px;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.columnChip:hover {
+  transform: translateY(-1px);
+}
+
+.columnChipCategorical {
+  color: #b4530f;
+  background-color: #fdece6;
+  border-color: #f3d5c3;
+}
+
+.columnChipNumeric {
+  color: var(--peace-accent, #0d6efd);
+  background-color: var(--peace-accent-soft, #eaf2ff);
+  border-color: #cfe0ff;
+}
+
+.columnChipDate {
+  color: #1e7d4f;
+  background-color: #e8f5ee;
+  border-color: #cfe9db;
+}
+
+.columnChipSelected {
+  outline: 2px solid currentColor;
+  outline-offset: 1px;
+  font-weight: 700;
+  box-shadow: var(--peace-shadow, 0 1px 3px rgba(0, 0, 0, 0.1));
+}
+
+.columnStatsLoading {
+  padding: 8px 4px;
+}
+
+.columnStatsBody {
+  padding: 4px 4px 8px;
+}
+
+.columnStatsTableContainer {
+  max-height: 320px;
+  overflow-y: auto;
+  border: 1px solid var(--peace-border);
+  border-radius: 8px;
+}
+
+.columnStatsLabel {
+  font-weight: 600;
+  color: var(--peace-ink);
+  white-space: nowrap;
+}
+
+.columnStatsValue {
+  color: var(--peace-ink);
+}
+
+.columnStatsMissing {
+  color: var(--peace-muted);
+  font-size: 13px;
+  margin-top: 6px;
 }

@@ -4,6 +4,7 @@ import Chart from "./Component/plot/Chart";
 import PlotChoice from "./Component/plotChoices/PlotChoices";
 import Dataset from "./Component/dataset/Dataset";
 import Form from "./Component/form/Form";
+import DataTable from "./Component/table/DataTable";
 import { Paper, Grid } from "@mui/material";
 import Header from "./Component/layout/header";
 import MetricsTool from "./Component/plot/Control/MetricsTool";
@@ -40,6 +41,11 @@ function Dashboard() {
     aggregate: [],
   });
 
+  // Spreadsheet view: the selected dataset identifier and the live filter
+  // selections the table should reflect (no Send needed).
+  const [selectedDataset, setSelectedDataset] = useState("");
+  const [activeFilters, setActiveFilters] = useState(undefined);
+
   return (
     <div className="App">
       <Header />
@@ -55,6 +61,7 @@ function Dashboard() {
             setDisplayData={setDisplayData}
             setAcronym_volume={setAcronym_volume}
             setMeta={setMeta}
+            setSelectedDataset={setSelectedDataset}
           />
           <Form
             setDisplayData={setDisplayData}
@@ -70,6 +77,7 @@ function Dashboard() {
             setAggList={setAggList}
             setDimension={setDimension}
             setGroupByKeys={setGroupByKeys}
+            setActiveFilters={setActiveFilters}
           />
         </Grid>
         <Grid item xs={20} sm={20} md={16} lg={15.5} xl={15}>
@@ -83,6 +91,16 @@ function Dashboard() {
               backgroundColor: "var(--peace-surface)",
             }}
           >
+            {/* Spreadsheet view: on top; it is the central element until
+                Send creates the plot. Hidden while the new dataset's form is
+                still retrieving. */}
+            {formFrame !== undefined && formFrame !== "dataset retrieving" ? (
+              <DataTable
+                identifier={selectedDataset}
+                filters={activeFilters}
+              />
+            ) : null}
+
             <MetricsTool
               originalArray={originalArray}
               plotChoice = {plotChoice}
@@ -107,25 +125,30 @@ function Dashboard() {
               displayData={displayData}
             />
 
-            <Chart
-              displayData={displayData}
-              field={formDataCurrent.field}
-              groupBy={formDataCurrent.group_by}
-              aggregation={formDataCurrent.aggregate}
-              plotChoice={plotChoice}
-              setPlotChoice={setPlotChoice}
-              field_status={type_fields_dict[formDataCurrent.field]}
-              acronym_volume={acronym_volume}
-              meta={meta}
-              n_value={n_value}
-              aggList={aggList}
-              errorBarChecked={errorBarChecked}
-              dimension={dimension}
-              setDimension={setDimension}
-              groupByKeys={groupByKeys}
-              setGroupByKeys={setGroupByKeys}
-              formFrame={formFrame}
-            />
+            {/* Plot: shown while no dataset is selected (the cover screen)
+                and once Send has created results; between the two (and after
+                Reset clears it) it is absent, so the table stays on top. */}
+            {formFrame === undefined || displayData !== undefined ? (
+              <Chart
+                displayData={displayData}
+                field={formDataCurrent.field}
+                groupBy={formDataCurrent.group_by}
+                aggregation={formDataCurrent.aggregate}
+                plotChoice={plotChoice}
+                setPlotChoice={setPlotChoice}
+                field_status={type_fields_dict[formDataCurrent.field]}
+                acronym_volume={acronym_volume}
+                meta={meta}
+                n_value={n_value}
+                aggList={aggList}
+                errorBarChecked={errorBarChecked}
+                dimension={dimension}
+                setDimension={setDimension}
+                groupByKeys={groupByKeys}
+                setGroupByKeys={setGroupByKeys}
+                formFrame={formFrame}
+              />
+            ) : null}
           </Paper>
         </Grid>
         <Grid item xs={20} sm={20} md={1} lg={1.5} xl={1}>

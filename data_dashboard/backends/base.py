@@ -159,6 +159,17 @@ def format_byte_size(num_bytes):
         size /= 1024.0
 
 
+def same_bound(a, b):
+    """True when two numeric bounds match (the meta range round-trips through
+    JSON floats, so compare with a small relative tolerance). Used by both
+    backends to treat untouched full-range sliders as no filter."""
+    if a is None or b is None:
+        return a is None and b is None
+    a = float(a)
+    b = float(b)
+    return abs(a - b) <= 1e-9 * max(1.0, abs(a), abs(b))
+
+
 class DashboardBackend(abc.ABC):
     """Interface every dashboard storage backend implements.
 
@@ -223,6 +234,21 @@ class DashboardBackend(abc.ABC):
     def query(self, spec):
         """Run a QuerySpec, returning normalized bucket dicts. spec.owner
         scopes the dataset."""
+
+    @abc.abstractmethod
+    def get_rows(self, name, offset=0, limit=100, owner=None, filters=None):
+        """Raw rows for the spreadsheet view, progressively: {columns: [names
+        in row order], rows: [[...]], total: <int>} for one page
+        (offset/limit). filters is a list of CategoricalFilter/
+        ContinuousFilter (empty = no filter). spec.owner scopes the dataset."""
+
+    @abc.abstractmethod
+    def get_column_stats(self, name, column, owner=None):
+        """Descriptive stats for one column (numiqo-style column picker):
+        numeric -> {stats: {min, max, mean, median, q25, q75, std, valid,
+        missing, total}}, categorical -> {values: [{value, count, fraction}],
+        missing, total, truncated} (fraction relative to the non-null values).
+        spec.owner scopes the dataset."""
 
     def validate_fields(self, name, fields, owner=None):
         """Raise UnknownFieldError for any field the dataset does not have."""

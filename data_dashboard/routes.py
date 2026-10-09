@@ -35,7 +35,7 @@ from .postprocess import (
     total_n_and_std,
     total_n_count,
 )
-from .query_form import parse_query_json
+from .query_form import parse_filters, parse_query_json
 from .utils import (
     csv_within_allowed_roots,
     get_config,
@@ -46,6 +46,20 @@ from .utils import (
 routes_script_folder = os.path.dirname(__file__)
 settings = get_config(os.path.join(routes_script_folder, 'settings.ini'))
 WEB_DIR = os.path.join(routes_script_folder, 'web')
+
+# Spreadsheet rows endpoint: page size requested by default and the hard cap
+# a client may raise it to (the UI loads pages progressively).
+ROWS_PAGE_DEFAULT = 200
+ROWS_PAGE_CAP = 1000
+
+
+def _column_kind(field_type):
+    """Categorical-vs-numeric classification for the spreadsheet UI."""
+    if field_type in ('keyword', 'boolean'):
+        return 'categorical'
+    if field_type == 'date':
+        return 'date'
+    return 'numeric'
 
 
 def init_blueprint(app, settings=settings, prefix='/dashboard'):
@@ -299,6 +313,71 @@ def init_blueprint(app, settings=settings, prefix='/dashboard'):
             'data': result['response'],
             'total_n': result['total_n'],
         })
+
+    # -- spreadsheet rows (filtered, progressive) ---------------------------
+
+    @blueprint.route('/api/datasets/<path:identifier>/rows', methods=['POST'])
+    @login_required
+    def dataset_rows(identifier):
+        username = _current_username()
+        json_data = request.get_json(silent=True)
+        if not isinstance(json_data, dict):
+            return _error_response('Invalid JSON payload')
+        try:
+            offset = int(json_data.get('offset') or 0)
+        except (TypeError, ValueError):
+            return _error_response("'offset' must be an integer")
+        try:
+            limit = int(json_data.get('limit') or ROWS_PAGE_DEFAULT)
+        except (TypeError, ValueError):
+            return _error_response("'limit' must be an integer")
+        if offset < 0:
+            return _error_response("'offset' must be >= 0")
+        limit = max(1, min(limit, ROWS_PAGE_CAP))
+        try:
+            filters = parse_filters(json_data.get('filter') or {})
+            name, owner = _resolve_identifier(identifier, username)
+            result = backend.get_rows(
+                name, offset=offset, limit=limit, owner=owner, filters=filters)
+            field_types = backend.get_field_types(name, owner)
+        except PermissionError as exc:
+            return _error_response(exc, 403)
+        except (ValueError, DashboardBackendError) as exc:
+            return _error_response(exc)
+        columns = [
+            {
+                'name': col,
+                'type': field_types.get(col, 'float'),
+                'kind': _column_kind(field_types.get(col, 'float')),
+            }
+            for col in result['columns']
+        ]
+        return jsonify({
+            'columns': columns,
+            'rows': result['rows'],
+            'total': result['total'],
+            'offset': offset,
+            'limit': limit,
+        })
+
+    @blueprint.route('/api/datasets/<path:identifier>/column_stats', methods=['POST'])
+    @login_required
+    def column_stats(identifier):
+        username = _current_username()
+        json_data = request.get_json(silent=True)
+        if not isinstance(json_data, dict):
+            return _error_response('Invalid JSON payload')
+        column = json_data.get('column')
+        if not column or not isinstance(column, str):
+            return _error_response("A 'column' name is required")
+        try:
+            name, owner = _resolve_identifier(identifier, username)
+            result = backend.get_column_stats(name, column, owner=owner)
+        except PermissionError as exc:
+            return _error_response(exc, 403)
+        except (ValueError, DashboardBackendError) as exc:
+            return _error_response(exc)
+        return jsonify(result)
 
     # -- CSV ingestion (file browser "Add to dashboard" button) ------------
 

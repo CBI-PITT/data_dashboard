@@ -7,6 +7,8 @@ files at the root remain readable (admins only, enforced in the routes).
 Queries run as SQL aggregates over the Parquet file.
 """
 
+import datetime
+import decimal
 import os
 import re
 
@@ -23,11 +25,13 @@ from .base import (
     format_byte_size,
     load_meta,
     meta_path,
+    same_bound,
     write_meta,
 )
 
 KEYWORD = 'keyword'
 SAMPLE_COLUMN = 'sample'
+COLUMN_STATS_VALUE_CAP = 100
 
 
 def _quote_ident(name):
@@ -60,6 +64,14 @@ def _duckdb_type_to_field_type(col_type):
 
 
 _NUMERIC_AGGS = ('min', 'max', 'avg', 'sum', 'boxplot')
+
+
+def _json_safe(value):
+    """DuckDB returns datetime/Decimal objects that the default Flask JSON
+    encoder cannot serialize; string them (numbers stay native)."""
+    if isinstance(value, (datetime.date, datetime.time, decimal.Decimal)):
+        return str(value)
+    return value
 
 
 class ParquetBackend(DashboardBackend):
@@ -213,7 +225,9 @@ class ParquetBackend(DashboardBackend):
                     % (_quote_ident(col), _quote_ident(col))
                 ).fetchone()
                 if row is not None and row[0] is not None:
-                    continuous[col] = [row[0], row[1]]
+                    # Dates serialize as strings in the sidecar (raw
+                    # datetime.date would crash json.dump).
+                    continuous[col] = [_json_safe(row[0]), _json_safe(row[1])]
         row_count = con.execute('SELECT COUNT(*) FROM dataset').fetchone()[0]
         return {
             'name': name,
@@ -462,3 +476,164 @@ class ParquetBackend(DashboardBackend):
                 idx += width
             buckets.append(bucket)
         return buckets
+
+    # -- spreadsheet rows ---------------------------------------------------
+
+    def get_rows(self, name, offset=0, limit=100, owner=None, filters=None):
+        """One page of raw rows for the spreadsheet view. Continuous filters
+        that still carry the meta's full min/max range (untouched sliders)
+        are treated as no filter so the unfiltered view keeps NULL rows."""
+        name = sanitize_dataset_name(name)
+        path = self._parquet_file(name, owner)
+        if not os.path.isfile(path):
+            raise UnknownDatasetError(name)
+        offset = max(int(offset), 0)
+        limit = max(int(limit), 1)
+        field_types = self.get_field_types(name, owner)
+        meta = load_meta(self._user_dir(owner), name) or {}
+        full_ranges = dict(meta.get('continuous') or {})
+
+        where = []
+        params = []
+        for f in filters or []:
+            if f.field not in field_types:
+                raise UnknownDatasetError('Unknown field: %r' % (f.field,))
+            col = _quote_ident(f.field)
+            if isinstance(f, CategoricalFilter):
+                values = [str(v) for v in f.values if str(v) != '']
+                if not values:
+                    # Empty selection means "no filter" (query() parity).
+                    continue
+                placeholders = ', '.join(['?'] * len(values))
+                where.append('%s IN (%s)' % (col, placeholders))
+                params.extend(values)
+            else:
+                if f.min is None and f.max is None:
+                    continue
+                full = full_ranges.get(f.field)
+                if (isinstance(full, (list, tuple)) and len(full) == 2 and
+                        same_bound(f.min, full[0]) and same_bound(f.max, full[1])):
+                    continue
+                where.append('%s BETWEEN ? AND ?' % col)
+                params.extend([f.min, f.max])
+        where_sql = (' WHERE ' + ' AND '.join(where)) if where else ''
+        from_sql = 'FROM read_parquet(%s)%s' % (_quote_literal(path), where_sql)
+
+        con = duckdb.connect(database=':memory:')
+        try:
+            if where:
+                total = con.execute(
+                    'SELECT COUNT(*) %s' % from_sql, params).fetchone()[0]
+            else:
+                total = meta.get('row_count')
+                if total is None:
+                    total = con.execute(
+                        'SELECT COUNT(*) %s' % from_sql, params).fetchone()[0]
+            columns = [row[0] for row in con.execute(
+                'DESCRIBE SELECT * %s' % from_sql, params).fetchall()]
+            rows = con.execute(
+                'SELECT * %s LIMIT %d OFFSET %d' % (from_sql, limit, offset),
+                params).fetchall()
+        finally:
+            con.close()
+        return {
+            'columns': columns,
+            'rows': [[_json_safe(value) for value in row] for row in rows],
+            'total': int(total),
+        }
+
+    # -- column stats (numiqo-style picker) ---------------------------------
+
+    def get_column_stats(self, name, column, owner=None):
+        """Descriptive stats for one column. Categorical: frequency table
+        (top COLUMN_STATS_VALUE_CAP values by occurrences, fraction relative
+        to the non-null values). Numeric: min/max/mean/median/quantiles/std.
+        Date: min/max/count only (quantiles/std are undefined for dates)."""
+        name = sanitize_dataset_name(name)
+        path = self._parquet_file(name, owner)
+        if not os.path.isfile(path):
+            raise UnknownDatasetError(name)
+        field_types = self.get_field_types(name, owner)
+        if column not in field_types:
+            raise UnknownDatasetError('Unknown field: %r' % (column,))
+        ftype = field_types[column]
+        col = _quote_ident(column)
+        from_sql = 'FROM read_parquet(?)'
+
+        def _number(value):
+            if value is None:
+                return None
+            if isinstance(value, decimal.Decimal):
+                return float(value)
+            return value
+
+        con = duckdb.connect(database=':memory:')
+        try:
+            if ftype == KEYWORD or ftype == 'boolean':
+                total, non_null, distinct = con.execute(
+                    'SELECT COUNT(*), COUNT(%s), COUNT(DISTINCT %s) %s'
+                    % (col, col, from_sql), [path]).fetchone()
+                rows = con.execute(
+                    'SELECT %s, COUNT(*) %s WHERE %s IS NOT NULL '
+                    'GROUP BY 1 ORDER BY 2 DESC, 1 ASC LIMIT %d'
+                    % (col, from_sql, col, COLUMN_STATS_VALUE_CAP),
+                    [path]).fetchall()
+                values = [
+                    {
+                        'value': _json_safe(value),
+                        'count': int(count),
+                        'fraction': (float(count) / float(non_null)) if non_null else 0.0,
+                    }
+                    for value, count in rows
+                ]
+                return {
+                    'column': column,
+                    'type': ftype,
+                    'kind': 'categorical',
+                    'values': values,
+                    'distinct': int(distinct),
+                    'missing': int(total) - int(non_null),
+                    'total': int(total),
+                    'truncated': int(distinct) > len(values),
+                }
+            if ftype == 'date':
+                low, high, valid, total = con.execute(
+                    'SELECT MIN(%s), MAX(%s), COUNT(%s), COUNT(*) %s'
+                    % (col, col, col, from_sql), [path]).fetchone()
+                return {
+                    'column': column,
+                    'type': ftype,
+                    'kind': 'date',
+                    'stats': {
+                        'min': _json_safe(low),
+                        'max': _json_safe(high),
+                        'valid': int(valid),
+                        'missing': int(total) - int(valid),
+                        'total': int(total),
+                    },
+                }
+            low, high, mean, median, q25, q75, std, valid, total = con.execute(
+                'SELECT MIN(%s), MAX(%s), AVG(%s), MEDIAN(%s), '
+                'QUANTILE_CONT(%s, 0.25), QUANTILE_CONT(%s, 0.75), '
+                'STDDEV_SAMP(%s), COUNT(%s), COUNT(*) %s'
+                % (col, col, col, col, col, col, col, col, from_sql),
+                [path]).fetchone()
+            return {
+                'column': column,
+                'type': ftype,
+                'kind': 'numeric',
+                'stats': {
+                    'min': _number(low),
+                    'max': _number(high),
+                    'mean': _number(mean),
+                    'median': _number(median),
+                    'q25': _number(q25),
+                    'q75': _number(q75),
+                    'std': _number(std),
+                    'valid': int(valid),
+                    'missing': int(total) - int(valid),
+                    'total': int(total),
+                },
+            }
+        finally:
+            con.close()

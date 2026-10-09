@@ -75,13 +75,13 @@ function GetField({ list, form_Data, set_FormData }) {
     if (list !== undefined) {
         return (
             <FormControl required sx={{ m: 1, width: '95%' }}>
-                <InputLabel id="x-axis-required-label">Field</InputLabel>
+                <InputLabel id="x-axis-required-label">Y</InputLabel>
                 <Select
                     labelId="x-axis-required-label"
                     id="x-axis-required"
                     // value=''
                     value={form_Data.field}
-                    label="field *"
+                    label="Y"
                     name="field"
                     onChange={(event) => {
                         const { name, value } = event.target;

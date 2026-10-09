@@ -74,8 +74,15 @@ def test_malformed_filters_rejected():
         parse_query_json(full_payload(filter={"categorical": {"t": "ctrl"}}))
     with pytest.raises(ValueError):
         parse_query_json(full_payload(filter={"continuous": {"x": [1]}}))
-    with pytest.raises(ValueError):
-        parse_query_json(full_payload(filter={"continuous": {"x": ["a", "b"]}}))
+
+
+def test_non_numeric_continuous_bounds_skipped():
+    """Date columns serialize as strings in the form's continuous sliders, so
+    non-numeric bounds are skipped (no filter) instead of rejected — raising
+    would 400 every query on datasets with date columns."""
+    spec = parse_query_json(
+        full_payload(filter={"continuous": {"x": ["a", "b"]}}))
+    assert spec.filters == []
 
 
 def test_non_dict_payload_rejected():

@@ -31,6 +31,7 @@ function Form({
   setAggList,
   setDimension,
   setGroupByKeys,
+  setActiveFilters,
 }) {
   const [Field_axis_list, setField_axis_list] = useState();
 
@@ -111,6 +112,21 @@ function Form({
       setvalue_Continuous([]);
     }
   }, [formFrame]);
+
+  // Push the current filter selections up on every change so the data table
+  // reflects them immediately (no Send needed); the table debounces.
+  useEffect(() => {
+    if (setActiveFilters) {
+      setActiveFilters({
+        categorical: JSON.parse(
+          JSON.stringify(formDataUpdated.filter.categorical || {})
+        ),
+        continuous: JSON.parse(
+          JSON.stringify(formDataUpdated.filter.continuous || {})
+        ),
+      });
+    }
+  }, [formDataUpdated]);
 
   // useEffect(() => {
   //     for(let key in key_Category)
@@ -365,186 +381,221 @@ function Form({
     rest_formData.aggregate = [];
 
     setFormDataUpdated(rest_formData);
+    // Reset clears the plot too: Chart/MetricsTool unmount and the data
+    // table returns to the top of the central component.
+    setDisplayData(undefined);
   };
 
   if (formFrame !== undefined && formFrame !== "dataset retrieving") {
     return (
-      <Paper
-        component="form"
-        variant="elevation"
-        elevation={0}
-        style={{
-          backgroundColor: "var(--peace-surface)",
-          border: "1px solid var(--peace-border)",
-          borderRadius: "12px",
-          boxShadow: "var(--peace-shadow)",
-          marginTop: "12px",
-          padding: "16px",
-          position: "relative",
-          maxHeight: "80vh", // Adjust the value as needed
-          overflowY: "auto",
-        }}
-        onSubmit={handleSubmit}
-      >
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
+      <React.Fragment>
+        {/* Filter Settings card: a plain Paper (the form element lives on
+            the Plot Settings card, which owns the submit). */}
+        <Paper
+          variant="elevation"
+          elevation={0}
+          style={{
+            backgroundColor: "var(--peace-surface)",
+            border: "1px solid var(--peace-border)",
+            borderRadius: "12px",
+            boxShadow: "var(--peace-shadow)",
+            marginTop: "12px",
+            padding: "16px",
+          }}
         >
-          <CircularProgress color="inherit" />
-        </Backdrop>
+          <Grid container>
+            <Grid item xs={12}>
+              <Typography variant="h6">Filter Settings</Typography>
+              <GetFilterList
+                list={filter_list}
+                form_Data={formDataUpdated}
+                set_FormData={setFormDataUpdated}
+                formFrame={formFrame}
+                setkey_Category={setkey_Category}
+                setvalue_Category={setvalue_Category}
+                setkey_Continuous={setkey_Continuous}
+                setvalue_Continuous={setvalue_Continuous}
+                key_Category={key_Category}
+                value_Category={value_Category}
+                key_Continuous={key_Continuous}
+                value_Continuous={value_Continuous}
+              />
+            </Grid>
 
-        <Grid container>
-          <Grid item xs={12}>
-            <Typography variant="h6">Filter Settings</Typography>
-            <GetFilterList
-              list={filter_list}
-              form_Data={formDataUpdated}
-              set_FormData={setFormDataUpdated}
-              formFrame={formFrame}
-              setkey_Category={setkey_Category}
-              setvalue_Category={setvalue_Category}
-              setkey_Continuous={setkey_Continuous}
-              setvalue_Continuous={setvalue_Continuous}
-              key_Category={key_Category}
-              value_Category={value_Category}
-              key_Continuous={key_Continuous}
-              value_Continuous={value_Continuous}
-            />
-          </Grid>
+            <Grid item xs={12}>
+              <GetConti
+                key_Continuous={key_Continuous}
+                value_Continuous={value_Continuous}
+                form_Data={formDataUpdated}
+                set_FormData={setFormDataUpdated}
+              />
+            </Grid>
 
-          <Grid item xs={12} style={{ background: "#fff" }}>
-            <GetConti
-              key_Continuous={key_Continuous}
-              value_Continuous={value_Continuous}
-              form_Data={formDataUpdated}
-              set_FormData={setFormDataUpdated}
-            />
+            <Grid item xs={12}>
+              <GetCate
+                key_category={key_Category}
+                value_category={value_Category}
+                formData={formDataUpdated}
+                set_FormData={setFormDataUpdated}
+              />
+            </Grid>
           </Grid>
+        </Paper>
 
-          <Grid item xs={12} style={{ background: "#fff" }}>
-            <br></br>
-            <GetCate
-              key_category={key_Category}
-              value_category={value_Category}
-              formData={formDataUpdated}
-              set_FormData={setFormDataUpdated}
-            />
+        {/* Plot Settings card: owns the form element, so Send submits and
+            Reset (type="reset") triggers the browser reset handler. */}
+        <Paper
+          component="form"
+          variant="elevation"
+          elevation={0}
+          style={{
+            backgroundColor: "var(--peace-surface)",
+            border: "1px solid var(--peace-border)",
+            borderRadius: "12px",
+            boxShadow: "var(--peace-shadow)",
+            marginTop: "12px",
+            padding: "16px",
+            position: "relative",
+          }}
+          onSubmit={handleSubmit}
+        >
+          <Backdrop
+            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={open}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
+
+          <Grid container>
+            <Grid item xs={12}>
+              <Typography variant="h6">Plot Settings</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <GetGroupBy
+                list={GroupBy_list}
+                form_Data={formDataUpdated}
+                set_FormData={setFormDataUpdated}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <GetField
+                list={Field_axis_list}
+                form_Data={formDataUpdated}
+                set_FormData={setFormDataUpdated}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <GetAggregation
+                list={Aggregation_list}
+                form_Data={formDataUpdated}
+                set_FormData={setFormDataUpdated}
+                field_status={type_fields_dict[formDataUpdated.field]}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <ParaCheck
+                isCheckedPara={isCheckedPara}
+                setIsCheckedPara={setIsCheckedPara}
+                className="paracheck"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <Button
+                  type="reset"
+                  variant="outlined"
+                  color="inherit"
+                  size="small"
+                  endIcon={<DeleteIcon />}
+                  onClick={handleReset}
+                >
+                  Reset
+                </Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  size="small"
+                  endIcon={<SendIcon />}
+                >
+                  Send
+                </Button>
+              </div>
+            </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <br></br>
-            <GetGroupBy
-              list={GroupBy_list}
-              form_Data={formDataUpdated}
-              set_FormData={setFormDataUpdated}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <br></br>
-            <GetField
-              list={Field_axis_list}
-              form_Data={formDataUpdated}
-              set_FormData={setFormDataUpdated}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <br></br>
-            <GetAggregation
-              list={Aggregation_list}
-              form_Data={formDataUpdated}
-              set_FormData={setFormDataUpdated}
-              field_status={type_fields_dict[formDataUpdated.field]}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <ParaCheck
-              isCheckedPara={isCheckedPara}
-              setIsCheckedPara={setIsCheckedPara}
-              className="paracheck"
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <Button
-                type="reset"
-                variant="outlined"
-                color="inherit"
-                size="small"
-                endIcon={<DeleteIcon />}
-                onClick={handleReset}
-              >
-                Reset
-              </Button>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                size="small"
-                endIcon={<SendIcon />}
-              >
-                Send
-              </Button>
-            </div>
-          </Grid>
-        </Grid>
-      </Paper>
+        </Paper>
+      </React.Fragment>
     );
   } else {
     return (
-      <Paper
-        component={"form"}
-        variant="elevation"
-        elevation={0}
-        className="form_data"
-        style={{
-          backgroundColor: "var(--peace-surface)",
-          border: "1px solid var(--peace-border)",
-          borderRadius: "12px",
-          boxShadow: "var(--peace-shadow)",
-          marginTop: "12px",
-          padding: "16px",
-        }}
-      >
-        <br></br>
-        {formFrame === "dataset retrieving" ? (
-          <div>
+      <React.Fragment>
+        <Paper
+          variant="elevation"
+          elevation={0}
+          className="form_data"
+          style={{
+            backgroundColor: "var(--peace-surface)",
+            border: "1px solid var(--peace-border)",
+            borderRadius: "12px",
+            boxShadow: "var(--peace-shadow)",
+            marginTop: "12px",
+            padding: "16px",
+          }}
+        >
+          {formFrame === "dataset retrieving" ? (
+            <div>
+              <Alert
+                className="dataset_alert"
+                severity="success"
+                variant="filled"
+                sx={accentAlertSx}
+              >
+                Loading dataset — this may take a moment
+              </Alert>
+              <Box className="filter">
+                <Skeleton animation="wave" variant="rounded" height={60} />
+              </Box>
+            </div>
+          ) : (
             <Alert
               className="dataset_alert"
-              severity="success"
+              severity="info"
               variant="filled"
               sx={accentAlertSx}
             >
-              Loading dataset — this may take a moment
+              Select a dataset from the panel on the left to get started
             </Alert>
-            <Box className="filter">
-              <Skeleton animation="wave" variant="rounded" height={60} />
-            </Box>
-            <br></br>
-            <Box className="groupBy">
-              <Skeleton animation="wave" variant="rounded" height={60} />
-            </Box>
-            <br></br>
-            <Box className="field">
-              <Skeleton animation="wave" variant="rounded" height={60} />
-            </Box>
-            <br></br>
-            <Box className="aggregation">
-              <Skeleton animation="wave" variant="rounded" height={60} />
-            </Box>
-
-            <br></br>
-          </div>
-        ) : (
-          <Alert
-            className="dataset_alert"
-            severity="info"
-            variant="filled"
-            sx={accentAlertSx}
-          >
-            Select a dataset from the panel on the left to get started
-          </Alert>
-        )}
-        <br></br>
-      </Paper>
+          )}
+        </Paper>
+        <Paper
+          variant="elevation"
+          elevation={0}
+          style={{
+            backgroundColor: "var(--peace-surface)",
+            border: "1px solid var(--peace-border)",
+            borderRadius: "12px",
+            boxShadow: "var(--peace-shadow)",
+            marginTop: "12px",
+            padding: "16px",
+          }}
+        >
+          {formFrame === "dataset retrieving" ? (
+            <div>
+              <Box className="groupBy">
+                <Skeleton animation="wave" variant="rounded" height={60} />
+              </Box>
+              <br></br>
+              <Box className="field">
+                <Skeleton animation="wave" variant="rounded" height={60} />
+              </Box>
+              <br></br>
+              <Box className="aggregation">
+                <Skeleton animation="wave" variant="rounded" height={60} />
+              </Box>
+            </div>
+          ) : null}
+        </Paper>
+      </React.Fragment>
     );
   }
 }
