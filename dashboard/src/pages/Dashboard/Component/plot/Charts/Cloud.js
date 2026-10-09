@@ -108,7 +108,7 @@ export default function CloudChart({
             data,
             wordField: "type",
             weightField: "value",
-            color: "#122c6a",
+            color: "#0d6efd",
             // colorField: 'type',
             wordStyle: {
               fontFamily: "Verdana",
@@ -135,7 +135,7 @@ export default function CloudChart({
           // return <h1>hello</h1>
           return (
             <div key={agg}>
-              <h3>{agg + "_" + field}</h3>
+              <h3 className="chartTitle">{agg + "_" + field}</h3>
               <WordCloud {...config} />
               <br />
             </div>

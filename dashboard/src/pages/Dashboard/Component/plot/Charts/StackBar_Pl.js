@@ -1,32 +1,20 @@
 import React from "react";
 import Plot from "react-plotly.js";
+import { plotLayout } from "./plotTheme";
 
 export default function StackedBar({ data, type }) {
-  // Sample data
-
-  // Layout configuration
   data.forEach((element) => {
     element.type = type;
   });
-  const layout = {
-    barmode: "stack", // Stack bars on top of each other
-    // title: "Stacked Bar Chart with Error Bars",
+  const layout = plotLayout({
+    barmode: "stack",
     legend: {
-      x: 0, // Adjust the x-coordinate for the legend
-      y: 1, // Adjust the y-coordinate for the legend
+      x: 0,
+      y: 1,
       orientation: "h",
-      font: {
-        size: 14, // Increase the font size of the legend
-      },
     },
-    font: {
-      size: 16, // Increase the overall font size of the chart layout
-    },
-    xaxis: {
-      type: "category",
-      // Specify the numeric x-axis data as category array
-    },
-  };
+    xaxis: { type: "category" },
+  });
 
   return (
     <Plot

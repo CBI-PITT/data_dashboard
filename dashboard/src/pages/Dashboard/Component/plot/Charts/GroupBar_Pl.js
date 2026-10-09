@@ -1,36 +1,22 @@
 import React from "react";
 import Plot from "react-plotly.js";
+import { plotLayout } from "./plotTheme";
 
-export default function GroupBar({ data ,agg,field}) {
-  // Sample data
-
-  // Layout configuration
-  
-  const layout = {
-    barmode: "group", // Stack bars on top of each other
-    // title: "Stacked Bar Chart with Error Bars",
+export default function GroupBar({ data, agg, field }) {
+  const layout = plotLayout({
+    barmode: "group",
     legend: {
-      x: 0, // Adjust the x-coordinate for the legend
-      y: 1, // Adjust the y-coordinate for the legend
+      x: 0,
+      y: 1,
       orientation: "h",
-      font: {
-        size: 14, // Increase the font size of the legend
-      },
     },
-    font: {
-      size: 16, // Increase the overall font size of the chart layout
-    },
-    title:"",
-    xaxis: {
-      type: 'category',
-      // Specify the numeric x-axis data as category array
-    }
-  };
+    xaxis: { type: "category" },
+  });
 
   return (
     <div>
       {data.map((traces, index) => (
-        <div key={index} >
+        <div key={index}>
           <Plot
             data={traces}
             layout={{

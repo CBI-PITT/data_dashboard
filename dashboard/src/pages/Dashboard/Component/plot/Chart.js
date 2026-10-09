@@ -3,11 +3,13 @@ import GroupBarChart from "./Charts/GroupBar";
 import LineChart from "./Charts/Line";
 import AreaChart from "./Charts/Area";
 import React, { useState } from "react";
+import Alert from "@mui/material/Alert";
 import PieChart from "./Charts/Pie";
 import CloudChart from "./Charts/Cloud";
 import CirclePackingChart from "./Charts/CirclePacking";
 import FacetChart from "./Charts/Facet";
-import CoverImg from "../asset/CoverImg.png";
+import CoverImg from "../asset/cyan_brain_icon.png";
+import { accentAlertSx } from "../../../../config/theme";
 import BoxChart from "./Charts/Box";
 import StackedBar from "./Charts/StackBar_Pl";
 import GroupBar from "./Charts/GroupBar_Pl";
@@ -30,6 +32,7 @@ function Chart({
   setDimension,
   groupByKeys,
   setGroupByKeys,
+  formFrame,
 }) {
   // Request condition = { "field": "atlas_structure_acronym", "filter": { "categorical": { "atlas_structure_acronym": [], "file_path": [], "route": [], "time_point": [], "transformed_coord_units": [], "treatment": [], "uuid_brain": [], "uuid_cell": [], "voxel_spacing": [], "voxel_spacing_units": [] }, "continuous": { "Unnamed: 0": [0, 32153394], "atlas_structure_number": [0, 614454277], "metadata": [18, 39], "n_channels": [1, 2], "x_downsampled": [0, 887], "x_transformed": [0, 13925], "x_transformed_px": [0, 557], "y_downsampled": [0, 276], "y_transformed": [0, 8000], "y_transformed_px": [0, 320], "z_downsampled": [4, 1210], "z_transformed": [0, 16850], "z_transformed_px": [0, 674] } }, "group_by": ["time_point", "route", "treatment"], "aggregate": ["value_count", "cardinality"] }
 
@@ -99,8 +102,22 @@ function Chart({
     // return <p>Loading....</p>
     return (
       <div className="cover">
-        <img src={CoverImg} className="coverImg" alt="coverImg"></img>
-        <h3 id="coverText">Statistics and Visulization</h3>
+        <img src={CoverImg} className="coverImg" alt="Brain illustration"></img>
+        <h3 id="coverText">Statistics and Visualization</h3>
+        {formFrame === undefined ? (
+          <Alert
+            severity="info"
+            variant="filled"
+            sx={{
+              ...accentAlertSx,
+              marginTop: "16px",
+              maxWidth: 480,
+              boxShadow: "var(--peace-shadow-lg)",
+            }}
+          >
+            Select a dataset from the panel on the left to get started
+          </Alert>
+        ) : null}
       </div>
     );
   }

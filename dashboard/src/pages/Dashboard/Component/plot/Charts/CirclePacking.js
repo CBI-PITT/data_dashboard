@@ -137,7 +137,7 @@ export default function CirclePackingChart({
           // return <h1>hello</h1>
           return (
             <div key={agg}>
-              <h3>{agg + "_" + field}</h3>
+              <h3 className="chartTitle">{agg + "_" + field}</h3>
               <CirclePacking {...config} />
               <br />
             </div>
