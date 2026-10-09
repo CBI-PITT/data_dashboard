@@ -20,9 +20,10 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import EditIcon from "@mui/icons-material/Edit";
 import CallMergeIcon from "@mui/icons-material/CallMerge";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
-import HOST from "../../../../config/path";
+import HOST, { BROWSER_EMBED_URL } from "../../../../config/path";
 
 const url_index = "/api/indices";
 const url_index_choosen = "/api/index_choosen/";
@@ -58,6 +59,11 @@ function Dataset({ setFormFrame, setDisplayData, setAcronym_volume, setMeta, set
   const [mergeSelections, setMergeSelections] = useState([]);
   const [mergeFieldsText, setMergeFieldsText] = useState({});
   const [mergeName, setMergeName] = useState("");
+
+  const [addOpen, setAddOpen] = useState(false);
+  // Set lazily on first open so the iframe loads only when used; the Dialog
+  // stays mounted (keepMounted) so the last browsed folder is remembered.
+  const [addFrameSrc, setAddFrameSrc] = useState("");
 
   const fetchIndices = useCallback(() => {
     axios.get(HOST + url_index).then((response) => {
@@ -214,6 +220,19 @@ function Dataset({ setFormFrame, setDisplayData, setAcronym_volume, setMeta, set
             ))}
           </Select>
         </FormControl>
+        <Tooltip title="Add dataset from file browser">
+          <IconButton
+            onClick={() => {
+              setAddOpen(true);
+              if (!addFrameSrc) setAddFrameSrc(BROWSER_EMBED_URL);
+            }}
+            size="small"
+            sx={{ mb: 1.5 }}
+            aria-label="Add dataset from file browser"
+          >
+            <AddCircleOutlineIcon />
+          </IconButton>
+        </Tooltip>
         <Tooltip title="Refresh dataset list">
           <IconButton
             onClick={fetchIndices}
@@ -360,6 +379,28 @@ function Dataset({ setFormFrame, setDisplayData, setAcronym_volume, setMeta, set
             Merge
           </Button>
         </DialogActions>
+      </Dialog>
+      <Dialog
+        open={addOpen}
+        onClose={() => {
+          setAddOpen(false);
+          // Re-fetch so datasets added via the file browser's "Add to
+          // dashboard" button (inside the iframe) appear; a same-tab modal
+          // never fires the visibilitychange listener.
+          fetchIndices();
+        }}
+        maxWidth="xl"
+        fullWidth
+        keepMounted
+      >
+        <DialogTitle>Add dataset</DialogTitle>
+        <DialogContent sx={{ p: 0 }}>
+          <iframe
+            src={addFrameSrc}
+            title="File browser"
+            style={{ width: "100%", height: "70vh", border: 0, display: "block" }}
+          />
+        </DialogContent>
       </Dialog>
     </Paper>
   );
