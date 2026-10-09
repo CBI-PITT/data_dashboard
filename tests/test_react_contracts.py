@@ -18,6 +18,11 @@ FORM_JS = REACT_SRC / "pages" / "Dashboard" / "Component" / "form" / "Form.js"
 DATA_TABLE_JS = (
     REACT_SRC / "pages" / "Dashboard" / "Component" / "table" / "DataTable.js"
 )
+COLUMN_STATS_JS = (
+    REACT_SRC / "pages" / "Dashboard" / "Component" / "table" / "ColumnStats.js"
+)
+GROUP_BY_JS = REACT_SRC / "pages" / "Dashboard" / "Component" / "form" / "Get_groupBy.js"
+FIELD_JS = REACT_SRC / "pages" / "Dashboard" / "Component" / "form" / "Get_field.js"
 
 
 def read(path):
@@ -90,6 +95,140 @@ def test_dashboard_places_table_center_then_below_plot():
     assert "formFrame === undefined || displayData !== undefined ? (" in content, (
         "the chart cover must only show with no dataset selected or results"
     )
+    # order: the table renders above the plot (plot appears below the table)
+    table_at = content.find("<DataTable\n                identifier=")
+    chart_at = content.find("<Chart\n                displayData=")
+    assert table_at != -1 and chart_at != -1, "both central children must render"
+    assert table_at < chart_at, "the plot must render below the data table"
+
+
+def test_reset_clears_the_plot():
+    """Form.js handleReset must clear displayData so Chart/MetricsTool
+    unmount and the data table returns to the top of the central component."""
+    content = read(FORM_JS)
+    reset_at = content.find("const handleReset = () => {")
+    assert reset_at != -1, "handleReset missing"
+    body = content[reset_at:reset_at + 900]
+    assert "setDisplayData(undefined);" in body, (
+        "Reset must clear the plot (displayData)"
+    )
+    assert 'type="reset"' in content, "the Reset button must be a reset-type submit"
+
+
+# -- left column card split (Filter Settings / Plot Settings) ------------------
+
+
+def test_form_splits_into_two_cards():
+    """Form.js must render two separate cards: Filter Settings (filters) and
+    Plot Settings (group-by/field/aggregation). The form element that owns
+    the submit must be the Plot Settings card; the cards must not be
+    fixed-height boxes (they grow and the page scrolls)."""
+    content = read(FORM_JS)
+    assert "<Typography variant=\"h6\">Filter Settings</Typography>" in content
+    assert "<Typography variant=\"h6\">Plot Settings</Typography>" in content
+    # structure: [Filter title, GetFilterList, filters] then the form element
+    # (plot card) opens, then the Plot Settings title, GetGroupBy, Send
+    filter_at = content.find("Filter Settings</Typography>")
+    assert filter_at != -1
+    assert content.find('component="form"', 0, filter_at) == -1, (
+        "the Filter Settings card must be a plain Paper"
+    )
+    form_at = content.find('component="form"')
+    assert form_at != -1 and form_at > filter_at, (
+        "the form element must live on the Plot Settings card"
+    )
+    plot_at = content.find("Plot Settings</Typography>")
+    assert plot_at > form_at, "the Plot Settings title must be inside the form card"
+    assert content.find("<GetFilterList") < form_at, (
+        "filters must render in the first card"
+    )
+    submit_at = content.find('type="submit"', plot_at)
+    assert submit_at != -1, "Send must live on the Plot Settings card"
+    assert "maxHeight" not in content, (
+        "the form cards must grow (no fixed-height boxes; page scrolls)"
+    )
+
+
+def test_groupby_and_field_renamed_x_y():
+    """GroupBy is renamed X and Field is renamed Y; the payload keys
+    (group_by / field) stay unchanged for the backend contract."""
+    group_content = read(GROUP_BY_JS)
+    assert ">X</InputLabel>" in group_content
+    assert '<OutlinedInput label="X" />' in group_content
+    assert "name='group_by'" in group_content, "payload key must stay group_by"
+    field_content = read(FIELD_JS)
+    assert ">Y</InputLabel>" in field_content
+    assert 'label="Y"' in field_content
+    assert 'name="field"' in field_content, "payload key must stay field"
+
+
+# -- column statistics (numiqo-style column picker) ----------------------------
+
+
+def test_column_stats_chips_colored_by_type_and_toggle():
+    """ColumnStats renders all column names as type-colored chips below the
+    table; clicking the selected chip again hides the stats."""
+    content = read(COLUMN_STATS_JS)
+    assert "columnChipCategorical" in content
+    assert "columnChipNumeric" in content
+    assert "columnChipDate" in content
+    assert 'kind === "categorical"' in content
+    assert 'kind === "date"' in content
+    assert "columnChipSelected" in content, "selected chip must be highlighted"
+    assert "handleChipClick" in content
+    toggle_at = content.find("if (selected === column) {")
+    assert toggle_at != -1, "clicking the selected chip again must hide"
+    after = content[toggle_at:toggle_at + 400]
+    assert "setSelected(null)" in after and "setStats(null)" in after
+
+
+def test_column_stats_fetches_per_column():
+    """Clicking a chip POSTs to the column_stats endpoint with the column
+    name, encoding the identifier and using the config HOST."""
+    content = read(COLUMN_STATS_JS)
+    assert 'HOST + STATS_URL' in content, "URL must compose from HOST"
+    assert 'const STATS_URL = "/api/datasets/";' in content
+    assert 'encodeURIComponent(identifier) + "/column_stats"' in content
+    assert "{ column: column }" in content
+    assert "/api/datasets/" not in content.replace(
+        'const STATS_URL = "/api/datasets/";', ""
+    ).replace('HOST + STATS_URL', ""), "ColumnStats must not hardcode the prefix"
+
+
+def test_column_stats_labels():
+    """Numeric columns report min/max/mean/median/quantiles/std; categorical
+    columns report a Value/Occurrences/Fraction frequency table."""
+    content = read(COLUMN_STATS_JS)
+    for label in ("Minimum", "Maximum", "Mean", "Median", "25% quantile",
+                  "75% quantile", "Standard deviation"):
+        assert label in content, f"numeric label missing: {label}"
+    assert 'kind === "numeric"' in content
+    assert 'kind === "categorical"' in content
+    for label in ("Value", "Occurrences", "Fraction"):
+        assert label in content, f"categorical label missing: {label}"
+
+
+def test_data_table_renders_column_stats_below():
+    """DataTable imports ColumnStats and renders it after the rows table."""
+    content = read(DATA_TABLE_JS)
+    assert 'import ColumnStats from "./ColumnStats";' in content
+    assert "<ColumnStats identifier={identifier} columns={columns} />" in content
+    container_at = content.find('className="dataTableContainer"')
+    stats_at = content.find("<ColumnStats")
+    assert container_at != -1 and stats_at != -1
+    assert container_at < stats_at, "stats must render below the rows table"
+
+
+def test_central_component_not_height_limited():
+    """The central Paper must grow with its content and scroll: .chart carries
+    max-height, not a fixed height."""
+    content = read(REPO_ROOT / "dashboard" / "src" / "pages" / "Dashboard" / "Dashboard.css")
+    chart_at = content.find(".chart {")
+    assert chart_at != -1
+    block = content[chart_at:chart_at + 300]
+    assert "max-height:" in block, ".chart must use max-height"
+    assert "height: 80vh" not in block, ".chart must not be a fixed-height box"
+    assert "overflow-y: auto" in block, ".chart must scroll"
 
 
 def test_form_pushes_filters_up_immediately():

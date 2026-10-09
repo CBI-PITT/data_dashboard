@@ -94,14 +94,14 @@ function GetGroupBy({ list, form_Data, set_FormData }) {
 
             <div>
                 <FormControl required sx={{ m: 1, width: '95%' }}>
-                    <InputLabel id="groupBy-multiple-checkbox-label">GroupBy</InputLabel>
+                    <InputLabel id="groupBy-multiple-checkbox-label">X</InputLabel>
                     <Select
                         labelId="groupBy-multiple-checkbox-label"
                         id="groupBy-multiple-checkbox"
                         multiple
                         value={form_Data.group_by}
                         onChange={handleChange}
-                        input={<OutlinedInput label="Tag" />}
+                        input={<OutlinedInput label="X" />}
                         renderValue={(selected) => (
                             selected.map((value) => (
                               <Chip key={value} label={value} />

@@ -360,6 +360,25 @@ def init_blueprint(app, settings=settings, prefix='/dashboard'):
             'limit': limit,
         })
 
+    @blueprint.route('/api/datasets/<path:identifier>/column_stats', methods=['POST'])
+    @login_required
+    def column_stats(identifier):
+        username = _current_username()
+        json_data = request.get_json(silent=True)
+        if not isinstance(json_data, dict):
+            return _error_response('Invalid JSON payload')
+        column = json_data.get('column')
+        if not column or not isinstance(column, str):
+            return _error_response("A 'column' name is required")
+        try:
+            name, owner = _resolve_identifier(identifier, username)
+            result = backend.get_column_stats(name, column, owner=owner)
+        except PermissionError as exc:
+            return _error_response(exc, 403)
+        except (ValueError, DashboardBackendError) as exc:
+            return _error_response(exc)
+        return jsonify(result)
+
     # -- CSV ingestion (file browser "Add to dashboard" button) ------------
 
     @blueprint.route('/api/add_csv', methods=['POST'])

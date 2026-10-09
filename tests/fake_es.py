@@ -80,22 +80,77 @@ class FakeESClient:
                 }
             }
         if aggs:
-            if len(aggs) == 1:
-                (field, spec), = aggs.items()
-                if "terms" in spec:
-                    counts = {}
-                    for doc in self.indices_data[index]["docs"]:
-                        value = doc.get(field)
-                        if value is not None:
-                            counts[value] = counts.get(value, 0) + 1
-                    buckets = [
-                        {"key": key, "doc_count": count}
-                        for key, count in sorted(counts.items())
-                    ]
-                    return {"aggregations": {field: {"buckets": buckets}}}
             out = {}
             for key, spec in aggs.items():
                 agg_type, agg_spec = list(spec.items())[0]
+                if agg_type == "terms":
+                    counts = {}
+                    for doc in self.indices_data[index]["docs"]:
+                        value = doc.get(agg_spec["field"])
+                        if value is not None:
+                            counts[value] = counts.get(value, 0) + 1
+                    ordered = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
+                    size = int(agg_spec.get("size") or 10)
+                    buckets = [
+                        {"key": key, "doc_count": count}
+                        for key, count in ordered[:size]
+                    ]
+                    other = sum(count for _, count in ordered[size:])
+                    out[key] = {
+                        "buckets": buckets,
+                        "sum_other_doc_count": other,
+                    }
+                    continue
+                if agg_type == "cardinality":
+                    field = agg_spec["field"]
+                    distinct = {
+                        doc.get(field)
+                        for doc in self.indices_data[index]["docs"]
+                        if doc.get(field) is not None
+                    }
+                    out[key] = {"value": len(distinct)}
+                    continue
+                if agg_type == "extended_stats":
+                    field = agg_spec["field"]
+                    values = [
+                        doc.get(field)
+                        for doc in self.indices_data[index]["docs"]
+                        if isinstance(doc.get(field), (int, float))
+                    ]
+                    n = len(values)
+                    if not n:
+                        out[key] = {
+                            "count": 0, "min": None, "max": None,
+                            "avg": None, "sum": 0, "std_deviation": None,
+                        }
+                        continue
+                    mean = sum(values) / n
+                    variance = (
+                        sum((v - mean) ** 2 for v in values) / (n - 1)
+                    ) if n > 1 else 0.0
+                    out[key] = {
+                        "count": n,
+                        "min": min(values),
+                        "max": max(values),
+                        "avg": mean,
+                        "sum": sum(values),
+                        "std_deviation": variance ** 0.5,
+                    }
+                    continue
+                if agg_type == "percentiles":
+                    field = agg_spec["field"]
+                    percents = agg_spec.get("percents") or [25, 50, 75]
+                    values = sorted(
+                        doc.get(field)
+                        for doc in self.indices_data[index]["docs"]
+                        if isinstance(doc.get(field), (int, float))
+                    )
+                    percents_out = {
+                        ("%s.0" % p): _quantile(values, p / 100.0)
+                        for p in percents
+                    }
+                    out[key] = {"values": percents_out}
+                    continue
                 values = [
                     doc.get(agg_spec["field"])
                     for doc in self.indices_data[index]["docs"]

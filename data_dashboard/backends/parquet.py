@@ -31,6 +31,7 @@ from .base import (
 
 KEYWORD = 'keyword'
 SAMPLE_COLUMN = 'sample'
+COLUMN_STATS_VALUE_CAP = 100
 
 
 def _quote_ident(name):
@@ -224,7 +225,9 @@ class ParquetBackend(DashboardBackend):
                     % (_quote_ident(col), _quote_ident(col))
                 ).fetchone()
                 if row is not None and row[0] is not None:
-                    continuous[col] = [row[0], row[1]]
+                    # Dates serialize as strings in the sidecar (raw
+                    # datetime.date would crash json.dump).
+                    continuous[col] = [_json_safe(row[0]), _json_safe(row[1])]
         row_count = con.execute('SELECT COUNT(*) FROM dataset').fetchone()[0]
         return {
             'name': name,
@@ -538,3 +541,99 @@ class ParquetBackend(DashboardBackend):
             'rows': [[_json_safe(value) for value in row] for row in rows],
             'total': int(total),
         }
+
+    # -- column stats (numiqo-style picker) ---------------------------------
+
+    def get_column_stats(self, name, column, owner=None):
+        """Descriptive stats for one column. Categorical: frequency table
+        (top COLUMN_STATS_VALUE_CAP values by occurrences, fraction relative
+        to the non-null values). Numeric: min/max/mean/median/quantiles/std.
+        Date: min/max/count only (quantiles/std are undefined for dates)."""
+        name = sanitize_dataset_name(name)
+        path = self._parquet_file(name, owner)
+        if not os.path.isfile(path):
+            raise UnknownDatasetError(name)
+        field_types = self.get_field_types(name, owner)
+        if column not in field_types:
+            raise UnknownDatasetError('Unknown field: %r' % (column,))
+        ftype = field_types[column]
+        col = _quote_ident(column)
+        from_sql = 'FROM read_parquet(?)'
+
+        def _number(value):
+            if value is None:
+                return None
+            if isinstance(value, decimal.Decimal):
+                return float(value)
+            return value
+
+        con = duckdb.connect(database=':memory:')
+        try:
+            if ftype == KEYWORD or ftype == 'boolean':
+                total, non_null, distinct = con.execute(
+                    'SELECT COUNT(*), COUNT(%s), COUNT(DISTINCT %s) %s'
+                    % (col, col, from_sql), [path]).fetchone()
+                rows = con.execute(
+                    'SELECT %s, COUNT(*) %s WHERE %s IS NOT NULL '
+                    'GROUP BY 1 ORDER BY 2 DESC, 1 ASC LIMIT %d'
+                    % (col, from_sql, col, COLUMN_STATS_VALUE_CAP),
+                    [path]).fetchall()
+                values = [
+                    {
+                        'value': _json_safe(value),
+                        'count': int(count),
+                        'fraction': (float(count) / float(non_null)) if non_null else 0.0,
+                    }
+                    for value, count in rows
+                ]
+                return {
+                    'column': column,
+                    'type': ftype,
+                    'kind': 'categorical',
+                    'values': values,
+                    'distinct': int(distinct),
+                    'missing': int(total) - int(non_null),
+                    'total': int(total),
+                    'truncated': int(distinct) > len(values),
+                }
+            if ftype == 'date':
+                low, high, valid, total = con.execute(
+                    'SELECT MIN(%s), MAX(%s), COUNT(%s), COUNT(*) %s'
+                    % (col, col, col, from_sql), [path]).fetchone()
+                return {
+                    'column': column,
+                    'type': ftype,
+                    'kind': 'date',
+                    'stats': {
+                        'min': _json_safe(low),
+                        'max': _json_safe(high),
+                        'valid': int(valid),
+                        'missing': int(total) - int(valid),
+                        'total': int(total),
+                    },
+                }
+            low, high, mean, median, q25, q75, std, valid, total = con.execute(
+                'SELECT MIN(%s), MAX(%s), AVG(%s), MEDIAN(%s), '
+                'QUANTILE_CONT(%s, 0.25), QUANTILE_CONT(%s, 0.75), '
+                'STDDEV_SAMP(%s), COUNT(%s), COUNT(*) %s'
+                % (col, col, col, col, col, col, col, col, from_sql),
+                [path]).fetchone()
+            return {
+                'column': column,
+                'type': ftype,
+                'kind': 'numeric',
+                'stats': {
+                    'min': _number(low),
+                    'max': _number(high),
+                    'mean': _number(mean),
+                    'median': _number(median),
+                    'q25': _number(q25),
+                    'q75': _number(q75),
+                    'std': _number(std),
+                    'valid': int(valid),
+                    'missing': int(total) - int(valid),
+                    'total': int(total),
+                },
+            }
+        finally:
+            con.close()

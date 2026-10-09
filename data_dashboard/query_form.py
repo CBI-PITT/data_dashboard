@@ -54,7 +54,10 @@ def parse_filters(filters):
             low = float(bounds[0]) if bounds[0] is not None else None
             high = float(bounds[1]) if bounds[1] is not None else None
         except (TypeError, ValueError):
-            raise ValueError("Continuous filter for %r must have numeric bounds" % (name,))
+            # Non-numeric bounds (date columns serialize as strings in the
+            # form) are skipped: the sliders are the only source and always
+            # send numbers for numeric columns.
+            continue
         parsed_filters.append(ContinuousFilter(field=str(name), min=low, max=high))
     return parsed_filters
 

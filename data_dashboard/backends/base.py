@@ -242,6 +242,14 @@ class DashboardBackend(abc.ABC):
         (offset/limit). filters is a list of CategoricalFilter/
         ContinuousFilter (empty = no filter). spec.owner scopes the dataset."""
 
+    @abc.abstractmethod
+    def get_column_stats(self, name, column, owner=None):
+        """Descriptive stats for one column (numiqo-style column picker):
+        numeric -> {stats: {min, max, mean, median, q25, q75, std, valid,
+        missing, total}}, categorical -> {values: [{value, count, fraction}],
+        missing, total, truncated} (fraction relative to the non-null values).
+        spec.owner scopes the dataset."""
+
     def validate_fields(self, name, fields, owner=None):
         """Raise UnknownFieldError for any field the dataset does not have."""
         known = self.get_field_types(name, owner)

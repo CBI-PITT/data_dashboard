@@ -91,6 +91,16 @@ function Dashboard() {
               backgroundColor: "var(--peace-surface)",
             }}
           >
+            {/* Spreadsheet view: on top; it is the central element until
+                Send creates the plot. Hidden while the new dataset's form is
+                still retrieving. */}
+            {formFrame !== undefined && formFrame !== "dataset retrieving" ? (
+              <DataTable
+                identifier={selectedDataset}
+                filters={activeFilters}
+              />
+            ) : null}
+
             <MetricsTool
               originalArray={originalArray}
               plotChoice = {plotChoice}
@@ -116,8 +126,8 @@ function Dashboard() {
             />
 
             {/* Plot: shown while no dataset is selected (the cover screen)
-                and once Send has created results; between the two, the data
-                table below is the central element. */}
+                and once Send has created results; between the two (and after
+                Reset clears it) it is absent, so the table stays on top. */}
             {formFrame === undefined || displayData !== undefined ? (
               <Chart
                 displayData={displayData}
@@ -137,16 +147,6 @@ function Dashboard() {
                 groupByKeys={groupByKeys}
                 setGroupByKeys={setGroupByKeys}
                 formFrame={formFrame}
-              />
-            ) : null}
-
-            {/* Spreadsheet view: the central element until Send creates the
-                plot, then it moves below the plot. Hidden while the new
-                dataset's form is still retrieving. */}
-            {formFrame !== undefined && formFrame !== "dataset retrieving" ? (
-              <DataTable
-                identifier={selectedDataset}
-                filters={activeFilters}
               />
             ) : null}
           </Paper>

@@ -37,6 +37,7 @@ from .base import (
 )
 
 NUMERIC_AGGS = ('min', 'max', 'avg', 'sum', 'boxplot')
+COLUMN_STATS_VALUE_CAP = 100
 
 
 def _pandas_type_to_es(dtype):
@@ -400,3 +401,104 @@ class ElasticsearchBackend(DashboardBackend):
             for doc in resp['hits']['hits']
         ]
         return {'columns': columns, 'rows': rows, 'total': int(total)}
+
+    # -- column stats (numiqo-style picker) ---------------------------------
+
+    def get_column_stats(self, name, column, owner=None):
+        """Descriptive stats for one column. Categorical: frequency table
+        (top COLUMN_STATS_VALUE_CAP terms, fraction relative to the non-null
+        values). Numeric: extended_stats + percentiles. Date: stats only."""
+        index_name = self._index_name(name, owner)
+        if not self.es.indices.exists(index=index_name):
+            raise UnknownDatasetError(name)
+        field_types = self.get_field_types(name, owner)
+        if column not in field_types:
+            raise UnknownDatasetError('Unknown field: %r' % (column,))
+        ftype = field_types[column]
+        total = int(self.es.count(
+            index=index_name, body={'query': {'match_all': {}}})['count'])
+
+        if ftype == 'keyword' or ftype == 'boolean':
+            body = {
+                'size': 0,
+                'aggs': {
+                    column: {'terms': {'field': column, 'size': COLUMN_STATS_VALUE_CAP}},
+                    'distinct': {'cardinality': {'field': column}},
+                },
+            }
+            resp = self.es.search(index=index_name, body=body)
+            agg = resp['aggregations'][column]
+            buckets = agg['buckets']
+            sum_counts = sum(bucket['doc_count'] for bucket in buckets)
+            values = [
+                {
+                    'value': bucket['key'],
+                    'count': bucket['doc_count'],
+                    'fraction': (float(bucket['doc_count']) / float(sum_counts))
+                    if sum_counts else 0.0,
+                }
+                for bucket in buckets
+            ]
+            other = int(agg.get('sum_other_doc_count') or 0)
+            distinct = int((resp['aggregations'].get('distinct') or {}).get('value') or 0)
+            return {
+                'column': column,
+                'type': ftype,
+                'kind': 'categorical',
+                'values': values,
+                'distinct': distinct,
+                'missing': total - sum_counts,
+                'total': total,
+                'truncated': other > 0,
+            }
+
+        if ftype == 'date':
+            body = {
+                'size': 0,
+                'aggs': {'col_stats': {'stats': {'field': column}}},
+            }
+            resp = self.es.search(index=index_name, body=body)
+            s = resp['aggregations']['col_stats']
+            return {
+                'column': column,
+                'type': ftype,
+                'kind': 'date',
+                'stats': {
+                    'min': s.get('min'),
+                    'max': s.get('max'),
+                    'valid': int(s.get('count') or 0),
+                    'missing': total - int(s.get('count') or 0),
+                    'total': total,
+                },
+            }
+
+        body = {
+            'size': 0,
+            'aggs': {
+                'col_stats': {'extended_stats': {'field': column}},
+                'col_percentiles': {
+                    'percentiles': {'field': column, 'percents': [25, 50, 75]},
+                },
+            },
+        }
+        resp = self.es.search(index=index_name, body=body)
+        s = resp['aggregations']['col_stats']
+        p = resp['aggregations']['col_percentiles']['values']
+        valid = int(s.get('count') or 0)
+        return {
+            'column': column,
+            'type': ftype,
+            'kind': 'numeric',
+            'stats': {
+                'min': s.get('min'),
+                'max': s.get('max'),
+                'mean': s.get('avg'),
+                'median': p.get('50.0'),
+                'q25': p.get('25.0'),
+                'q75': p.get('75.0'),
+                'std': s.get('std_deviation'),
+                'valid': valid,
+                'missing': total - valid,
+                'total': total,
+            },
+        }

@@ -14,6 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 import HOST from "../../../../config/path";
+import ColumnStats from "./ColumnStats";
 
 const PAGE_SIZE = 200;
 const SCROLL_THRESHOLD = 300;
@@ -220,6 +221,9 @@ function DataTable({ identifier, filters }) {
           This dataset has no rows
         </Typography>
       ) : null}
+      {/* Column statistics (numiqo-style): type-colored column names below
+          the table; clicking one highlights it and shows its stats. */}
+      <ColumnStats identifier={identifier} columns={columns} />
     </Box>
   );
 }
