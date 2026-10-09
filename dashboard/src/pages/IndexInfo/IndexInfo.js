@@ -18,12 +18,13 @@ const styles = {
     maxWidth: "1800px",
     margin: "0 auto",
     overflowX: "hidden",
-    padding: "16px",
+    padding: "20px",
   },
   root: {
-    backgroundColor: "#f9f9f9",
-    borderRadius: "8px",
-    boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+    backgroundColor: "#ffffff",
+    border: "1px solid #e4e8ee",
+    borderRadius: "12px",
+    boxShadow: "0 1px 2px rgba(15, 23, 42, .05), 0 1px 3px rgba(15, 23, 42, .08)",
     marginBottom: "20px",
     padding: "16px",
     display: "flex",
@@ -31,8 +32,8 @@ const styles = {
     justifyContent: "space-between",
   },
   head: {
-    backgroundColor: "#3498db", // Blue background color for table header
-    color: "white", // Apply alternate row colors
+    backgroundColor: "#0d6efd", // Theme accent for the table header
+    color: "white",
   },
 };
 
@@ -90,7 +91,7 @@ const YourComponent = () => {
           value={selectedEsIndex}
           onChange={handleChange}
           variant="outlined"
-          
+          sx={{ minWidth: 220 }}
         >
           {[...new Set(data.map(item => item.es_index))].map((esIndex) => (
             <MenuItem key={esIndex} value={esIndex}>
@@ -110,7 +111,7 @@ const YourComponent = () => {
           </TableHead>
           <TableBody>
             {filteredData.map((item, index) => (
-                <TableRow key={index} style={{ backgroundColor: isEven(index) ? '#f9f9f9' : 'inherit' }}>
+                <TableRow key={index} style={{ backgroundColor: isEven(index) ? '#f6f8fb' : 'inherit' }}>
                 {tableHeaders.map((header, idx) => (
                   <TableCell key={idx}>{item[header]}</TableCell>
                 ))}

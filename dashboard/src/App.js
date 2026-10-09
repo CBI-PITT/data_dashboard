@@ -1,5 +1,8 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import theme from "./config/theme";
 
 import Dashboard from "./pages/Dashboard/Dashboard";
 import IndexInfo from "./pages/IndexInfo/IndexInfo";
@@ -8,12 +11,15 @@ import IndexInfo from "./pages/IndexInfo/IndexInfo";
 // strips that prefix so react-router routes stay relative to it.
 export default function App() {
   return (
-    <BrowserRouter basename="/dashboard">
-      <Routes>
-        <Route exact path="/" Component={Dashboard} />
-        <Route path="/indexInfo" Component={IndexInfo} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <BrowserRouter basename="/dashboard">
+        <Routes>
+          <Route exact path="/" Component={Dashboard} />
+          <Route path="/indexInfo" Component={IndexInfo} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }

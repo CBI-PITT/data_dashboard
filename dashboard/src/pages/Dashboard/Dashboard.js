@@ -46,9 +46,8 @@ function Dashboard() {
       <Grid
         container
         spacing={3}
-        style={{ backgroundColor: "rgb(246, 241, 228)" }}
         columns={20}
-        sx={{ padding: "10px" }}
+        sx={{ padding: "16px" }}
       >
         <Grid item xs={20} sm={20} md={3} lg={3} xl={4}>
           <Dataset
@@ -76,8 +75,13 @@ function Dashboard() {
         <Grid item xs={20} sm={20} md={16} lg={15.5} xl={15}>
           <Paper
             className="chart"
-            elevation={10}
-            // style={{ backgroundColor: "rgb(246, 241, 228)"  }}
+            elevation={0}
+            sx={{
+              borderRadius: "12px",
+              border: "1px solid var(--peace-border)",
+              boxShadow: "var(--peace-shadow-lg)",
+              backgroundColor: "var(--peace-surface)",
+            }}
           >
             <MetricsTool
               originalArray={originalArray}
@@ -125,11 +129,18 @@ function Dashboard() {
         </Grid>
         <Grid item xs={20} sm={20} md={1} lg={1.5} xl={1}>
           <Paper
-            elevation={10}
-            style={{ backgroundColor: "rgb(189, 227, 209)" }}
+            elevation={0}
+            sx={{
+              padding: "8px",
+              borderRadius: "12px",
+              border: "1px solid var(--peace-border)",
+              boxShadow: "var(--peace-shadow)",
+              backgroundColor: "var(--peace-surface)",
+            }}
           >
             <PlotChoice
               setPlotChoice={setPlotChoice}
+              plotChoice={plotChoice}
               field_status={type_fields_dict[formDataCurrent.field]}
               groupBy={formDataCurrent.group_by}
             />

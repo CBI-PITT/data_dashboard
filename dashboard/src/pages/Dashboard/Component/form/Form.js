@@ -371,11 +371,14 @@ function Form({
       <Paper
         component="form"
         variant="elevation"
-        elevation={10}
+        elevation={0}
         style={{
-          backgroundColor: "#feeeed",
-          marginTop: "2%",
-          padding: "20px",
+          backgroundColor: "var(--peace-surface)",
+          border: "1px solid var(--peace-border)",
+          borderRadius: "12px",
+          boxShadow: "var(--peace-shadow)",
+          marginTop: "12px",
+          padding: "16px",
           position: "relative",
           maxHeight: "80vh", // Adjust the value as needed
           overflowY: "auto",
@@ -390,15 +393,7 @@ function Form({
         </Backdrop>
 
         <Grid container>
-          <Grid
-            item
-            xs={12}
-            style={{
-              background: "#fff",
-              borderTopLeftRadius: "10px",
-              borderTopRightRadius: "10px",
-            }}
-          >
+          <Grid item xs={12}>
             <Typography variant="h6">Filter Settings</Typography>
             <GetFilterList
               list={filter_list}
@@ -470,7 +465,7 @@ function Form({
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <Button
                 type="reset"
-                variant="contained"
+                variant="outlined"
                 color="inherit"
                 size="small"
                 endIcon={<DeleteIcon />}
@@ -481,7 +476,7 @@ function Form({
               <Button
                 type="submit"
                 variant="contained"
-                color="inherit"
+                color="primary"
                 size="small"
                 endIcon={<SendIcon />}
               >
@@ -497,9 +492,16 @@ function Form({
       <Paper
         component={"form"}
         variant="elevation"
-        elevation={10}
+        elevation={0}
         className="form_data"
-        style={{ backgroundColor: "#feeeed", marginTop: "2%" }}
+        style={{
+          backgroundColor: "var(--peace-surface)",
+          border: "1px solid var(--peace-border)",
+          borderRadius: "12px",
+          boxShadow: "var(--peace-shadow)",
+          marginTop: "12px",
+          padding: "16px",
+        }}
       >
         <br></br>
         {formFrame === "dataset retrieving" ? (

@@ -1,11 +1,22 @@
-import React from "react"
-import Typography from '@mui/material/Typography';
+import React from "react";
+import Typography from "@mui/material/Typography";
 
-export default function N_number({N}){
-    return (
-          <Typography sx={{ fontSize: 16 ,float:'right'}} color="unset">
-            N = {N}
-          </Typography>
-          )
-    return (<h4 style={{fontFamily:'initial', display:'flex'}}>N = {N}</h4>)
+export default function N_number({ N }) {
+  return (
+    <Typography
+      sx={{
+        fontSize: 14,
+        fontWeight: 600,
+        color: "var(--peace-ink)",
+        backgroundColor: "var(--peace-accent-soft)",
+        border: "1px solid var(--peace-border)",
+        borderRadius: 999,
+        px: 1.5,
+        py: 0.25,
+        whiteSpace: "nowrap",
+      }}
+    >
+      N = {N}
+    </Typography>
+  );
 }

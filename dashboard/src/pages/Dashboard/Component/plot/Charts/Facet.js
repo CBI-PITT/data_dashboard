@@ -1,6 +1,7 @@
 import React from "react";
 import Typography from "@mui/material/Typography";
 import Plot from "react-plotly.js";
+import { plotLayout } from "./plotTheme";
 
 function PieCharts({ groupedData }) {
   const generatePieCharts = (data, prefix = "") => {
@@ -158,12 +159,12 @@ export default function FacetChart({
           agg_list_render[key].push(
             <Plot key={keyInfo}
               data={[chartData]}
-              layout={{
+              layout={plotLayout({
                 width: 400,
                 height: 400,
                 title: `${key}  (${keyInfo})`,
                 sort: false,
-              }}
+              })}
             />
           );
         }

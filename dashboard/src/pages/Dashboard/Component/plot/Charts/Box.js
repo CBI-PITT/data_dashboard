@@ -42,16 +42,16 @@ export default function BoxChart({
     xField: "x",
     yField: ["min", "q1", "median", "q3", "max"],
     boxStyle: {
-      stroke: "#4C3D3D",
-      fill: "#292929",
-      fillOpacity: 0.6,
+      stroke: "#0d6efd",
+      fill: "#0d6efd",
+      fillOpacity: 0.35,
     },
     xAxis: {
       label: {
         autoHide: true,
         autoRotate: true,
         style: {
-          fontSize: 18,
+          fontSize: 14,
         },
       },
     },
@@ -60,7 +60,7 @@ export default function BoxChart({
         autoHide: true,
         autoRotate: true,
         style: {
-          fontSize: 18,
+          fontSize: 14,
         },
       },
     },

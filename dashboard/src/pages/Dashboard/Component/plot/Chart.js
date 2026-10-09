@@ -100,7 +100,7 @@ function Chart({
     return (
       <div className="cover">
         <img src={CoverImg} className="coverImg" alt="coverImg"></img>
-        <h3 id="coverText">Statistics and Visulization</h3>
+        <h3 id="coverText">Statistics and Visualization</h3>
       </div>
     );
   }

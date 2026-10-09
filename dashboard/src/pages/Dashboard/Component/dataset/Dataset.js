@@ -161,8 +161,16 @@ function Dataset({ setFormFrame, setDisplayData, setAcronym_volume, setMeta }) {
   };
 
   return (
-    <Paper elevation={10} className="dataset">
-      <br></br>
+    <Paper
+      elevation={0}
+      className="dataset"
+      sx={{
+        padding: "10px",
+        borderRadius: "12px",
+        border: "1px solid var(--peace-border)",
+        boxShadow: "var(--peace-shadow)",
+      }}
+    >
       <div style={{ display: "flex", alignItems: "flex-end" }}>
         <FormControl required sx={{ m: 1, minWidth: 120 }}>
           <InputLabel id="dataset-required-label">Index</InputLabel>
