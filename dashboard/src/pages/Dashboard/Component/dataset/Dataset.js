@@ -22,12 +22,10 @@ import CallMergeIcon from "@mui/icons-material/CallMerge";
 import DeleteIcon from "@mui/icons-material/Delete";
 import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
-import Dividers from "./Divider";
 import HOST from "../../../../config/path";
 
 const url_index = "/api/indices";
 const url_index_choosen = "/api/index_choosen/";
-const url_index_choosen_status = "/api/index_choosen/current_status/";
 const url_index_choosen_meta = "/api/index_choosen/meta/";
 const url_rename = "/api/datasets/";
 const url_merge = "/api/merge";
@@ -60,13 +58,6 @@ function Dataset({ setFormFrame, setDisplayData, setAcronym_volume, setMeta }) {
   const [mergeSelections, setMergeSelections] = useState([]);
   const [mergeFieldsText, setMergeFieldsText] = useState({});
   const [mergeName, setMergeName] = useState("");
-
-  const [indexStatus, setIndexStatus] = useState({
-    health: "NaN",
-    status: "NaN",
-    storageSize: "NaN",
-    docCount: "NaN",
-  });
 
   const fetchIndices = useCallback(() => {
     axios.get(HOST + url_index).then((response) => {
@@ -125,12 +116,6 @@ function Dataset({ setFormFrame, setDisplayData, setAcronym_volume, setMeta }) {
         if (selectedIndex === sessionStorage.getItem("INDEX")) {
           sessionStorage.removeItem("INDEX");
           setSelectedIndex("");
-          setIndexStatus({
-            health: "NaN",
-            status: "NaN",
-            storageSize: "NaN",
-            docCount: "NaN",
-          });
         }
         setDeleteOpen(false);
         fetchIndices();
@@ -199,24 +184,6 @@ function Dataset({ setFormFrame, setDisplayData, setAcronym_volume, setMeta }) {
                 .then((response) => {
                   console.log("Index selected or changed successfully");
                   setFormFrame(response.data);
-                });
-              setIndexStatus({
-                health: "Retrieving",
-                status: "Retrieving",
-                storageSize: "Retrieving",
-                docCount: "Retrieving",
-              });
-              axios
-                .get(HOST + url_index_choosen_status + index)
-                .then((response) => {
-                  console.log("Index status retreive successfully");
-
-                  setIndexStatus({
-                    health: response.data["health"],
-                    status: response.data["status"],
-                    storageSize: response.data["storage_size"],
-                    docCount: response.data["docs_count"],
-                  });
                 });
               axios
                 .get(HOST + url_index_choosen_meta + index)
@@ -288,8 +255,6 @@ function Dataset({ setFormFrame, setDisplayData, setAcronym_volume, setMeta }) {
           </span>
         </Tooltip>
       </div>
-
-      <Dividers index_status={indexStatus}></Dividers>
 
       <Dialog open={renameOpen} onClose={() => setRenameOpen(false)}>
         <DialogTitle>Rename dataset</DialogTitle>
