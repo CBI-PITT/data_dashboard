@@ -79,34 +79,52 @@ class FakeESClient:
                     "categories": {"buckets": self._composite(index, body)}
                 }
             }
-        if len(aggs) == 1:
-            (field, spec), = aggs.items()
-            if "terms" in spec:
-                counts = {}
-                for doc in self.indices_data[index]["docs"]:
-                    value = doc.get(field)
-                    if value is not None:
-                        counts[value] = counts.get(value, 0) + 1
-                buckets = [
-                    {"key": key, "doc_count": count}
-                    for key, count in sorted(counts.items())
+        if aggs:
+            if len(aggs) == 1:
+                (field, spec), = aggs.items()
+                if "terms" in spec:
+                    counts = {}
+                    for doc in self.indices_data[index]["docs"]:
+                        value = doc.get(field)
+                        if value is not None:
+                            counts[value] = counts.get(value, 0) + 1
+                    buckets = [
+                        {"key": key, "doc_count": count}
+                        for key, count in sorted(counts.items())
+                    ]
+                    return {"aggregations": {field: {"buckets": buckets}}}
+            out = {}
+            for key, spec in aggs.items():
+                agg_type, agg_spec = list(spec.items())[0]
+                values = [
+                    doc.get(agg_spec["field"])
+                    for doc in self.indices_data[index]["docs"]
+                    if isinstance(doc.get(agg_spec["field"]), (int, float))
                 ]
-                return {"aggregations": {field: {"buckets": buckets}}}
-        out = {}
-        for key, spec in aggs.items():
-            agg_type, agg_spec = list(spec.items())[0]
-            values = [
-                doc.get(agg_spec["field"])
-                for doc in self.indices_data[index]["docs"]
-                if isinstance(doc.get(agg_spec["field"]), (int, float))
-            ]
-            if agg_type == "min":
-                out[key] = {"value": min(values) if values else None}
-            elif agg_type == "max":
-                out[key] = {"value": max(values) if values else None}
+                if agg_type == "min":
+                    out[key] = {"value": min(values) if values else None}
+                elif agg_type == "max":
+                    out[key] = {"value": max(values) if values else None}
+                else:
+                    out[key] = {"value": None}
+            return {"aggregations": out}
+        # Plain hits search (spreadsheet rows: from/size in stored order).
+        docs = self._filtered_docs(index, body.get("query"))
+        start = int(body.get("from") or 0)
+        size = int(body.get("size") or 10)
+        source = body.get("_source")
+        hits = []
+        for doc in docs[start:start + size]:
+            if source is None:
+                src = dict(doc)
             else:
-                out[key] = {"value": None}
-        return {"aggregations": out}
+                src = {field: doc.get(field) for field in source}
+            hits.append({"_source": src})
+        return {"hits": {"total": {"value": len(docs)}, "hits": hits}}
+
+    def count(self, index=None, body=None):
+        docs = self._filtered_docs(index, (body or {}).get("query"))
+        return {"count": len(docs)}
 
     def reindex(self, body=None, refresh=False):
         """_reindex: copy all documents from source to dest."""
@@ -121,7 +139,7 @@ class FakeESClient:
 
     def _filtered_docs(self, index, query):
         docs = self.indices_data[index]["docs"]
-        if not query:
+        if not query or "match_all" in query:
             return list(docs)
         must = query["bool"]["filter"]["bool"]["must"]
         out = []

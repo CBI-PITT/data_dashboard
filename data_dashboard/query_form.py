@@ -24,22 +24,10 @@ from .backends.base import (
 )
 
 
-def parse_query_json(json_data, include_n_field=False):
-    """Build a QuerySpec from the UI payload. Raises ValueError for malformed
-    payloads. Unknown dataset/field names are rejected later by the backend
-    against the dataset's own schema."""
-    if not isinstance(json_data, dict):
-        raise ValueError('Query payload must be a JSON object')
-
-    dataset = json_data.get('INDEX')
-    if not dataset or not isinstance(dataset, str):
-        raise ValueError("Query payload must include an 'INDEX' dataset name")
-
-    field = json_data.get('field')
-    if not field or not isinstance(field, str):
-        raise ValueError("Query payload must include a 'field' name")
-
-    filters = json_data.get('filter') or {}
+def parse_filters(filters):
+    """Parse the Form.js `filter` dict ({categorical, continuous}) into a
+    list of backend filter dataclasses. Shared by /api/query and the rows
+    endpoint. Raises ValueError for malformed payloads."""
     if not isinstance(filters, dict):
         raise ValueError("'filter' must be an object")
     parsed_filters = []
@@ -68,6 +56,25 @@ def parse_query_json(json_data, include_n_field=False):
         except (TypeError, ValueError):
             raise ValueError("Continuous filter for %r must have numeric bounds" % (name,))
         parsed_filters.append(ContinuousFilter(field=str(name), min=low, max=high))
+    return parsed_filters
+
+
+def parse_query_json(json_data, include_n_field=False):
+    """Build a QuerySpec from the UI payload. Raises ValueError for malformed
+    payloads. Unknown dataset/field names are rejected later by the backend
+    against the dataset's own schema."""
+    if not isinstance(json_data, dict):
+        raise ValueError('Query payload must be a JSON object')
+
+    dataset = json_data.get('INDEX')
+    if not dataset or not isinstance(dataset, str):
+        raise ValueError("Query payload must include an 'INDEX' dataset name")
+
+    field = json_data.get('field')
+    if not field or not isinstance(field, str):
+        raise ValueError("Query payload must include a 'field' name")
+
+    parsed_filters = parse_filters(json_data.get('filter') or {})
 
     group_by = json_data.get('group_by') or []
     if not isinstance(group_by, list) or not all(isinstance(g, str) for g in group_by):

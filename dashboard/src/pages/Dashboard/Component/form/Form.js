@@ -31,6 +31,7 @@ function Form({
   setAggList,
   setDimension,
   setGroupByKeys,
+  setActiveFilters,
 }) {
   const [Field_axis_list, setField_axis_list] = useState();
 
@@ -111,6 +112,21 @@ function Form({
       setvalue_Continuous([]);
     }
   }, [formFrame]);
+
+  // Push the current filter selections up on every change so the data table
+  // reflects them immediately (no Send needed); the table debounces.
+  useEffect(() => {
+    if (setActiveFilters) {
+      setActiveFilters({
+        categorical: JSON.parse(
+          JSON.stringify(formDataUpdated.filter.categorical || {})
+        ),
+        continuous: JSON.parse(
+          JSON.stringify(formDataUpdated.filter.continuous || {})
+        ),
+      });
+    }
+  }, [formDataUpdated]);
 
   // useEffect(() => {
   //     for(let key in key_Category)

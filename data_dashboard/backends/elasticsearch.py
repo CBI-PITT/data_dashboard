@@ -32,6 +32,7 @@ from .base import (
     ensure_within,
     load_meta,
     meta_path,
+    same_bound,
     write_meta,
 )
 
@@ -160,6 +161,9 @@ class ElasticsearchBackend(DashboardBackend):
     def create_dataset(self, name, csv_path, owner=None):
         from elasticsearch import helpers
         name = sanitize_dataset_name(name)
+        # The owner's folder may not exist yet (first dataset of a new user);
+        # the sidecar write below would fail without it.
+        os.makedirs(self._user_dir(owner), exist_ok=True)
         # Always-create semantics: an existing index name gets a _2, _3... suffix.
         match = re.match(r'^(.*)_(\d+)$', name)
         if match:
@@ -337,3 +341,62 @@ class ElasticsearchBackend(DashboardBackend):
             aggs['N'] = {'cardinality': {'field': spec.n_field}}
         form_query_body['aggs']['categories']['aggs'] = aggs
         return form_query_body
+
+    # -- spreadsheet rows ---------------------------------------------------
+
+    def get_rows(self, name, offset=0, limit=100, owner=None, filters=None):
+        """One page of raw rows for the spreadsheet view (search from/size in
+        stored order). Continuous filters that still carry the sidecar's full
+        min/max range (untouched sliders) are treated as no filter."""
+        index_name = self._index_name(name, owner)
+        if not self.es.indices.exists(index=index_name):
+            raise UnknownDatasetError(name)
+        offset = max(int(offset), 0)
+        limit = max(int(limit), 1)
+        field_types = self.get_field_types(name, owner)
+        meta = load_meta(self._user_dir(owner), name) or {}
+        full_ranges = dict(meta.get('continuous') or {})
+
+        must = []
+        for f in filters or []:
+            if f.field not in field_types:
+                raise UnknownDatasetError('Unknown field: %r' % (f.field,))
+            if isinstance(f, CategoricalFilter):
+                values = [v for v in f.values if str(v) != '']
+                if not values:
+                    # Empty selection means "no filter" (query() parity).
+                    continue
+                should = [{'term': {f.field: value}} for value in values]
+                must.append({'bool': {'should': should}})
+            else:
+                if f.min is None and f.max is None:
+                    continue
+                full = full_ranges.get(f.field)
+                if (isinstance(full, (list, tuple)) and len(full) == 2 and
+                        same_bound(f.min, full[0]) and same_bound(f.max, full[1])):
+                    continue
+                must.append({'range': {f.field: {'gte': f.min, 'lte': f.max}}})
+        query = {'bool': {'filter': {'bool': {'must': must}}}} if must else {'match_all': {}}
+
+        count_body = {'query': query}
+        if must:
+            total = self.es.count(index=index_name, body=count_body)['count']
+        else:
+            total = meta.get('row_count')
+            if total is None:
+                total = self.es.count(index=index_name, body=count_body)['count']
+
+        # Column order follows the mapping properties, matching get_field_types.
+        columns = list(field_types.keys())
+        resp = self.es.search(index=index_name, body={
+            'from': offset,
+            'size': limit,
+            'query': query,
+            'sort': ['_doc'],
+            '_source': columns,
+        })
+        rows = [
+            [doc['_source'].get(col) for col in columns]
+            for doc in resp['hits']['hits']
+        ]
+        return {'columns': columns, 'rows': rows, 'total': int(total)}

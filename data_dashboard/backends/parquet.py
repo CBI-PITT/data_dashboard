@@ -7,6 +7,8 @@ files at the root remain readable (admins only, enforced in the routes).
 Queries run as SQL aggregates over the Parquet file.
 """
 
+import datetime
+import decimal
 import os
 import re
 
@@ -23,6 +25,7 @@ from .base import (
     format_byte_size,
     load_meta,
     meta_path,
+    same_bound,
     write_meta,
 )
 
@@ -60,6 +63,14 @@ def _duckdb_type_to_field_type(col_type):
 
 
 _NUMERIC_AGGS = ('min', 'max', 'avg', 'sum', 'boxplot')
+
+
+def _json_safe(value):
+    """DuckDB returns datetime/Decimal objects that the default Flask JSON
+    encoder cannot serialize; string them (numbers stay native)."""
+    if isinstance(value, (datetime.date, datetime.time, decimal.Decimal)):
+        return str(value)
+    return value
 
 
 class ParquetBackend(DashboardBackend):
@@ -462,3 +473,68 @@ class ParquetBackend(DashboardBackend):
                 idx += width
             buckets.append(bucket)
         return buckets
+
+    # -- spreadsheet rows ---------------------------------------------------
+
+    def get_rows(self, name, offset=0, limit=100, owner=None, filters=None):
+        """One page of raw rows for the spreadsheet view. Continuous filters
+        that still carry the meta's full min/max range (untouched sliders)
+        are treated as no filter so the unfiltered view keeps NULL rows."""
+        name = sanitize_dataset_name(name)
+        path = self._parquet_file(name, owner)
+        if not os.path.isfile(path):
+            raise UnknownDatasetError(name)
+        offset = max(int(offset), 0)
+        limit = max(int(limit), 1)
+        field_types = self.get_field_types(name, owner)
+        meta = load_meta(self._user_dir(owner), name) or {}
+        full_ranges = dict(meta.get('continuous') or {})
+
+        where = []
+        params = []
+        for f in filters or []:
+            if f.field not in field_types:
+                raise UnknownDatasetError('Unknown field: %r' % (f.field,))
+            col = _quote_ident(f.field)
+            if isinstance(f, CategoricalFilter):
+                values = [str(v) for v in f.values if str(v) != '']
+                if not values:
+                    # Empty selection means "no filter" (query() parity).
+                    continue
+                placeholders = ', '.join(['?'] * len(values))
+                where.append('%s IN (%s)' % (col, placeholders))
+                params.extend(values)
+            else:
+                if f.min is None and f.max is None:
+                    continue
+                full = full_ranges.get(f.field)
+                if (isinstance(full, (list, tuple)) and len(full) == 2 and
+                        same_bound(f.min, full[0]) and same_bound(f.max, full[1])):
+                    continue
+                where.append('%s BETWEEN ? AND ?' % col)
+                params.extend([f.min, f.max])
+        where_sql = (' WHERE ' + ' AND '.join(where)) if where else ''
+        from_sql = 'FROM read_parquet(%s)%s' % (_quote_literal(path), where_sql)
+
+        con = duckdb.connect(database=':memory:')
+        try:
+            if where:
+                total = con.execute(
+                    'SELECT COUNT(*) %s' % from_sql, params).fetchone()[0]
+            else:
+                total = meta.get('row_count')
+                if total is None:
+                    total = con.execute(
+                        'SELECT COUNT(*) %s' % from_sql, params).fetchone()[0]
+            columns = [row[0] for row in con.execute(
+                'DESCRIBE SELECT * %s' % from_sql, params).fetchall()]
+            rows = con.execute(
+                'SELECT * %s LIMIT %d OFFSET %d' % (from_sql, limit, offset),
+                params).fetchall()
+        finally:
+            con.close()
+        return {
+            'columns': columns,
+            'rows': [[_json_safe(value) for value in row] for row in rows],
+            'total': int(total),
+        }
