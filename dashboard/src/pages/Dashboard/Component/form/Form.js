@@ -14,6 +14,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import SendIcon from "@mui/icons-material/Send";
 import DeleteIcon from "@mui/icons-material/Delete";
 import HOST from "../../../../config/path";
+import { accentAlertSx } from "../../../../config/theme";
 import ParaCheck from "./Para_Check";
 function Form({
   setDisplayData,
@@ -506,8 +507,13 @@ function Form({
         <br></br>
         {formFrame === "dataset retrieving" ? (
           <div>
-            <Alert className="dataset_alert" severity="success">
-              Dataset is retrieving — <strong>Please wait</strong>
+            <Alert
+              className="dataset_alert"
+              severity="success"
+              variant="filled"
+              sx={accentAlertSx}
+            >
+              Loading dataset — this may take a moment
             </Alert>
             <Box className="filter">
               <Skeleton animation="wave" variant="rounded" height={60} />
@@ -528,9 +534,13 @@ function Form({
             <br></br>
           </div>
         ) : (
-          <Alert className="dataset_alert" severity="info">
-            Dataset is waiting to be selected —{" "}
-            <strong>Please choose one!</strong>
+          <Alert
+            className="dataset_alert"
+            severity="info"
+            variant="filled"
+            sx={accentAlertSx}
+          >
+            Select a dataset from the panel on the left to get started
           </Alert>
         )}
         <br></br>

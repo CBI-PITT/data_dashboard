@@ -27,3 +27,14 @@ const theme = createTheme({
 });
 
 export default theme;
+
+// Shared filled-alert style (accent blue, white text) used by the dataset
+// picker placeholder alerts and the central cover alert so they stay
+// identical by construction.
+export const accentAlertSx = {
+  borderRadius: "10px",
+  backgroundColor: "var(--peace-accent)",
+  color: "#ffffff",
+  fontWeight: 500,
+  fontSize: "1rem",
+};

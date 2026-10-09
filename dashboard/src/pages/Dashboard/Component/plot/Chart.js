@@ -3,11 +3,13 @@ import GroupBarChart from "./Charts/GroupBar";
 import LineChart from "./Charts/Line";
 import AreaChart from "./Charts/Area";
 import React, { useState } from "react";
+import Alert from "@mui/material/Alert";
 import PieChart from "./Charts/Pie";
 import CloudChart from "./Charts/Cloud";
 import CirclePackingChart from "./Charts/CirclePacking";
 import FacetChart from "./Charts/Facet";
-import CoverImg from "../asset/CoverImg.png";
+import CoverImg from "../asset/cyan_brain_icon.png";
+import { accentAlertSx } from "../../../../config/theme";
 import BoxChart from "./Charts/Box";
 import StackedBar from "./Charts/StackBar_Pl";
 import GroupBar from "./Charts/GroupBar_Pl";
@@ -100,12 +102,21 @@ function Chart({
     // return <p>Loading....</p>
     return (
       <div className="cover">
-        <img src={CoverImg} className="coverImg" alt="coverImg"></img>
+        <img src={CoverImg} className="coverImg" alt="Brain illustration"></img>
         <h3 id="coverText">Statistics and Visualization</h3>
         {formFrame === undefined ? (
-          <p id="coverHint">
+          <Alert
+            severity="info"
+            variant="filled"
+            sx={{
+              ...accentAlertSx,
+              marginTop: "16px",
+              maxWidth: 480,
+              boxShadow: "var(--peace-shadow-lg)",
+            }}
+          >
             Select a dataset from the panel on the left to get started
-          </p>
+          </Alert>
         ) : null}
       </div>
     );

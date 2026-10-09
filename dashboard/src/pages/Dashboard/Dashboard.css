@@ -53,7 +53,8 @@
 }
 
 .coverImg {
-  height: 60vh;
+  height: 40vh;
+  max-height: 460px;
 }
 
 .chartFill {
@@ -65,14 +66,6 @@
   color: var(--peace-muted);
   font-weight: 600;
   letter-spacing: 0.02em;
-}
-
-#coverHint {
-  margin-top: 8px;
-  font-size: 1rem;
-  line-height: 1.5;
-  color: var(--peace-muted);
-  max-width: 60ch;
 }
 
 .chartTitle {
